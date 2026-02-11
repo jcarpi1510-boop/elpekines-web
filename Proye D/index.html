@@ -23,7 +23,7 @@
     <header class="header">
         <div class="container header-container">
             <a href="#" class="logo">
-                <i class="fa-solid fa-paw"></i> ElPekines
+                <img src="El Pekines.jpeg" alt="Logo El Pekines" class="nav-logo-img"> ElPekines
             </a>
             <nav class="nav">
                 <ul class="nav-list">
@@ -137,16 +137,11 @@
     </section>
 
     <!-- About Section -->
-    <section id="nosotros" class="section about">
-        <div class="container about-container">
-            <div class="about-image">
-                <div class="image-wrapper">
-                    <!-- Placeholder for team image -->
-                    <img src="https://images.unsplash.com/photo-1584132967334-10e028bd69f7?q=80&w=1000&auto=format&fit=crop"
-                        alt="Cuidado Veterinario Profesional">
-                </div>
-            </div>
-            <div class="about-content">
+    <!-- Why Choose Us & Offers Combined -->
+    <section id="nosotros-ofertas" class="section bg-light">
+        <div class="container split-column-container">
+            <!-- Left Side: Why Choose Us -->
+            <div class="col-left about-content">
                 <h2 class="section-title">¿Por qué elegirnos?</h2>
                 <ul class="benefits-list">
                     <li><i class="fa-solid fa-check-circle"></i> Atención personalizada.</li>
@@ -157,88 +152,30 @@
                     <li><i class="fa-solid fa-shield-dog"></i> Ambiente limpio y seguro.</li>
                 </ul>
             </div>
-        </div>
-    </section>
 
-    <!-- Promo Banner (Hidden for now)
-    <section class="promo-banner">
-        <div class="container promo-content">
-            <h2>¡Tu primera consulta con descuento!</h2>
-            <p>Conoce nuestro servicio y dale la mejor bienvenida a tu mascota.</p>
-            <a href="https://agendapro.com" target="_blank" class="btn btn-white btn-lg">Obtener Descuento</a>
-        </div>
-    </section>
-    -->
-
-    <!-- Offers Section -->
-    <section id="ofertas" class="section offers bg-light">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Ofertas y Promociones</h2>
-                <p class="section-desc">Aprovecha nuestros beneficios exclusivos para el cuidado de tu mascota.</p>
-            </div>
-            <div class="offers-grid">
-                <!-- Loyalty Card Promotion -->
-                <div class="offer-card featured-offer">
-                    <div class="offer-badge">¡SÚPER PROMO!</div>
-                    <div class="offer-icon-top">🎁</div>
-                    <h3>Tarjeta de Fidelización</h3>
-                    <p class="promo-highlight">¡Premiamos tu preferencia!</p>
-                    <p class="promo-details">Por cada <strong>7 baños</strong> realizados, <br><span
-                            class="text-primary-color">el 8° es totalmente <strong>GRATIS</strong>.</span></p>
-                    <i class="fa-solid fa-gift offer-icon"></i>
+            <!-- Right Side: Offers -->
+            <div class="col-right">
+                <div class="section-header" style="margin-bottom: 30px; text-align: center;">
+                    <h2 class="section-title">Ofertas y Promociones</h2>
+                    <p class="section-desc" style="max-width: 100%;">Beneficios exclusivos para tu mascota.</p>
                 </div>
-
-                <div class="offer-card">
-                    <div class="offer-badge">Próximamente</div>
-                    <h3>Más sorpresas</h3>
-                    <p>Estamos preparando más beneficios para ti y tu mejor amigo.</p>
-                    <i class="fa-solid fa-paw offer-icon"></i>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Testimonials Section -->
-    <section class="section testimonials">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Lo que dicen nuestros clientes</h2>
-            </div>
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <div class="stars">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                            class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                            class="fa-solid fa-star"></i>
+                <div class="offers-grid" style="grid-template-columns: 1fr;">
+                    <!-- Loyalty Card Promotion -->
+                    <div class="offer-card featured-offer">
+                        <div class="offer-badge">¡SÚPER PROMO!</div>
+                        <div class="offer-icon-top">🎁</div>
+                        <h3>Tarjeta de Fidelización</h3>
+                        <p class="promo-highlight">¡Premiamos tu preferencia!</p>
+                        <p class="promo-details">Por cada <strong>7 baños</strong> realizados, <br><span
+                                class="text-primary-color">el 8° es totalmente <strong>GRATIS</strong>.</span></p>
+                        <i class="fa-solid fa-gift offer-icon"></i>
                     </div>
-                    <p class="testimonial-text">"Increíble atención. Mi perro Toby suele tener miedo al vet, pero aquí
-                        lo trataron con tanto cariño que ni se dio cuenta de las vacunas."</p>
-                    <p class="client-name">- María P.</p>
-                </div>
-                <div class="testimonial-card">
-                    <div class="stars">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                            class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                            class="fa-solid fa-star"></i>
-                    </div>
-                    <p class="testimonial-text">"El servicio de peluquería es excelente. Dejaron a mi Luna hermosa y con
-                        un olor exquisito. ¡Recomendadísimos!"</p>
-                    <p class="client-name">- Carlos R.</p>
-                </div>
-                <div class="testimonial-card">
-                    <div class="stars">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                            class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                            class="fa-solid fa-star"></i>
-                    </div>
-                    <p class="testimonial-text">"Muy profesionales y puntuales con la hora agendada. Me encanta poder
-                        reservar online sin complicaciones."</p>
-                    <p class="client-name">- Fernanda S.</p>
                 </div>
             </div>
         </div>
     </section>
+
+
 
     <!-- Agenda CTA Section -->
     <section class="section agenda-cta">
@@ -257,7 +194,7 @@
         <div class="container footer-grid">
             <div class="footer-info">
                 <a href="#" class="logo footer-logo">
-                    <i class="fa-solid fa-paw"></i> ElPekines
+                    <img src="El Pekines.jpeg" alt="Logo El Pekines" class="nav-logo-img"> ElPekines
                 </a>
                 <p>Cuidado profesional para tu mascota en Chile.</p>
                 <div class="social-links">
