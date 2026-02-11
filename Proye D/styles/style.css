@@ -334,6 +334,14 @@ img {
     width: 100%;
     /* Occupy full container width */
     padding-top: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+}
+
+.hero-text-side {
+    max-width: 700px;
     text-align: left;
 }
 
@@ -342,25 +350,36 @@ img {
     font-weight: 700;
     margin-bottom: 20px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    max-width: 600px;
-    /* Limit text width here instead of container */
     animation: fadeInUp 0.8s ease-out;
 }
 
 .hero-subtitle {
     font-size: 1.25rem;
-    margin-bottom: 40px;
-    max-width: 600px;
+    margin-bottom: 0;
+    /* Removed margin since it's now in a flex block */
     animation: fadeInUp 1s ease-out;
 }
 
 .hero-buttons {
     display: flex;
-    gap: 20px;
+    flex-direction: column;
+    gap: 15px;
     animation: fadeInUp 1.2s ease-out;
+    min-width: 250px;
 }
 
 @media (max-width: 768px) {
+    .hero-content {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        gap: 30px;
+    }
+
+    .hero-buttons {
+        width: 100%;
+    }
+
     .hero-title {
         font-size: 2.5rem;
     }
@@ -372,6 +391,38 @@ img {
     .hero-buttons {
         flex-direction: column;
         align-items: flex-start;
+    }
+}
+
+/* Coming Soon Badge */
+.coming-soon-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #f1c40f 0%, #e67e22 100%);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
+    animation: badgePulse 2s infinite, fadeInUp 0.6s ease-out;
+}
+
+@keyframes badgePulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(243, 156, 18, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(243, 156, 18, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(243, 156, 18, 0);
     }
 }
 
@@ -703,6 +754,106 @@ img {
     100% {
         transform: translateX(100%) translateY(100%) rotate(45deg);
     }
+}
+
+/* Offers Section */
+.offers {
+    background-color: var(--bg-light);
+}
+
+.offers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    justify-content: center;
+}
+
+.offer-card {
+    background: white;
+    padding: 40px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border: 2px dashed var(--primary-color);
+    transition: var(--transition);
+}
+
+.offer-card:hover {
+    transform: translateY(-5px);
+    border-style: solid;
+}
+
+.featured-offer {
+    border-style: solid;
+    border-width: 3px;
+    background: linear-gradient(to bottom, #ffffff, #f9fffb);
+}
+
+.offer-icon-top {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.promo-highlight {
+    color: var(--secondary-color);
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.promo-details {
+    font-size: 1.2rem;
+    line-height: 1.4;
+}
+
+.text-primary-color {
+    color: var(--primary-color);
+}
+
+.offer-badge {
+    position: absolute;
+    top: 20px;
+    right: -30px;
+    background: var(--accent-color);
+    color: var(--text-color);
+    padding: 5px 40px;
+    transform: rotate(45deg);
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.offer-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-top: 20px;
+    opacity: 0.3;
+}
+
+/* Service List Styling */
+.service-list-items {
+    list-style: none;
+    padding: 0;
+}
+
+.service-list-items li {
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-color);
+}
+
+.service-list-items li i {
+    color: var(--primary-color);
+    font-size: 0.8rem;
+}
+
+.evaluation-card p {
+    font-weight: 500;
+    color: var(--text-color) !important;
 }
 
 /* WhatsApp Floating Button */
