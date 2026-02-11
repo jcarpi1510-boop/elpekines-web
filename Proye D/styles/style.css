@@ -11,8 +11,8 @@
     --text-light: #7f8c8d;
     --bg-light: #f2faf9;
     /* Very Light Green background */
-    --brand-pink: #f8c8dc;
-    /* Soft Pink */
+    --brand-pink: #d63384;
+    /* Stronger and more readable Pink */
     --white: #ffffff;
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
@@ -404,8 +404,8 @@ img {
     margin-bottom: 0;
     line-height: 1.4;
     color: var(--brand-pink);
-    -webkit-text-stroke: 1px var(--secondary-color);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    -webkit-text-stroke: 1.5px var(--secondary-color);
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
     animation: fadeInUp 1s ease-out;
 }
 
@@ -765,6 +765,16 @@ img {
     background-color: var(--white);
     color: var(--primary-color);
     transform: translateY(-5px) scale(1.1);
+}
+
+.social-links a.instagram-footer {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%) !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.social-links a.whatsapp-footer {
+    background-color: #25d366 !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .footer h3 {
