@@ -184,6 +184,31 @@ img {
     align-items: center;
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn-instagram {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    color: white;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    transition: var(--transition);
+}
+
+.btn-instagram:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    color: white;
+}
+
 .logo {
     font-family: var(--font-heading);
     font-size: 1.5rem;
@@ -209,8 +234,27 @@ img {
     position: relative;
 }
 
-.nav-link:hover {
-    color: var(--primary-color);
+.mobile-socials {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-instagram-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.mobile-instagram-link i {
+    font-size: 1.5rem;
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .nav-link::after {
@@ -238,7 +282,7 @@ img {
 @media (max-width: 768px) {
 
     .nav,
-    .header .btn {
+    .header-actions {
         display: none;
     }
 
@@ -344,21 +388,27 @@ img {
 .hero-text-side {
     max-width: 650px;
     text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
-.hero-logo-inline {
-    color: var(--primary-color);
-    margin-right: 10px;
-    font-size: 0.9em;
-    vertical-align: middle;
+.hero-logo-img-block {
+    height: 80px;
+    width: auto;
+    margin-bottom: 25px;
+    border-radius: 50%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    animation: fadeInUp 0.8s ease-out;
 }
 
 .hero-title {
-    font-size: 2.5rem;
+    font-size: 1.8rem;
     font-weight: 700;
-    margin-bottom: 20px;
+    margin-bottom: 0;
+    line-height: 1.4;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    animation: fadeInUp 0.8s ease-out;
+    animation: fadeInUp 1s ease-out;
 }
 
 .hero-subtitle {
