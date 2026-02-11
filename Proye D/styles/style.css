@@ -335,14 +335,22 @@ img {
     /* Occupy full container width */
     padding-top: 60px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    gap: 40px;
+    gap: 80px;
+    /* Increased gap to keep balance while centering */
 }
 
 .hero-text-side {
-    max-width: 700px;
+    max-width: 650px;
     text-align: left;
+}
+
+.hero-logo-inline {
+    color: var(--primary-color);
+    margin-right: 10px;
+    font-size: 0.9em;
+    vertical-align: middle;
 }
 
 .hero-title {
@@ -433,8 +441,9 @@ img {
 
 .services-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 450px));
     gap: 30px;
+    justify-content: center;
 }
 
 .service-card {
