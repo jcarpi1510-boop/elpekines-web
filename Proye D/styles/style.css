@@ -5,12 +5,12 @@
     --secondary-color: #d4af37;
     /* Gold */
     --secondary-dark: #b8860b;
-    --accent-color: #ffd1dc;
-    /* Light Pink */
+    --accent-color: #e0f2f1;
+    /* Soft Turquoise Green instead of Pink */
     --text-color: #2c3e50;
     --text-light: #7f8c8d;
-    --bg-light: #fff5f7;
-    /* Very Light Pink background */
+    --bg-light: #f2faf9;
+    /* Very Light Green background */
     --white: #ffffff;
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
@@ -423,26 +423,29 @@ img {
 @media (max-width: 768px) {
     .hero-content {
         flex-direction: column;
-        align-items: flex-start;
-        text-align: left;
+        align-items: center;
+        text-align: center;
         gap: 30px;
+        padding-top: 80px;
+    }
+
+    .hero-text-side {
+        align-items: center;
+        text-align: center;
     }
 
     .hero-buttons {
         width: 100%;
+        align-items: center;
     }
 
     .hero-title {
-        font-size: 2.5rem;
+        font-size: 1.8rem;
+        /* Matches desktop or slightly smaller if needed */
     }
 
     .hero-subtitle {
-        font-size: 1.1rem;
-    }
-
-    .hero-buttons {
-        flex-direction: column;
-        align-items: flex-start;
+        font-size: 1rem;
     }
 }
 
