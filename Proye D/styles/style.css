@@ -746,7 +746,7 @@ img {
 }
 
 .footer p {
-    color: #bdc3c7;
+    color: var(--white);
     margin-bottom: 20px;
 }
 
@@ -792,13 +792,13 @@ img {
 
 .footer ul li {
     margin-bottom: 12px;
-    color: #bdc3c7;
+    color: var(--white);
     display: flex;
     gap: 10px;
 }
 
 .footer ul li i {
-    color: var(--primary-color);
+    color: var(--white);
     margin-top: 5px;
 }
 
@@ -806,7 +806,7 @@ img {
     background-color: #243442;
     padding: 20px 0;
     text-align: center;
-    color: #7f8c8d;
+    color: var(--white);
     font-size: 0.9rem;
 }
 
