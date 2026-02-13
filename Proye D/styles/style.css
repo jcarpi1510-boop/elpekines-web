@@ -340,9 +340,15 @@ img {
     }
 
     .mobile-nav-link {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
         font-weight: 600;
-        color: var(--primary-color);
+        color: var(--white);
+        background-color: var(--primary-color);
+        padding: 12px 30px;
+        border-radius: 50px;
+        display: inline-block;
+        min-width: 200px;
+        box-shadow: var(--shadow);
     }
 }
 
