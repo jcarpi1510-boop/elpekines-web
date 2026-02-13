@@ -173,7 +173,7 @@ img {
     left: 0;
     width: 100%;
     z-index: 1000;
-    background-color: rgba(212, 175, 55, 0.95);
+    background-color: var(--brand-pink);
     backdrop-filter: blur(10px);
     box-shadow: var(--shadow);
     padding: 15px 0;
@@ -215,7 +215,7 @@ img {
     font-family: var(--font-heading);
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--secondary-color);
+    color: var(--white);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -236,7 +236,7 @@ img {
 
 .nav-link {
     font-weight: 500;
-    color: var(--text-color);
+    color: var(--white);
     position: relative;
 }
 
@@ -297,7 +297,7 @@ img {
         background: none;
         border: none;
         font-size: 1.5rem;
-        color: var(--text-color);
+        color: var(--white);
         cursor: pointer;
     }
 
