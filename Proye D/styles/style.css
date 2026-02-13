@@ -425,12 +425,19 @@ img {
 }
 
 @media (max-width: 768px) {
+    .hero {
+        height: auto;
+        min-height: calc(100vh - 80px);
+        /* Fill most of the screen but allow growth */
+        padding: 100px 0 60px;
+        /* Top padding for fixed header, bottom for spacing */
+    }
+
     .hero-content {
         flex-direction: column;
         align-items: center;
         text-align: center;
         gap: 30px;
-        padding-top: 80px;
     }
 
     .hero-text-side {
@@ -444,8 +451,13 @@ img {
     }
 
     .hero-title {
-        font-size: 1.8rem;
-        /* Matches desktop or slightly smaller if needed */
+        font-size: 1.6rem;
+    }
+
+    .hero-logo-img-block {
+        height: 100px;
+        /* Smaller logo on mobile to leave room for buttons */
+        margin-bottom: 15px;
     }
 
     .hero-subtitle {
