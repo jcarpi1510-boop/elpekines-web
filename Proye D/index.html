@@ -62,9 +62,6 @@
         <div class="hero-overlay"></div>
         <div class="container hero-content">
             <div class="hero-text-side">
-                <div class="coming-soon-badge">
-                    <i class="fa-solid fa-stopwatch"></i> ¡PRÓXIMA APERTURA!
-                </div>
                 <img src="El Pekines.jpeg" class="hero-logo-img-block" alt="Logo">
                 <h1 class="hero-title">Veterinaria El Pekinés: cuidados y belleza atendidos por profesionales de la
                     salud animal.</h1>
@@ -136,7 +133,9 @@
         <div class="container split-column-container">
             <!-- Left Side: Why Choose Us -->
             <div class="col-left about-content">
-                <h2 class="section-title">¿Por qué elegirnos?</h2>
+                <div class="section-header" style="margin-bottom: 30px; text-align: left;">
+                    <h2 class="section-title">¿Por qué elegirnos?</h2>
+                </div>
                 <ul class="benefits-list">
                     <li><i class="fa-solid fa-check-circle"></i> Atención personalizada.</li>
                     <li><i class="fa-solid fa-ban"></i> NO trabajamos con sedantes.</li>
@@ -275,7 +274,8 @@
         </div>
     </footer>
 
-    <!-- Social Floating Buttons -->
+    <!-- Original Social Floating Buttons - Hidden to use new widget -->
+    <!--
     <a href="https://www.instagram.com/elpekines.cl?igsh=a2JvbXBqeDhqazdo&utm_source=qr" target="_blank"
         class="social-float instagram-float" aria-label="Seguinos en Instagram">
         <i class="fa-brands fa-instagram"></i>
@@ -284,6 +284,34 @@
         aria-label="Chat en WhatsApp">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
+    -->
+
+    <!-- Widget WhatsApp Quirúrgico -->
+    <div class="wa-surgical-widget" id="waWidget">
+        <div class="wa-chat-window" id="waWindow">
+            <div class="wa-chat-header">
+                <img src="El Pekines.jpeg" alt="Logo">
+                <div>
+                    <strong>El Pekinés</strong>
+                    <p style="font-size: 0.8rem; margin: 0; opacity: 0.9;">En línea</p>
+                </div>
+            </div>
+            <div class="wa-chat-body">
+                <div class="wa-msg">
+                    ¡Hola! 🐾 Bienvenido a El Pekinés. ¿En qué podemos ayudarte hoy?
+                </div>
+            </div>
+            <div class="wa-chat-footer">
+                <a href="https://wa.me/56976018029?text=Hola%20El%20Pekinés!%20Quería%20hacer%20una%20consulta..."
+                    target="_blank" class="wa-btn-send">
+                    Iniciar Chat
+                </a>
+            </div>
+        </div>
+        <div class="wa-bubble" id="waBubble">
+            <i class="fa-brands fa-whatsapp"></i>
+        </div>
+    </div>
 
     <script src="scripts/main.js"></script>
 </body>
