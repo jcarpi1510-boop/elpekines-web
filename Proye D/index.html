@@ -160,9 +160,53 @@
                         <div class="offer-icon-top">🎁</div>
                         <h3>Tarjeta de Fidelización</h3>
                         <p class="promo-highlight">¡Premiamos tu preferencia!</p>
-                        <p class="promo-details">Por cada <strong>7 baños</strong> realizados, <br><span
-                                class="text-primary-color">el 8° es totalmente <strong>GRATIS</strong>.</span></p>
-                        <i class="fa-solid fa-gift offer-icon"></i>
+                        <p class="promo-details" style="margin-bottom: 20px;">Por cada <strong>7 baños</strong>
+                            realizados, <br><span class="text-primary-color">el 8° es totalmente
+                                <strong>GRATIS</strong>.</span></p>
+
+                        <!-- Embedded Form -->
+                        <div class="embedded-form-container"
+                            style="background: #f9f9f9; padding: 20px; border-radius: 10px; border: 1px solid #eee; text-align: left;">
+                            <p
+                                style="font-size: 0.95rem; margin-bottom: 15px; color: var(--text-color); text-align: center;">
+                                Déjanos tus datos y recibe tu tarjeta de fidelización.</p>
+                            <form id="promoForm" class="promo-form-embedded">
+                                <div class="form-group" style="margin-bottom: 10px;">
+                                    <label for="ownerName" style="display:block; margin-bottom:5px; font-weight:600;">Tu
+                                        Nombre</label>
+                                    <input type="text" id="ownerName" name="ownerName" placeholder="Ej. Juan Pérez"
+                                        required
+                                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 10px;">
+                                    <label for="userName"
+                                        style="display:block; margin-bottom:5px; font-weight:600;">Nombre de tu
+                                        mascota</label>
+                                    <input type="text" id="userName" name="userName" placeholder="Ej. Rocky" required
+                                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 10px;">
+                                    <label for="petBreed"
+                                        style="display:block; margin-bottom:5px; font-weight:600;">Raza de tu
+                                        mascota</label>
+                                    <input type="text" id="petBreed" name="petBreed" placeholder="Ej. Poodle" required
+                                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 15px;">
+                                    <label for="userContact"
+                                        style="display:block; margin-bottom:5px; font-weight:600;">WhatsApp o
+                                        Email</label>
+                                    <input type="text" id="userContact" name="userContact" placeholder="+569..."
+                                        required
+                                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                </div>
+                                <button type="submit" class="btn btn-primary"
+                                    style="width: 100%; box-shadow: none;">¡Quiero mi tarjeta!</button>
+                            </form>
+                            <p id="formFeedback" class="form-feedback"
+                                style="display: none; margin-top: 10px; color: green; font-weight: bold; text-align: center;">
+                                ¡Genial! Te contactaremos pronto.</p>
+                        </div>
                     </div>
                 </div>
             </div>

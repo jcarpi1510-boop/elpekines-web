@@ -49,21 +49,64 @@ window.addEventListener('scroll', () => {
 });
 
 // Smooth Scroll for Anchor Links (polishing standard behavior)
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
+
+// Promo Form Logic (Embedded)
+const promoForm = document.querySelector('#promoForm');
+const formFeedback = document.querySelector('#formFeedback');
+
+if (promoForm) {
+    promoForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const targetId = this.getAttribute('href');
-        const targetElement = document.querySelector(targetId);
 
-        if (targetElement) {
-            const headerHeight = document.querySelector('.header').offsetHeight;
-            const elementPosition = targetElement.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
+        // Retrieve data
+        const owner = document.getElementById('ownerName').value;
+        const name = document.getElementById('userName').value;
+        const breed = document.getElementById('petBreed').value;
+        const contact = document.getElementById('userContact').value;
 
-            window.scrollTo({
-                top: offsetPosition,
-                behavior: 'smooth'
+        // Google Apps Script Web App URL
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyXNnAZ7OTR8Y-96EDkan5zwHA8r-fi1ozUOmRdOizs82yHVq0kdn1P3hcMz6UOnbr9/exec';
+
+        // Show loading state
+        const submitBtn = promoForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerText;
+        submitBtn.innerText = 'Enviando...';
+        submitBtn.disabled = true;
+
+        // Send data to Google Sheets
+        fetch(scriptURL, {
+            method: 'POST',
+            mode: 'no-cors', // Important for Google Apps Script
+            headers: {
+                'Content-Type': 'text/plain' // Avoids CORS preflight
+            },
+            body: JSON.stringify({
+                owner: owner,
+                name: name,
+                breed: breed,
+                contact: contact
+            })
+        })
+            .then(response => {
+                // Success State (With no-cors we can't read the response, so we assume success if no error)
+                promoForm.style.display = 'none';
+                formFeedback.style.display = 'block';
+                formFeedback.innerText = `¡Gracias ${name}! Tu tarjeta digital ha sido activada. Te contactaremos pronto.`;
+
+                // Reset form logic
+                setTimeout(() => {
+                    formFeedback.style.display = 'none';
+                    promoForm.style.display = 'block';
+                    promoForm.reset();
+                    submitBtn.innerText = originalText;
+                    submitBtn.disabled = false;
+                }, 5000);
+            })
+            .catch(error => {
+                console.error('Error!', error.message);
+                submitBtn.innerText = originalText;
+                submitBtn.disabled = false;
+                alert('Hubo un error al enviar. Por favor intenta de nuevo.');
             });
-        }
     });
-});
+}
