@@ -905,6 +905,44 @@ img {
     }
 }
 
+/* --- BOTÓN INSTAGRAM QUIRÚRGICO --- */
+.ig-surgical-bubble {
+    position: fixed;
+    bottom: 25px;
+    right: 95px;
+    /* Al lado de WhatsApp (25 + 60 + 10 de margen) */
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    z-index: 9998;
+    text-decoration: none;
+}
+
+.ig-surgical-bubble:hover {
+    transform: scale(1.1);
+    color: white;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 600px) {
+    .ig-surgical-bubble {
+        bottom: 20px;
+        right: 85px;
+        width: 50px;
+        height: 50px;
+        font-size: 25px;
+    }
+}
+
 .social-links a.whatsapp-footer {
     background-color: #25d366 !important;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
