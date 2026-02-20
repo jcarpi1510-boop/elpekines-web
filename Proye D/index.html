@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="styles/style.css">
     <!-- Font Awesome for Icons -->
@@ -19,11 +19,29 @@
 
 <body>
 
+    <!-- Top Contact Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-container">
+            <div class="top-info">
+                <span><i class="fa-solid fa-location-dot"></i> Los Jardines 22 Local 10, Ñuñoa</span>
+                <span><i class="fa-solid fa-phone"></i> +56 9 7601 8029</span>
+            </div>
+            <div class="top-social">
+                <a href="https://instagram.com/elpekines.cl" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://wa.me/56976018029" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+            </div>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="header">
         <div class="container header-container">
             <a href="#" class="logo">
-                <img src="El Pekines.jpeg" alt="Logo El Pekines" class="nav-logo-img"> Veterinaria El Pekines
+                <img src="El Pekines.jpeg" alt="Logo El Pekines" class="nav-logo-img">
+                <div class="logo-text">
+                    <span class="brand-name">Veterinaria El Pekines</span>
+                    <span class="brand-tagline">Peluquería • Canina</span>
+                </div>
             </a>
             <nav class="nav">
                 <ul class="nav-list">
@@ -35,7 +53,7 @@
             </nav>
             <div class="header-actions">
                 <a href="https://veterinariadeelpekineschile.site.agendapro.com/cl" target="_blank"
-                    class="btn btn-primary btn-sm">Reservar Hora</a>
+                    class="btn btn-primary btn-sm shine-effect">Agendar Hora</a>
             </div>
             <button class="menu-toggle" aria-label="Abrir menú">
                 <i class="fa-solid fa-bars"></i>
@@ -68,11 +86,9 @@
                     y enfocada en el bienestar real de tu mascota.</p>
             </div>
             <div class="hero-buttons">
+                <a href="#servicios" class="btn btn-secondary btn-lg">Ver Servicios</a>
                 <a href="https://veterinariadeelpekineschile.site.agendapro.com/cl" target="_blank"
-                    class="btn btn-primary btn-lg">Reservar Hora</a>
-                <a href="#servicios" class="btn btn-primary btn-lg">Ver Servicios</a>
-                <a href="https://wa.me/56976018029" target="_blank" class="btn btn-whatsapp-hero btn-lg"><i
-                        class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                    class="btn btn-primary btn-lg shine-effect">Agendar Hora</a>
             </div>
         </div>
     </section>
@@ -81,131 +97,111 @@
     <section id="servicios" class="section services">
         <div class="container">
             <div class="section-header">
+                <span class="section-subtitle">Lo mejor para ellos</span>
                 <h2 class="section-title">Nuestros Servicios</h2>
-                <p class="section-desc">Bienestar integral para tu mascota en un solo lugar.</p>
+                <p class="section-desc">Cuidando a tus Mascotas con Amor</p>
             </div>
-            <div class="services-grid">
-                <!-- Service 1: Veterinaria -->
-                <div class="service-card">
-                    <div class="icon-box">
-                        <i class="fa-solid fa-stethoscope"></i>
+            <div class="services-grid-premium">
+                <!-- Service 1: Consulta -->
+                <div class="service-card-premium">
+                    <div class="service-img-wrapper">
+                        <img src="Foto Veterinaria.jpeg" alt="Consulta Veterinaria">
+                        <div class="service-icon-badge"><i class="fa-solid fa-stethoscope"></i></div>
                     </div>
-                    <h3>🩺 Veterinaria</h3>
-                    <img src="Peluqueria Canina.png" alt="Pekinés en Consulta" class="service-img"
-                        style="border-radius: 8px; margin-bottom: 15px; width: 100%; height: 200px; object-fit: cover;">
-                    <ul class="service-list-items" style="text-align: left; margin-bottom: 20px;">
-                        <li><i class="fa-solid fa-check"></i> Consulta veterinaria</li>
-                        <li><i class="fa-solid fa-check"></i> Vacunación</li>
-                        <li><i class="fa-solid fa-check"></i> Desparasitación</li>
-                        <li><i class="fa-solid fa-check"></i> Control general</li>
-                        <li><i class="fa-solid fa-check"></i> Certificados</li>
-                        <li><i class="fa-solid fa-check"></i> Microchips</li>
-                    </ul>
-                    <a href="https://veterinariadeelpekineschile.site.agendapro.com/cl" target="_blank"
-                        class="btn btn-primary" style="display: inline-block; width: 100%; text-align: center;">Agendar
-                        Hora</a>
-                </div>
-                <!-- Service 2: Peluquería -->
-                <div class="service-card">
-                    <div class="icon-box">
-                        <i class="fa-solid fa-pump-soap"></i>
+                    <div class="service-details">
+                        <h3>Consulta Veterinaria</h3>
+                        <p class="service-price">Desde <span>$10.000</span></p>
+                        <p class="service-time"><i class="fa-regular fa-clock"></i> Aproximadamente 20 minutos</p>
+                        <a href="https://veterinariadeelpekineschile.site.agendapro.com/cl" target="_blank"
+                            class="btn btn-emerald-card">Reservar ahora</a>
                     </div>
-                    <h3>✂️ Peluquería canina</h3>
-                    <img src="Peluqueria Pekines.png" alt="Pekinés en Peluquería" class="service-img"
-                        style="border-radius: 8px; margin-bottom: 15px; width: 100%; height: 200px; object-fit: cover;">
-                    <ul class="service-list-items" style="text-align: left; margin-bottom: 20px;">
-                        <li><i class="fa-solid fa-check"></i> Baño sanitario</li>
-                        <li><i class="fa-solid fa-check"></i> Baño especializado (piel sensible, doble manto)</li>
-                        <li><i class="fa-solid fa-check"></i> Corte de raza o a elección</li>
-                        <li><i class="fa-solid fa-check"></i> Deslanado</li>
-                        <li><i class="fa-solid fa-check"></i> Corte de uñas / limpieza de oídos</li>
-                    </ul>
-                    <a href="https://veterinariadeelpekineschile.site.agendapro.com/cl" target="_blank"
-                        class="btn btn-primary" style="display: inline-block; width: 100%; text-align: center;">Agendar
-                        Hora</a>
                 </div>
+
+                <!-- Service 2: Vacunación -->
+                <div class="service-card-premium">
+                    <div class="service-img-wrapper">
+                        <img src="Peluqueria Canina.png" alt="Vacunación">
+                        <div class="service-icon-badge"><i class="fa-solid fa-syringe"></i></div>
+                    </div>
+                    <div class="service-details">
+                        <h3>Vacunación y Desparasitación</h3>
+                        <p class="service-price">Desde <span>$15.000</span></p>
+                        <p class="service-time"><i class="fa-regular fa-clock"></i> Aproximadamente 2 minutos</p>
+                        <a href="https://veterinariadeelpekineschile.site.agendapro.com/cl" target="_blank"
+                            class="btn btn-emerald-card">Reservar ahora</a>
+                    </div>
+                </div>
+
+                <!-- Service 3: Peluquería -->
+                <div class="service-card-premium">
+                    <div class="service-img-wrapper">
+                        <img src="Peluqueria Pekines.png" alt="Peluquería Canina">
+                        <div class="service-icon-badge"><i class="fa-solid fa-scissors"></i></div>
+                    </div>
+                    <div class="service-details">
+                        <h3>Peluquería Canina Completa</h3>
+                        <p class="service-price">Desde <span>$20.000</span></p>
+                        <p class="service-time"><i class="fa-regular fa-clock"></i> Aproximadamente 1 hora</p>
+                        <a href="https://veterinariadeelpekineschile.site.agendapro.com/cl" target="_blank"
+                            class="btn btn-emerald-card">Reservar ahora</a>
+                    </div>
+                </div>
+            </div>
+            <div class="services-footer">
+                <a href="#contacto" class="btn btn-outline-gold">Ver Todos los Servicios <i
+                        class="fa-solid fa-chevron-right"></i></a>
             </div>
         </div>
     </section>
 
-    <!-- About Section -->
-    <!-- Why Choose Us & Offers Combined -->
-    <section id="nosotros-ofertas" class="section bg-light">
-        <div class="container split-column-container">
-            <!-- Left Side: Why Choose Us -->
-            <div class="col-left about-content">
-                <div class="section-header" style="margin-bottom: 30px; text-align: left;">
-                    <h2 class="section-title">¿Por qué elegirnos?</h2>
-                </div>
-                <ul class="benefits-list">
-                    <li><i class="fa-solid fa-check-circle"></i> Atención personalizada.</li>
-                    <li><i class="fa-solid fa-ban"></i> NO trabajamos con sedantes.</li>
-                    <li><i class="fa-solid fa-heart"></i> Amor y respeto por las mascotas.</li>
-                    <li><i class="fa-solid fa-user-graduate"></i> Profesionales certificados.</li>
-                    <li><i class="fa-solid fa-medal"></i> Productos de alta calidad.</li>
-                    <li><i class="fa-solid fa-shield-dog"></i> Ambiente limpio y seguro.</li>
-                </ul>
+    <!-- Staff Section (Sobre Nosotros) -->
+    <section id="nosotros" class="section staff-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">Personal calificado</span>
+                <h2 class="section-title">Sobre Nosotros</h2>
+                <p class="section-desc">Cuidando a tus Mascotas con Amor</p>
             </div>
-
-            <!-- Right Side: Offers -->
-            <div class="col-right">
-                <div class="section-header" style="margin-bottom: 30px; text-align: center;">
-                    <h2 class="section-title">Ofertas y Promociones</h2>
-                    <p class="section-desc" style="max-width: 100%;">Beneficios exclusivos para tu mascota.</p>
+            <div class="staff-content-wrapper">
+                <div class="staff-text">
+                    <p>Somos una veterinaria y peluquería canina en Santiago dedicada a brindar el mejor cuidado para
+                        tus mascotas. Contamos con un equipo profesional altamente experimentado para asegurar la salud
+                        y bienestar de los engreídos peludos.</p>
+                    <ul class="benefits-list-premium">
+                        <li><i class="fa-solid fa-circle-check"></i> Profesionales de confianza</li>
+                        <li><i class="fa-solid fa-circle-check"></i> Atención personalizada</li>
+                        <li><i class="fa-solid fa-circle-check"></i> Equipamiento moderno</li>
+                    </ul>
+                    <a href="#contacto" class="btn btn-emerald-pill">Saber más sobre Nosotros <i
+                            class="fa-solid fa-chevron-right"></i></a>
                 </div>
-                <div class="offers-grid" style="grid-template-columns: 1fr;">
-                    <!-- Loyalty Card Promotion -->
-                    <div class="offer-card featured-offer">
-                        <div class="offer-badge">¡SÚPER PROMO!</div>
-                        <div class="offer-icon-top">🎁</div>
-                        <h3>Tarjeta de Fidelización</h3>
-                        <p class="promo-highlight">¡Premiamos tu preferencia!</p>
-                        <p class="promo-details" style="margin-bottom: 20px;">Por cada <strong>7 baños</strong>
-                            realizados, <br><span class="text-primary-color">el 8° es totalmente
-                                <strong>GRATIS</strong>.</span></p>
-
-                        <!-- Embedded Form -->
-                        <div class="embedded-form-container"
-                            style="background: #f9f9f9; padding: 20px; border-radius: 10px; border: 1px solid #eee; text-align: left;">
-                            <p
-                                style="font-size: 0.95rem; margin-bottom: 15px; color: var(--text-color); text-align: center;">
-                                Déjanos tus datos y recibe tu tarjeta de fidelización.</p>
-                            <form id="promoForm" class="promo-form-embedded">
-                                <div class="form-group" style="margin-bottom: 10px;">
-                                    <label for="ownerName" style="display:block; margin-bottom:5px; font-weight:600;">Tu
-                                        Nombre</label>
-                                    <input type="text" id="ownerName" name="ownerName" placeholder="Ej. Juan Pérez"
-                                        required
-                                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 10px;">
-                                    <label for="userName"
-                                        style="display:block; margin-bottom:5px; font-weight:600;">Nombre de tu
-                                        mascota</label>
-                                    <input type="text" id="userName" name="userName" placeholder="Ej. Rocky" required
-                                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 10px;">
-                                    <label for="petBreed"
-                                        style="display:block; margin-bottom:5px; font-weight:600;">Raza de tu
-                                        mascota</label>
-                                    <input type="text" id="petBreed" name="petBreed" placeholder="Ej. Poodle" required
-                                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 15px;">
-                                    <label for="userContact"
-                                        style="display:block; margin-bottom:5px; font-weight:600;">WhatsApp o
-                                        Email</label>
-                                    <input type="text" id="userContact" name="userContact" placeholder="+569..."
-                                        required
-                                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                                </div>
-                                <button type="submit" class="btn btn-primary"
-                                    style="width: 100%; box-shadow: none;">¡Quiero mi tarjeta!</button>
-                            </form>
-                            <p id="formFeedback" class="form-feedback"
-                                style="display: none; margin-top: 10px; color: green; font-weight: bold; text-align: center;">
-                                ¡Genial! Te contactaremos pronto.</p>
+                <div class="staff-grid">
+                    <div class="staff-member">
+                        <div class="staff-img-box">
+                            <img src="assets/dra-andrea.jpg" alt="Dra. Andrea Rojas">
+                        </div>
+                        <h4>Dra. Andrea Rojas</h4>
+                        <p>Médica Veterinaria</p>
+                        <div class="rating">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="staff-member">
+                        <div class="staff-img-box">
+                            <img src="El Pekines.jpeg" alt="Diego López">
+                        </div>
+                        <h4>Diego López</h4>
+                        <p>Peluquero Canino</p>
+                        <div class="rating">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
                         </div>
                     </div>
                 </div>
