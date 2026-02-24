@@ -825,6 +825,48 @@ img {
     border-color: var(--primary-color);
 }
 
+/* Custom details for service cards */
+.service-description-detail {
+    margin-top: 15px;
+    text-align: left;
+    border-top: 1px solid rgba(212, 175, 55, 0.1);
+    padding-top: 15px;
+}
+
+.service-description-detail p {
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    color: var(--primary-color);
+}
+
+.service-list {
+    margin-bottom: 15px;
+    padding-left: 0;
+}
+
+.service-list li {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.service-list li i {
+    color: var(--secondary-color);
+    font-size: 0.8rem;
+}
+
+.service-note {
+    font-size: 0.85rem !important;
+    font-style: italic;
+    color: var(--text-light);
+    margin-top: 10px;
+    margin-bottom: 20px !important;
+    line-height: 1.4;
+}
+
 /* Footer de la sección servicios */
 .services-footer {
     text-align: center;
@@ -1576,4 +1618,45 @@ img {
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+}
+
+/* =============================================
+   RESPONSIVE — Botones flotantes en móvil
+   ============================================= */
+@media (max-width: 768px) {
+    .social-float {
+        width: 48px;
+        height: 48px;
+        font-size: 22px;
+        bottom: 16px;
+    }
+
+    .whatsapp-float {
+        right: 16px;
+    }
+
+    .instagram-float {
+        right: 74px;
+    }
+
+    /* Widget WhatsApp en móvil */
+    .wa-surgical-widget {
+        bottom: 16px;
+        right: 16px;
+    }
+
+    .wa-bubble {
+        width: 48px;
+        height: 48px;
+        font-size: 22px;
+    }
+
+    /* Botón Instagram en móvil */
+    .ig-surgical-bubble {
+        width: 48px;
+        height: 48px;
+        font-size: 22px;
+        bottom: 16px;
+        right: 74px;
+    }
 }
