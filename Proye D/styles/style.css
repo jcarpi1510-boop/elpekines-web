@@ -160,22 +160,19 @@ img {
 }
 
 .btn-gold {
-    background: var(--accent-color);
-    color: #5d4a4e !important;
-    /* Dark brownish text for pink background */
-    font-weight: 700;
-    box-shadow: 0 4px 15px rgba(236, 208, 216, 0.4);
-    border: none;
+    background: #E4D0D1;
+    border: 1px solid rgba(200, 168, 106, .35);
+    box-shadow: 0 10px 20px rgba(31, 59, 58, .18);
+    color: #1F3B3A !important;
+    font-weight: 800;
+    border-radius: 44px;
     padding: 15px 45px;
-    border-radius: 100px;
-    /* Fully oval */
 }
 
 .btn-gold:hover {
-    background: #f4dfe5;
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 8px 25px rgba(236, 208, 216, 0.6);
-    color: #5d4a4e !important;
+    transform: translateY(-1px);
+    box-shadow: 0 14px 26px rgba(31, 59, 58, .22);
+    color: #1F3B3A !important;
 }
 
 .btn-white {
@@ -207,7 +204,9 @@ img {
     left: 0;
     width: 100%;
     z-index: 1000;
-    background-color: var(--accent-color);
+    background: #D9C2C3;
+    border-top: 1px solid rgba(200, 168, 106, .22);
+    border-bottom: 1px solid rgba(200, 168, 106, .22);
     backdrop-filter: blur(10px);
     box-shadow: var(--shadow);
     padding: 10px 0;
@@ -388,7 +387,8 @@ img {
 
 /* Top Bar */
 .top-bar {
-    background: var(--primary-color);
+    background: linear-gradient(180deg, #9ECED0 0%, #86BCC0 100%);
+    border-bottom: 1px solid rgba(200, 168, 106, .28);
     color: var(--bg-light);
     padding: 0;
     height: 60px;
@@ -399,9 +399,10 @@ img {
 }
 
 .top-bar a.phone {
-    color: var(--secondary-color);
-    font-weight: 700;
+    color: #C8A86A;
     text-decoration: none;
+    border-bottom: 1px solid rgba(200, 168, 106, .35);
+    font-weight: 700;
     margin-left: 5px;
 }
 
@@ -458,19 +459,19 @@ img {
 
 .brand-name {
     font-family: var(--font-heading);
-    font-weight: 700;
+    font-weight: 800;
     font-size: 1.4rem;
-    color: var(--secondary-color);
+    color: #C8A86A;
     line-height: 1;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    text-shadow: 0 2px 6px rgba(74, 52, 32, .30), 0 1px 0 rgba(230, 210, 162, .35);
 }
 
 .brand-tagline {
     font-size: 0.8rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--secondary-color);
-    font-weight: 600;
+    letter-spacing: .18em;
+    color: #C8A86A;
+    font-weight: 800;
     opacity: 0.9;
 }
 
@@ -511,7 +512,9 @@ img {
 .hero {
     height: 50vh;
     min-height: 450px;
-    background-color: var(--primary-color);
+    background:
+        radial-gradient(circle at 50% 35%, rgba(247, 245, 242, .35) 0%, rgba(247, 245, 242, 0) 52%),
+        linear-gradient(180deg, #A7D5D6 0%, #7FB4B6 100%);
     background-size: cover;
     background-position: center;
     position: relative;
@@ -560,7 +563,7 @@ img {
     margin: 0 auto 20px;
     border-radius: 50%;
     border: 6px solid var(--secondary-color);
-    box-shadow: 0 10px 30px rgba(200, 168, 106, 0.3);
+    filter: drop-shadow(0 10px 22px rgba(31, 59, 58, .22));
 }
 
 .hero-title {
@@ -1657,8 +1660,37 @@ img {
 }
 
 /* =============================================
-   RESPONSIVE — Botones flotantes en móvil
+   RESPONSIVE — Top Bar and Floating Buttons
    ============================================= */
+@media (max-width: 768px) {
+    .top-bar {
+        height: auto;
+        padding: 10px 0;
+    }
+
+    .top-bar-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+    }
+
+    .top-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        gap: 5px;
+    }
+
+    .top-info span {
+        margin-right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+}
+
 @media (max-width: 768px) {
     .social-float {
         width: 48px;
