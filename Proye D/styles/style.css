@@ -1,21 +1,21 @@
 :root {
-    --primary-color: #1e3a34;
-    /* Emerald Green */
-    --primary-dark: #122521;
-    --secondary-color: #d4af37;
+    --primary-color: #a1cdcf;
+    /* Custom Green from photo */
+    --primary-dark: #7ab8bb;
+    --secondary-color: #C8A86A;
     /* Gold */
-    --secondary-dark: #b8860b;
-    --accent-color: #e8a5b8;
-    /* Coral/Pink for buttons */
-    --accent-soft: #f4d0d9;
-    --text-color: #1a1a1a;
-    --text-light: #555555;
-    --bg-light: #f9f5f0;
-    /* Cream background */
+    --secondary-dark: #b6945a;
+    --accent-color: #ecd0d8;
+    /* Pink/Nude */
+    --accent-soft: #fdf8f9;
+    --text-color: #4a4a4a;
+    --text-light: #777777;
+    --bg-light: #F7F5F2;
+    /* Cream/Off-white */
     --white: #ffffff;
     --grey-light: #f4f4f4;
-    --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 15px 35px rgba(0, 0, 0, 0.12);
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 15px 35px rgba(0, 0, 0, 0.08);
     --radius: 12px;
     --radius-lg: 24px;
     --font-heading: 'Playfair Display', serif;
@@ -160,18 +160,22 @@ img {
 }
 
 .btn-gold {
-    background: linear-gradient(135deg, var(--secondary-color), var(--secondary-dark));
-    color: var(--primary-dark) !important;
+    background: var(--accent-color);
+    color: #5d4a4e !important;
+    /* Dark brownish text for pink background */
     font-weight: 700;
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 4px 15px rgba(236, 208, 216, 0.4);
     border: none;
+    padding: 15px 45px;
+    border-radius: 100px;
+    /* Fully oval */
 }
 
 .btn-gold:hover {
-    background: linear-gradient(135deg, var(--secondary-dark), var(--secondary-color));
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6);
-    color: var(--primary-dark) !important;
+    background: #f4dfe5;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(236, 208, 216, 0.6);
+    color: #5d4a4e !important;
 }
 
 .btn-white {
@@ -198,14 +202,15 @@ img {
 /* Header */
 .header {
     position: fixed;
-    top: 0;
+    top: 60px;
+    /* Offset for top-bar */
     left: 0;
     width: 100%;
     z-index: 1000;
-    background-color: var(--brand-pink);
+    background-color: var(--accent-color);
     backdrop-filter: blur(10px);
     box-shadow: var(--shadow);
-    padding: 15px 0;
+    padding: 10px 0;
     transition: var(--transition);
 }
 
@@ -383,17 +388,30 @@ img {
 
 /* Top Bar */
 .top-bar {
-    background: var(--primary-dark);
-    color: var(--white);
-    padding: 8px 0;
-    font-size: 0.85rem;
+    background: var(--primary-color);
+    color: var(--bg-light);
+    padding: 0;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
     font-weight: 500;
 }
 
-.top-bar-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.top-bar a.phone {
+    color: var(--secondary-color);
+    font-weight: 700;
+    text-decoration: none;
+    margin-left: 5px;
+}
+
+.top-bar .icon {
+    color: var(--bg-light);
+    transition: var(--transition);
+}
+
+.top-bar .icon:hover {
+    color: var(--secondary-color);
 }
 
 .top-info span {
@@ -442,8 +460,9 @@ img {
     font-family: var(--font-heading);
     font-weight: 700;
     font-size: 1.4rem;
-    color: var(--primary-color);
+    color: var(--secondary-color);
     line-height: 1;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .brand-tagline {
@@ -452,10 +471,11 @@ img {
     letter-spacing: 1px;
     color: var(--secondary-color);
     font-weight: 600;
+    opacity: 0.9;
 }
 
 .nav-logo-img {
-    height: 50px;
+    height: 70px;
     width: auto;
     border-radius: 50%;
 }
@@ -490,15 +510,14 @@ img {
 /* Hero Section */
 .hero {
     height: 50vh;
-    min-height: 400px;
-    background: linear-gradient(rgba(30, 58, 52, 0.85), rgba(30, 58, 52, 0.85)), url('../assets/banner-bg.jpeg');
+    min-height: 450px;
+    background-color: var(--primary-color);
     background-size: cover;
     background-position: center;
-    background-attachment: fixed;
     position: relative;
     display: flex;
     align-items: center;
-    color: var(--white);
+    color: var(--text-color);
     overflow: hidden;
 }
 
@@ -535,13 +554,13 @@ img {
 }
 
 .hero-logo-img-block {
-    height: 180px;
+    height: 350px;
     width: auto;
     display: block;
     margin: 0 auto 20px;
     border-radius: 50%;
-    border: 4px solid var(--secondary-color);
-    box-shadow: var(--shadow-lg);
+    border: 6px solid var(--secondary-color);
+    box-shadow: 0 10px 30px rgba(200, 168, 106, 0.3);
 }
 
 .hero-title {
@@ -1434,7 +1453,7 @@ img {
 }
 
 .footer-bottom {
-    background-color: #243442;
+    background-color: var(--primary-dark);
     padding: 20px 0;
     text-align: center;
     color: var(--white);
