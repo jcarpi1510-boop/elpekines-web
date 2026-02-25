@@ -159,6 +159,21 @@ img {
     color: var(--primary-color);
 }
 
+.btn-gold {
+    background: linear-gradient(135deg, var(--secondary-color), var(--secondary-dark));
+    color: var(--primary-dark) !important;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+    border: none;
+}
+
+.btn-gold:hover {
+    background: linear-gradient(135deg, var(--secondary-dark), var(--secondary-color));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6);
+    color: var(--primary-dark) !important;
+}
+
 .btn-white {
     background-color: var(--white);
     color: var(--secondary-color);
@@ -474,8 +489,8 @@ img {
 
 /* Hero Section */
 .hero {
-    height: 85vh;
-    min-height: 600px;
+    height: 50vh;
+    min-height: 400px;
     background: linear-gradient(rgba(30, 58, 52, 0.85), rgba(30, 58, 52, 0.85)), url('../assets/banner-bg.jpeg');
     background-size: cover;
     background-position: center;
@@ -556,10 +571,10 @@ img {
 @media (max-width: 768px) {
     .hero {
         height: auto;
-        min-height: calc(100vh - 80px);
-        /* Fill most of the screen but allow growth */
-        padding: 100px 0 60px;
-        /* Top padding for fixed header, bottom for spacing */
+        min-height: 350px;
+        /* Reducido para que no ocupe toda la pantalla sin texto */
+        padding: 80px 0 40px;
+        /* Ajuste de espacio */
     }
 
     .hero-content {
