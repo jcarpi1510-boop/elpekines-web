@@ -572,11 +572,12 @@ img {
 }
 
 .hero-logo-img-block {
-    height: 350px;
     width: 350px;
+    max-width: 80vw;
+    aspect-ratio: 1 / 1;
     object-fit: cover;
     display: block;
-    margin: 0 auto 20px;
+    margin: 0 auto 30px;
     border-radius: 50%;
     border: 6px solid var(--secondary-color);
     background-color: #D9C2C3;
@@ -638,8 +639,8 @@ img {
     }
 
     .hero-logo-img-block {
-        height: 100px;
-        /* Smaller logo on mobile to leave room for buttons */
+        width: 150px;
+        height: 150px;
         margin-bottom: 15px;
     }
 
