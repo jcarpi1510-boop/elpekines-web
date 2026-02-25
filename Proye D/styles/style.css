@@ -510,6 +510,7 @@ img {
 
 /* Hero Section */
 .hero {
+    position: relative;
     height: 50vh;
     min-height: 450px;
     background:
@@ -517,11 +518,25 @@ img {
         linear-gradient(180deg, #A7D5D6 0%, #7FB4B6 100%);
     background-size: cover;
     background-position: center;
-    position: relative;
     display: flex;
     align-items: center;
     color: var(--text-color);
     overflow: hidden;
+}
+
+/* Marca de agua - Logo de fondo sutil */
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("../Logo.png");
+    background-repeat: no-repeat;
+    background-position: center 40%;
+    background-size: 420px;
+    opacity: 0.08;
+    filter: grayscale(100%) brightness(120%);
+    pointer-events: none;
+    z-index: 0;
 }
 
 .hero-overlay {
@@ -558,11 +573,13 @@ img {
 
 .hero-logo-img-block {
     height: 350px;
-    width: auto;
+    width: 350px;
+    object-fit: cover;
     display: block;
     margin: 0 auto 20px;
     border-radius: 50%;
     border: 6px solid var(--secondary-color);
+    background-color: #D9C2C3;
     filter: drop-shadow(0 10px 22px rgba(31, 59, 58, .22));
 }
 
