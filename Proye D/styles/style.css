@@ -1,25 +1,28 @@
 :root {
-    --primary-color: #a1cdcf;
-    /* Custom Green from photo */
-    --primary-dark: #7ab8bb;
-    --secondary-color: #C8A86A;
-    /* Gold */
-    --secondary-dark: #b6945a;
-    --accent-color: #ecd0d8;
-    /* Pink/Nude */
-    --accent-soft: #fdf8f9;
+    /* Owner Brand Palette */
+    --mucurapo: #9ECED0;
+    --mucurapo-deep: #7FB4B6;
+    --ajmer: #D9C2C3;
+    --champagne: #C8A86A;
+    --gold-hi: #E6D2A2;
+    --gold-shadow: #4A3420;
+    --ink: #1F3B3A;
+    --softwhite: #F7F5F2;
+
+    /* Legacy Mappings & Utilities */
+    --primary-color: var(--mucurapo);
+    --primary-dark: var(--mucurapo-deep);
+    --secondary-color: var(--champagne);
+    --accent-color: var(--ajmer);
+    --bg-light: var(--softwhite);
+    --white: #ffffff;
     --text-color: #4a4a4a;
     --text-light: #777777;
-    --bg-light: #F7F5F2;
-    /* Cream/Off-white */
-    --white: #ffffff;
-    --grey-light: #f4f4f4;
     --shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    --shadow-lg: 0 15px 35px rgba(0, 0, 0, 0.08);
     --radius: 12px;
     --radius-lg: 24px;
     --font-heading: 'Playfair Display', serif;
-    --font-body: 'Montserrat', sans-serif;
+    --font-body: 'Georgia', serif;
     --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
@@ -161,12 +164,14 @@ img {
 
 .btn-gold {
     background: #E4D0D1;
-    border: 1px solid rgba(200, 168, 106, .35);
-    box-shadow: 0 10px 20px rgba(31, 59, 58, .18);
-    color: #1F3B3A !important;
+    padding: 22px 45px;
+    border-radius: 50px;
+    text-decoration: none;
     font-weight: 800;
-    border-radius: 44px;
-    padding: 15px 45px;
+    color: var(--ink) !important;
+    border: 1px solid rgba(200, 168, 106, .35);
+    box-shadow: 0 12px 25px rgba(31, 59, 58, .18);
+    transition: all .3s ease;
 }
 
 .btn-gold:hover {
@@ -199,17 +204,15 @@ img {
 /* Header */
 .header {
     position: fixed;
-    top: 60px;
-    /* Offset for top-bar */
+    top: 50px;
+    /* Adjusted roughly for top-bar height */
     left: 0;
     width: 100%;
     z-index: 1000;
-    background: #D9C2C3;
-    border-top: 1px solid rgba(200, 168, 106, .22);
-    border-bottom: 1px solid rgba(200, 168, 106, .22);
-    backdrop-filter: blur(10px);
-    box-shadow: var(--shadow);
-    padding: 10px 0;
+    background: var(--ajmer);
+    padding: 25px 20px;
+    border-top: 1px solid rgba(200, 168, 106, .25);
+    border-bottom: 1px solid rgba(200, 168, 106, .25);
     transition: var(--transition);
 }
 
@@ -387,23 +390,21 @@ img {
 
 /* Top Bar */
 .top-bar {
-    background: linear-gradient(180deg, #9ECED0 0%, #86BCC0 100%);
-    border-bottom: 1px solid rgba(200, 168, 106, .28);
-    color: var(--bg-light);
-    padding: 0;
-    height: 60px;
+    background: linear-gradient(180deg, var(--mucurapo) 0%, var(--mucurapo-deep) 100%);
+    padding: 14px 20px;
+    color: var(--softwhite);
+    font-size: 14px;
+    border-bottom: 1px solid rgba(200, 168, 106, .25);
     display: flex;
     align-items: center;
-    font-size: 0.95rem;
-    font-weight: 500;
 }
 
 .top-bar a.phone {
-    color: #C8A86A;
+    margin-left: 20px;
+    color: var(--champagne);
+    font-weight: bold;
     text-decoration: none;
     border-bottom: 1px solid rgba(200, 168, 106, .35);
-    font-weight: 700;
-    margin-left: 5px;
 }
 
 .top-bar .icon {
@@ -452,32 +453,35 @@ img {
     gap: 12px;
 }
 
-.logo-text {
-    display: flex;
-    flex-direction: column;
-}
-
 .brand-name {
     font-family: var(--font-heading);
-    font-weight: 800;
-    font-size: 1.4rem;
-    color: #C8A86A;
-    line-height: 1;
-    text-shadow: 0 2px 6px rgba(74, 52, 32, .30), 0 1px 0 rgba(230, 210, 162, .35);
+    font-size: 32px;
+    margin: 0;
 }
 
-.brand-tagline {
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: .18em;
-    color: #C8A86A;
+.gold-title {
+    color: var(--champagne);
+    text-shadow: 0 3px 8px rgba(74, 52, 32, .30), 0 1px 0 rgba(230, 210, 162, .35);
     font-weight: 800;
-    opacity: 0.9;
+}
+
+.ink-title {
+    color: var(--ink);
+    font-weight: 800;
+}
+
+.brand-tagline,
+.subtitle {
+    margin-top: 8px;
+    letter-spacing: .18em;
+    color: var(--champagne);
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
 .nav-logo-img {
-    height: 70px;
-    width: auto;
+    width: 100px;
+    height: auto;
     border-radius: 50%;
 }
 
@@ -511,64 +515,30 @@ img {
 /* Hero Section */
 .hero {
     position: relative;
-    height: 50vh;
+    padding: 120px 20px 100px 20px;
+    height: auto;
     min-height: 450px;
+    text-align: center;
     background:
-        radial-gradient(circle at 50% 35%, rgba(247, 245, 242, .35) 0%, rgba(247, 245, 242, 0) 52%),
+        radial-gradient(circle at 50% 40%, rgba(247, 245, 242, .35) 0%, rgba(247, 245, 242, 0) 55%),
         linear-gradient(180deg, #A7D5D6 0%, #7FB4B6 100%);
-    background-size: cover;
-    background-position: center;
-    display: flex;
-    align-items: center;
-    color: var(--text-color);
     overflow: hidden;
-}
-
-/* Marca de agua - Logo de fondo sutil */
-.hero::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: url("../Logo.png");
-    background-repeat: no-repeat;
-    background-position: center 40%;
-    background-size: 420px;
-    opacity: 0.08;
-    filter: grayscale(100%) brightness(120%);
-    pointer-events: none;
-    z-index: 0;
-}
-
-.hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
-    z-index: 1;
-}
-
-.hero-content {
-    position: relative;
-    z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
+    justify-content: center;
 }
 
-.hero-badge {
-    background: var(--secondary-color);
-    color: var(--primary-dark);
-    padding: 8px 16px;
-    border-radius: 30px;
-    font-weight: 700;
-    font-size: 0.9rem;
-    margin-bottom: 25px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+
+
+.main-logo-hero {
+    width: 260px;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    margin-bottom: 50px;
+    filter: drop-shadow(0 12px 25px rgba(31, 59, 58, .25));
+    border-radius: 50%;
+    border: 6px solid var(--champagne);
 }
 
 .hero-logo-img-block {
