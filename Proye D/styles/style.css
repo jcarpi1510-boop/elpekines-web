@@ -521,6 +521,7 @@ img {
     text-align: center;
     background:
         radial-gradient(circle at 50% 40%, rgba(247, 245, 242, .35) 0%, rgba(247, 245, 242, 0) 55%),
+        url("data:image/svg+xml,%3Csvg width='240' height='240' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' opacity='0.08'%3E%3Cg transform='translate(30, 30) rotate(15) scale(0.8)'%3E%3Cpath d='M 25 45 C 15 35 10 20 25 15 C 35 10 40 20 40 20 C 40 20 45 10 55 15 C 70 20 65 35 55 45 C 45 55 35 60 25 45 Z' /%3E%3Ccircle cx='15' cy='5' r='5' /%3E%3Ccircle cx='30' cy='-5' r='5' /%3E%3Ccircle cx='50' cy='-5' r='5' /%3E%3Ccircle cx='65' cy='5' r='5' /%3E%3C/g%3E%3Cg transform='translate(170, 50) rotate(-30) scale(0.6)'%3E%3Cpath d='M 15 15 C 5 5 0 15 10 25 C 0 35 5 45 15 35 L 45 35 C 55 45 60 35 50 25 C 60 15 55 5 45 15 Z' /%3E%3C/g%3E%3Cg transform='translate(150, 160) rotate(-20) scale(0.8)'%3E%3Cpath d='M 25 45 C 15 35 10 20 25 15 C 35 10 40 20 40 20 C 40 20 45 10 55 15 C 70 20 65 35 55 45 C 45 55 35 60 25 45 Z' /%3E%3Ccircle cx='15' cy='5' r='5' /%3E%3Ccircle cx='30' cy='-5' r='5' /%3E%3Ccircle cx='50' cy='-5' r='5' /%3E%3Ccircle cx='65' cy='5' r='5' /%3E%3C/g%3E%3Cg transform='translate(40, 170) rotate(45) scale(0.6)'%3E%3Cpath d='M 15 15 C 5 5 0 15 10 25 C 0 35 5 45 15 35 L 45 35 C 55 45 60 35 50 25 C 60 15 55 5 45 15 Z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
         linear-gradient(180deg, #A7D5D6 0%, #7FB4B6 100%);
     overflow: hidden;
     display: flex;
