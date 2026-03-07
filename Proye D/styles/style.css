@@ -773,7 +773,7 @@ img {
 /* Ícono flotante sobre la imagen */
 .service-icon-badge {
     position: absolute;
-    bottom: -20px;
+    bottom: 15px;
     left: 24px;
     width: 44px;
     height: 44px;
