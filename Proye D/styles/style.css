@@ -180,6 +180,22 @@ img {
     color: #1F3B3A !important;
 }
 
+.btn-outline-gold {
+    background: transparent;
+    padding: 22px 45px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 800;
+    color: var(--ink) !important;
+    border: 2px solid rgba(200, 168, 106, 0.8);
+    transition: all .3s ease;
+}
+
+.btn-outline-gold:hover {
+    background: rgba(200, 168, 106, 0.1);
+    transform: translateY(-1px);
+}
+
 .btn-white {
     background-color: var(--white);
     color: var(--secondary-color);
