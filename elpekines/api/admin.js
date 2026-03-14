@@ -9,15 +9,21 @@ const IK_CONFIG = {
     urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT || '',
 };
 
+const mask = (s) => s ? `${s.substring(0, 4)}...${s.substring(s.length - 4)}` : 'MISSING';
+
 if (IK_CONFIG.publicKey && IK_CONFIG.privateKey && IK_CONFIG.urlEndpoint) {
     try {
         imagekit = new ImageKit(IK_CONFIG);
-        console.log("✅ ImageKit backend inicializado correctamente");
+        console.log("✅ ImageKit backend inicializado");
+        console.log(`🔗 Public Key: ${mask(IK_CONFIG.publicKey)}`);
+        console.log(`🔗 Private Key: ${mask(IK_CONFIG.privateKey)}`);
+        console.log(`🔗 Endpoint: ${IK_CONFIG.urlEndpoint}`);
     } catch (e) {
         console.error("❌ Error inicializando ImageKit SDK:", e);
     }
 } else {
-    console.error("❌ Error: Faltan variables de entorno de ImageKit (Public, Private o Endpoint)");
+    console.error("❌ Error: Faltan variables de entorno de ImageKit");
+    console.log(`Config actual: PUB=${mask(IK_CONFIG.publicKey)}, PRIV=${mask(IK_CONFIG.privateKey)}, END=${IK_CONFIG.urlEndpoint || 'MISSING'}`);
 }
 
 module.exports = async (req, res) => {
@@ -82,6 +88,14 @@ module.exports = async (req, res) => {
                 console.log(`🗑️ [API] Eliminando archivo: ${fileId}`);
                 await imagekit.deleteFile(fileId);
                 return res.status(200).json({ success: true });
+
+            case 'test':
+                const testFiles = await imagekit.listFiles({ limit: 1 });
+                return res.status(200).json({ 
+                    success: true, 
+                    message: "Conexión con ImageKit establecida", 
+                    count: testFiles.length 
+                });
 
             default:
                 console.warn(`❓ [API] Acción desconocida: ${action}`);
