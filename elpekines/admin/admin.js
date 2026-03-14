@@ -3,7 +3,7 @@ console.log("🚀 [SISTEMA] Iniciando Panel Admin Appwrite V4.0...");
 
 // Configuración obtenida del usuario
 const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
-const APPWRITE_PROJECT = '69b5c3ba000e65fa0bda';
+const APPWRITE_PROJECT = '69b5bc9e001dc8643178';
 const BUCKET_ID = 'media';
 const DATABASE_ID = 'main';
 const COLLECTION_ID = 'content';
@@ -19,6 +19,12 @@ const storage = new Storage(client);
 const databases = new Databases(client);
 
 console.log("✅ Appwrite SDK inicializado");
+console.log("🔧 [DEBUG] Config Activa:", {
+    Endpoint: APPWRITE_ENDPOINT,
+    Project: APPWRITE_PROJECT,
+    Database: DATABASE_ID,
+    Collection: COLLECTION_ID
+});
 
 // Elementos (Selección diferida para mayor seguridad)
 let loginOverlay, adminContent, loginForm, btnLogout, btnLogin;
@@ -129,8 +135,12 @@ async function handleLoginAttempt(e) {
         showToast('¡Bienvenido, Jesús! 🐾');
         handleAuthState(true);
     } catch (error) {
-        console.error("❌ Error Appwrite:", error.code, error.message);
-        showToast('Error de login: ' + error.message, 'error');
+        console.error("❌ [LOGIN_FAIL]", error);
+        let msg = error.message;
+        if (error.code === 401) msg = "Credenciales incorrectas o Proyecto mal configurado.";
+        if (error.code === 0) msg = "No hay conexión con Appwrite. Revisa tu internet o el Endpoint.";
+        
+        showToast('Error: ' + msg, 'error');
     } finally {
         setLoginLoading(false);
     }
