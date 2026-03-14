@@ -1,5 +1,5 @@
-// --- REPARACIÓN BOUTIQUE: API ADMIN ---
-const ImageKit = require('imagekit'); // Intentamos el paquete estándar
+// --- REPARACIÓN BOUTIQUE: API ADMIN (DynaServices Edition) ---
+const ImageKit = require('imagekit');
 
 let imagekit;
 try {
@@ -8,9 +8,6 @@ try {
         privateKey: process.env.IMAGEKIT_PRIVATE_KEY || '',
         urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT || '',
     });
-    
-    // Log de diagnóstico interno (solo se ve en logs de Vercel)
-    console.log("ImageKit Init OK. Methods:", Object.keys(imagekit));
 } catch (e) {
     console.error("Critical: Failed to initialize ImageKit", e);
 }
@@ -25,7 +22,7 @@ module.exports = async (req, res) => {
 
     try {
         const params = { ...req.query, ...req.body };
-        const { action, password, fileId, tags } = params;
+        const { action, password, fileId, tags, customMetadata } = params;
 
         // Validaciones de Seguridad
         if (!process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD === "") {
@@ -43,23 +40,26 @@ module.exports = async (req, res) => {
         // --- SISTEMA DE ACCIONES ---
         switch (action) {
             case 'auth':
-                // Generar token para subida desde cliente
+                // Generar token para subida desde cliente (Permitimos metadata en la subida)
                 return res.status(200).json(imagekit.getAuthenticationParameters());
 
             case 'list':
-                // Listar imágenes (Soporte para diferentes nombres de método por versión)
+                // Listado unificado: galería normal + servicios
                 const listMethod = imagekit.listFiles ? 'listFiles' : (imagekit.list ? 'list' : null);
-                
-                if (!listMethod) throw new Error("Método listFiles no encontrado en SDK");
+                if (!listMethod) throw new Error("Método listFiles no encontrado");
 
-                const files = await imagekit[listMethod]({
+                const allFiles = await imagekit[listMethod]({
                     path: '/galeria-perritos',
-                    limit: 50
+                    limit: 100
                 });
-                return res.status(200).json(files);
+                return res.status(200).json(allFiles);
 
-            case 'toggle':
-                await imagekit.updateFileDetails(fileId, { tags: tags });
+            case 'update':
+                // ACTUALIZAR METADATOS (Título y descripción del servicio)
+                await imagekit.updateFileDetails(fileId, {
+                    tags: tags,
+                    customMetadata: customMetadata // Aquí guardamos title y description
+                });
                 return res.status(200).json({ success: true });
 
             case 'delete':
