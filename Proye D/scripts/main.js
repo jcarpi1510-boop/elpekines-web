@@ -197,5 +197,79 @@ async function loadGallery() {
     }
 }
 
-// Iniciar galería
-document.addEventListener('DOMContentLoaded', loadGallery);
+async function loadServices() {
+    const servicesContainer = document.getElementById('servicesContainer');
+    if (!servicesContainer) return;
+
+    try {
+        let servicesData = [];
+
+        if (supabaseClient) {
+            const { data, error } = await supabaseClient
+                .from('services')
+                .select('*')
+                .eq('is_active', true)
+                .order('display_order', { ascending: true });
+
+            if (error) throw error;
+            servicesData = data;
+        } else {
+            // Demo data
+            servicesData = [
+                {
+                    title: 'Consulta Veterinaria',
+                    description: 'Examen físico completo, revisión de piel, oídos, ojos y dental básica.',
+                    image_url: 'Foto Veterinaria.jpeg'
+                },
+                {
+                    title: 'Vacunación y Desparasitación',
+                    description: 'Vacunas séxtuple/óctuple, antirrábica y control de parásitos.',
+                    image_url: 'Vacunacion Pekines.png'
+                },
+                {
+                    title: 'Peluquería Canina Completa',
+                    description: 'Baño profesional, corte estético, limpieza de oídos y corte de uñas.',
+                    image_url: 'Peluqueria Pekines.png'
+                }
+            ];
+        }
+
+        if (servicesData.length > 0) {
+            servicesContainer.innerHTML = '';
+            servicesData.forEach((service, index) => {
+                const card = document.createElement('div');
+                card.className = 'service-card-premium';
+                card.style.animationDelay = `${index * 0.1}s`;
+                
+                // Determinamos el icono basado en el título (opcional, por ahora stethoscope como default)
+                let iconClass = 'fa-stethoscope';
+                if (service.title.toLowerCase().includes('vacuna')) iconClass = 'fa-syringe';
+                if (service.title.toLowerCase().includes('pelu')) iconClass = 'fa-scissors';
+
+                card.innerHTML = `
+                    <div class="service-img-wrapper">
+                        <img src="${service.image_url}" alt="${service.title}">
+                        <div class="service-icon-badge"><i class="fa-solid ${iconClass}"></i></div>
+                    </div>
+                    <div class="service-details">
+                        <h3>${service.title}</h3>
+                        <div class="service-description-detail">
+                            <p>${service.description}</p>
+                        </div>
+                        <a href="https://veterinariadeelpekineschile.site.agendapro.com/cl" target="_blank"
+                            class="btn btn-gold shine-effect">Reservar ahora</a>
+                    </div>
+                `;
+                servicesContainer.appendChild(card);
+            });
+        }
+    } catch (err) {
+        console.error('Error cargando servicios:', err);
+    }
+}
+
+// Iniciar galería y servicios
+document.addEventListener('DOMContentLoaded', () => {
+    loadGallery();
+    loadServices();
+});

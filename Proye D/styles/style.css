@@ -1859,4 +1859,15 @@ img {
     .gallery-preview-container {
         margin-top: 40px;
     }
-}
+}
+
+/* Skeleton Loading State for Services */
+.service-skeleton {
+    height: 400px;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading-gallery 1.5s infinite;
+    margin-bottom: 30px;
+}
+
