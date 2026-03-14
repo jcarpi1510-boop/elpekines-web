@@ -1,26 +1,24 @@
-// --- Configuración e Integración Boutique (Ultra-Robust Edition) ---
-console.log("🚀 [SISTEMA] Iniciando Panel Admin V3.1...");
-const IMAGEKIT_PUBLIC_KEY = 'public_7/aJSThnVm10OMILssPm9pLrwSo=';
-const IMAGEKIT_URL_ENDPOINT = 'https://ik.imagekit.io/15vvxh7w1';
+// --- Configuración Appwrite (Master Edition) ---
+console.log("🚀 [SISTEMA] Iniciando Panel Admin Appwrite V4.0...");
 
-let currentPassword = localStorage.getItem('adminPass') || '';
-let imagekit = null;
+// Configuración obtenida del usuario
+const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
+const APPWRITE_PROJECT = 'fra-69b5bc9e001dc8643178';
+const BUCKET_ID = 'media';
+const DATABASE_ID = 'main';
+const COLLECTION_ID = 'content';
 
-// Inicialización segura de ImageKit
-try {
-    if (typeof ImageKit !== 'undefined') {
-        imagekit = new ImageKit({
-            publicKey: IMAGEKIT_PUBLIC_KEY,
-            urlEndpoint: IMAGEKIT_URL_ENDPOINT,
-            authenticationEndpoint: '/api/admin?action=auth&password=' + encodeURIComponent(currentPassword)
-        });
-        console.log("✅ ImageKit SDK inicializado");
-    } else {
-        console.warn("⚠️ SDK de ImageKit no detectado. Las subidas podrían fallar.");
-    }
-} catch (e) {
-    console.error("❌ Error al inicializar ImageKit:", e);
-}
+// SDK Appwrite
+const { Client, Account, Storage, Databases, ID, Query } = Appwrite;
+const client = new Client()
+    .setEndpoint(APPWRITE_ENDPOINT)
+    .setProject(APPWRITE_PROJECT);
+
+const account = new Account(client);
+const storage = new Storage(client);
+const databases = new Databases(client);
+
+console.log("✅ Appwrite SDK inicializado");
 
 // Elementos (Selección diferida para mayor seguridad)
 let loginOverlay, adminContent, loginForm, btnLogout, btnLogin;
@@ -48,16 +46,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (btnLogout) {
-            btnLogout.addEventListener('click', () => {
-                handleAuthState(false);
-                showToast('Sesión finalizada');
-                setTimeout(() => window.location.reload(), 1000);
-            });
+            btnLogout.addEventListener('click', handleLogout);
         }
 
-        if (currentPassword) {
-            console.log("🔑 [TRAZA] Sesión previa detectada, validando...");
-            checkSession(currentPassword);
+        if (account) {
+            console.log("🔑 [TRAZA] Verificando sesión activa...");
+            checkSession();
         }
 
         // --- Vincular Eventos de Galería (Correcto) ---
@@ -106,73 +100,63 @@ function bindElements() {
     }
 }
 
+// --- Control de Sesión con Appwrite ---
+async function handleAuthState(isLoggedIn) {
+    if (loginOverlay) loginOverlay.classList.toggle('hidden', isLoggedIn);
+    if (adminContent) adminContent.classList.toggle('hidden', !isLoggedIn);
+    
+    if (isLoggedIn) {
+        console.log("🔓 Panel desbloqueado");
+        refreshAllData();
+    }
+}
+
 async function handleLoginAttempt(e) {
     if (e) e.preventDefault();
-    console.log("🎯 Intento de login iniciado...");
-
+    const emailInput = document.getElementById('adminEmailInput');
     const passInput = document.getElementById('adminPassInput');
-    const pass = passInput ? passInput.value : '';
     
-    if (!pass) {
-        showToast('Por favor ingresa la contraseña', 'error');
-        return;
-    }
-
-    // Alerta de modo local
-    if (window.location.protocol === 'file:') {
-        alert("⚠️ MODO LOCAL DETECTADO:\nEl login solo funciona cuando subes los cambios a Vercel/GitHub.");
-        return;
-    }
-
+    if (!emailInput || !passInput) return;
+    
+    const email = emailInput.value;
+    const password = passInput.value;
+    
     setLoginLoading(true);
     try {
-        console.log("📡 Llamando a la API de validación...");
-        const res = await fetch(`/api/admin?action=list&password=${encodeURIComponent(pass)}`);
-        
-        if (res.ok) {
-            const data = await res.json();
-            localStorage.setItem('adminPass', pass);
-            currentPassword = pass;
-            
-            // Actualizar auth endpoint de ImageKit
-            if (imagekit) imagekit.options.authenticationEndpoint = '/api/admin?action=auth&password=' + encodeURIComponent(pass);
-            
-            showToast('Acceso premiun concedido ✨');
-            handleAuthState(true);
-            refreshAllData(data);
-        } else {
-            const errData = await res.json().catch(() => ({}));
-            const errMsg = errData.error || 'Contraseña incorrecta';
-            const details = errData.details ? ` (${errData.details})` : '';
-            showToast(errMsg + details, 'error');
-            console.warn("❌ Login rechazado:", errMsg, details);
-        }
-    } catch (err) {
-        showToast('Falla de red o servidor', 'error');
-        console.error("❌ Error en fetch login:", err);
+        await account.createEmailPasswordSession(email, password);
+        console.log("✅ Sesión creada exitosamente");
+        showToast('¡Bienvenido, Jesús! 🐾');
+        handleAuthState(true);
+    } catch (error) {
+        console.error("❌ Error de login:", error.message);
+        showToast('Credenciales incorrectas: ' + error.message, 'error');
     } finally {
         setLoginLoading(false);
     }
 }
 
-async function checkSession(pass) {
-    if (window.location.protocol === 'file:') return;
+async function checkSession() {
     try {
-        const res = await fetch(`/api/admin?action=list&password=${encodeURIComponent(pass)}`);
-        if (res.ok) {
-            const data = await res.json();
-            handleAuthState(true);
-            refreshAllData(data);
-        } else {
-            handleAuthState(false);
-        }
-    } catch (err) { handleAuthState(false); }
+        const user = await account.get();
+        console.log("👤 Usuario autenticado:", user.email);
+        handleAuthState(true);
+    } catch (error) {
+        console.log("🚪 No hay sesión activa");
+        handleAuthState(false);
+    }
 }
 
-function handleAuthState(isAuth) {
-    if (loginOverlay) loginOverlay.classList.toggle('hidden', isAuth);
-    if (adminContent) adminContent.classList.toggle('hidden', !isAuth);
-    if (!isAuth) localStorage.removeItem('adminPass');
+async function handleLogout() {
+    if (!confirm('¿Cerrar sesión?')) return;
+    try {
+        await account.deleteSession('current');
+        console.log("👋 Sesión cerrada");
+        showToast('Sesión finalizada');
+        setTimeout(() => window.location.reload(), 1000);
+    } catch (error) {
+        console.error("❌ Error al cerrar sesión:", error);
+        window.location.reload();
+    }
 }
 
 // --- TABS ---
@@ -190,20 +174,35 @@ function switchTab(tabId) {
 }
 
 // --- DATOS ---
-async function refreshAllData(preloadedFiles = null) {
-    const files = preloadedFiles || await fetchFiles();
-    if (!files) return;
-    renderGallery(files.filter(f => f.tags && f.tags.includes('active')));
-    renderServices(files);
-    renderVideos(files);
+async function refreshAllData() {
+    try {
+        const response = await databases.listDocuments(DATABASE_ID, COLLECTION_ID, [
+            Query.orderDesc('order')
+        ]);
+        const documents = response.documents;
+        
+        renderGallery(documents.filter(d => d.type === 'gallery'));
+        renderServices(documents.filter(d => d.type === 'service'));
+        renderVideos(documents.filter(d => d.type === 'moment'));
+    } catch (error) {
+        console.error("❌ Error al cargar datos de Appwrite:", error);
+    }
 }
 
-async function fetchFiles() {
-    if (!currentPassword) return null;
+async function deleteImage(docId, fileId) {
+    if (!confirm('¿Eliminar de la galería?')) return;
     try {
-        const res = await fetch(`/api/admin?action=list&password=${encodeURIComponent(currentPassword)}`);
-        return res.ok ? await res.json() : null;
-    } catch (err) { return null; }
+        // 1. Borrar documento
+        await databases.deleteDocument(DATABASE_ID, COLLECTION_ID, docId);
+        // 2. Borrar archivo
+        await storage.deleteFile(BUCKET_ID, fileId);
+        
+        showToast('Foto eliminada');
+        refreshAllData();
+    } catch (error) {
+        console.error("❌ Error al eliminar:", error);
+        showToast('Error al eliminar', 'error');
+    }
 }
 
 // --- RENDER GALERÍA ---
@@ -215,15 +214,17 @@ function renderGallery(items) {
     items.forEach(item => {
         const card = document.createElement('div');
         card.className = 'admin-card';
+        const fileUrl = `${APPWRITE_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${item.fileId}/view?project=${APPWRITE_PROJECT}`;
+        
         card.innerHTML = `
             <div class="card-image">
-                <img src="${item.url}?tr=w-500,h-400,fo-auto" alt="${item.name}">
+                <img src="${fileUrl}" alt="${item.title}">
                 <span class="badge-tag tag-active">Activa</span>
             </div>
             <div class="card-body">
-                <strong class="dog-name">${item.name.split('_')[1] || item.name}</strong>
+                <strong class="dog-name">${item.title}</strong>
                 <div class="action-row">
-                    <button onclick="deleteImage('${item.fileId}')" class="btn-sm btn-delete"><i class="fa-solid fa-trash-can"></i> Eliminar</button>
+                    <button onclick="deleteImage('${item.$id}', '${item.fileId}')" class="btn-sm btn-delete"><i class="fa-solid fa-trash-can"></i> Eliminar</button>
                 </div>
             </div>
         `;
@@ -232,19 +233,19 @@ function renderGallery(items) {
 }
 
 // --- RENDER SERVICIOS ---
-function renderServices(files) {
+function renderServices(docs) {
     if (!servicesContainer) return;
     servicesContainer.innerHTML = '';
     
     [1, 2, 3].forEach(num => {
-        const file = files.find(f => f.tags && f.tags.includes(`service_${num}`));
+        const doc = docs.find(d => d.type === 'service' && d.order === num);
         const card = document.createElement('div');
         card.className = 'service-editor-card';
         
         const defTitle = num === 1 ? 'Veterinaria' : (num === 2 ? 'Vacunación' : 'Peluquería');
-        const title = file?.customMetadata?.title || defTitle;
-        const desc = file?.customMetadata?.description || 'Descripción del servicio...';
-        const imgUrl = file?.url || '../Logo.png';
+        const title = doc?.title || defTitle;
+        const desc = doc?.description || 'Descripción del servicio...';
+        const imgUrl = doc?.fileId ? `${APPWRITE_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${doc.fileId}/view?project=${APPWRITE_PROJECT}` : '../Logo.png';
 
         card.innerHTML = `
             <h4 style="margin-bottom: 15px; color: var(--brand-gold);">Slot #${num}: ${defTitle}</h4>
@@ -261,7 +262,7 @@ function renderServices(files) {
                 <label>Descripción corta</label>
                 <textarea id="serviceDesc_${num}" rows="3">${desc}</textarea>
             </div>
-            <button class="btn-gold" onclick="saveService(${num}, '${file?.fileId || ''}')" id="btnSaveService_${num}">
+            <button class="btn-gold" onclick="saveService(${num}, '${doc?.$id || ''}', '${doc?.fileId || ''}')" id="btnSaveService_${num}">
                 <span>Guardar Cambios</span>
             </button>
         `;
@@ -280,7 +281,7 @@ window.handleServiceFile = (num) => {
     }
 };
 
-window.saveService = async (num, oldFileId) => {
+window.saveService = async (num, docId, oldFileId) => {
     const btn = document.getElementById(`btnSaveService_${num}`);
     const title = document.getElementById(`serviceTitle_${num}`).value;
     const desc = document.getElementById(`serviceDesc_${num}`).value;
@@ -290,42 +291,38 @@ window.saveService = async (num, oldFileId) => {
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
 
     try {
+        let fileId = oldFileId;
         if (file) {
-            const uploadRes = await imagekit.upload({
-                file: file,
-                fileName: `service_${num}_${Date.now()}`,
-                folder: '/galeria-perritos',
-                tags: [`service_${num}`],
-                customMetadata: { title, description: desc }
-            });
-            if (oldFileId) await fetch(`/api/admin?action=delete&password=${encodeURIComponent(currentPassword)}&fileId=${oldFileId}`);
-        } else if (oldFileId) {
-            await fetch('/api/admin', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    action: 'update', password: currentPassword, fileId: oldFileId, 
-                    tags: [`service_${num}`], customMetadata: { title, description: desc }
-                })
-            });
+            const uploaded = await storage.createFile(BUCKET_ID, ID.unique(), file);
+            fileId = uploaded.$id;
+            if (oldFileId) await storage.deleteFile(BUCKET_ID, oldFileId);
         }
+
+        const data = { type: 'service', fileId, title, description: desc, order: num };
+
+        if (docId) {
+            await databases.updateDocument(DATABASE_ID, COLLECTION_ID, docId, data);
+        } else {
+            await databases.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), data);
+        }
+
         showToast('Servicio actualizado ✨');
         refreshAllData();
-    } catch (err) { showToast('Error al guardar', 'error'); }
+    } catch (err) { console.error(err); showToast('Error al guardar', 'error'); }
     finally { btn.disabled = false; btn.innerHTML = '<span>Guardar Cambios</span>'; }
 };
 
 // --- RENDER VIDEOS MOMENTOS ---
-function renderVideos(files) {
+function renderVideos(docs) {
     if (!videosContainer) return;
     videosContainer.innerHTML = '';
     
     [1, 2, 3].forEach(num => {
-        const file = files.find(f => f.tags && f.tags.includes(`moment_${num}`));
+        const doc = docs.find(d => d.type === 'moment' && d.order === num);
         const card = document.createElement('div');
         card.className = 'service-editor-card';
         
-        const videoUrl = file?.url || '';
+        const videoUrl = doc?.fileId ? `${APPWRITE_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${doc.fileId}/view?project=${APPWRITE_PROJECT}` : '';
 
         card.innerHTML = `
             <h4 style="margin-bottom: 15px; color: var(--brand-gold);">Slot Video #${num}</h4>
@@ -339,7 +336,7 @@ function renderVideos(files) {
                 </div>
                 <input type="file" id="videoFileInput_${num}" accept="video/*" style="display:none" onchange="handleVideoFile(${num})">
             </div>
-            <button class="btn-gold" onclick="saveVideo(${num}, '${file?.fileId || ''}')" id="btnSaveVideo_${num}">
+            <button class="btn-gold" onclick="saveVideo(${num}, '${doc?.$id || ''}', '${doc?.fileId || ''}')" id="btnSaveVideo_${num}">
                 <span>Guardar Video #${num}</span>
             </button>
         `;
@@ -360,11 +357,11 @@ window.handleVideoFile = (num) => {
     }
 };
 
-window.saveVideo = async (num, oldFileId) => {
+window.saveVideo = async (num, docId, oldFileId) => {
     const btn = document.getElementById(`btnSaveVideo_${num}`);
     const file = document.getElementById(`videoFileInput_${num}`).files[0];
 
-    if (!file && !oldFileId) {
+    if (!file && !docId) {
         showToast('Selecciona un video primero', 'error');
         return;
     }
@@ -373,30 +370,33 @@ window.saveVideo = async (num, oldFileId) => {
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Subiendo...';
 
     try {
+        let fileId = oldFileId;
         if (file) {
-            console.log(`🎬 Subiendo video ${num} a ImageKit...`);
-            const uploadRes = await imagekit.upload({
-                file: file,
-                fileName: `moment_${num}_${Date.now()}`,
-                folder: '/galeria-perritos',
-                tags: [`moment_${num}`]
-            });
-            if (oldFileId) await fetch(`/api/admin?action=delete&password=${encodeURIComponent(currentPassword)}&fileId=${oldFileId}`);
-            showToast(`¡Video #${num} actualizado! 🐾🎬`);
-            refreshAllData();
-        } else {
-          showToast('No hay cambios que guardar', 'info');
+            const uploaded = await storage.createFile(BUCKET_ID, ID.unique(), file);
+            fileId = uploaded.$id;
+            if (oldFileId) await storage.deleteFile(BUCKET_ID, oldFileId);
         }
+
+        const data = { type: 'moment', fileId, order: num };
+
+        if (docId) {
+            await databases.updateDocument(DATABASE_ID, COLLECTION_ID, docId, data);
+        } else {
+            await databases.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), data);
+        }
+
+        showToast(`¡Video #${num} actualizado! 🐾🎬`);
+        refreshAllData();
     } catch (err) {
         console.error("Error al subir video:", err);
-        showToast('Error al subir video (Max 100MB)', 'error'); 
+        showToast('Error al subir video', 'error'); 
     }
     finally { btn.disabled = false; btn.innerHTML = `<span>Guardar Video #${num}</span>`; }
 };
 
 async function handleGalleryUpload(e) {
     if (e) e.preventDefault();
-    console.log("📤 [TRAZA] Iniciando proceso de subida a ImageKit...");
+    console.log("📤 [TRAZA] Iniciando subida a Appwrite...");
     
     const file = fileInput ? fileInput.files[0] : null;
     if (!file) {
@@ -405,52 +405,35 @@ async function handleGalleryUpload(e) {
     }
     
     setLoading(true);
-    const authUrl = `/api/admin?action=auth&password=${encodeURIComponent(currentPassword)}`;
-    
     try {
-        console.log("📡 [TRAZA] Verificando token de subida...");
-        const authCheck = await fetch(authUrl);
-        if (!authCheck.ok) {
-            const errData = await authCheck.json().catch(() => ({}));
-            throw new Error(errData.error || `Error del servidor (${authCheck.status})`);
-        }
-        const authData = await authCheck.json();
-        console.log("✅ [TRAZA] Respuesta auth recibida");
+        // 1. Subir archivo a Storage
+        console.log("📡 [TRAZA] Subiendo archivo a Storage...");
+        const uploadedFile = await storage.createFile(BUCKET_ID, ID.unique(), file);
+        const fileId = uploadedFile.$id;
         
-        if (!authData.token || !authData.signature || !authData.expire) {
-            console.error("❌ [TRAZA] Token incompleto:", authData);
-            throw new Error("El servidor no devolvió las llaves de subida. Revisa los logs de Vercel.");
-        }
-        
-        console.log("✅ [TRAZA] Token validado OK");
-        const finalPubKey = authData.publicKey || IMAGEKIT_PUBLIC_KEY;
-        console.log(`📡 [TRAZA] Usando Public Key: ${finalPubKey.substring(0, 10)}...`);
+        // Generar URL directa (Appwrite)
+        const fileUrl = `${APPWRITE_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${fileId}/view?project=${APPWRITE_PROJECT}`;
 
-        console.log(`📤 [TRAZA] Iniciando subida: ${file.name}`);
-        imagekit.upload({
-            file: file,
-            fileName: `${Date.now()}_${file.name.replace(/\s/g, '_')}`,
-            folder: '/galeria-perritos',
-            tags: ['active'],
-            token: authData.token,
-            signature: authData.signature,
-            expire: authData.expire,
-            publicKey: finalPubKey
-        }, (err, result) => {
-            setLoading(false);
-            if (err) {
-                console.error("❌ [TRAZA] Error SDK ImageKit:", err);
-                return showToast('Error ImageKit: ' + (err.message || 'Error desconocido'), 'error');
-            }
-            console.log("✅ [TRAZA] Subida exitosa:", result);
-            showToast('¡Foto publicada! 🐾');
-            resetGalleryForm();
-            refreshAllData();
+        // 2. Crear documento en Database
+        console.log("📡 [TRAZA] Registrando en base de datos...");
+        await databases.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), {
+            type: 'gallery',
+            fileId: fileId,
+            title: file.name,
+            description: 'Foto de la galería',
+            active: true,
+            order: Date.now()
         });
+
+        console.log("✅ [TRAZA] Proceso Appwrite completo");
+        showToast('¡Foto publicada! 🐾');
+        resetGalleryForm();
+        refreshAllData();
     } catch (err) {
+        console.error("❌ [TRAZA] Error en proceso Appwrite:", err);
+        showToast('Error en la subida: ' + err.message, 'error');
+    } finally {
         setLoading(false);
-        console.error("❌ [TRAZA] Error en proceso de subida:", err);
-        showToast('Falla de Autenticación: ' + err.message, 'error');
     }
     return false;
 }
@@ -472,11 +455,7 @@ function handleFilePreview(e) {
     }
 }
 
-window.deleteImage = async (fileId) => {
-    if (!confirm('¿Eliminar de la galería?')) return;
-    const res = await fetch(`/api/admin?action=delete&password=${encodeURIComponent(currentPassword)}&fileId=${fileId}`);
-    if (res.ok) { showToast('Foto eliminada'); refreshAllData(); }
-};
+    // Eliminamos la función obsoleta fetch-based
 
 // --- MANEJO DE IMÁGENES ---
 
