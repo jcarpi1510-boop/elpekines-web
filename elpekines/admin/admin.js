@@ -2,10 +2,12 @@
 const IMAGEKIT_PUBLIC_KEY = 'public_vBNo27Y5W/8jRCH6s9V2K71hPqY=';
 const IMAGEKIT_URL_ENDPOINT = 'https://ik.imagekit.io/elpekines';
 
+let currentPassword = localStorage.getItem('adminPass') || '';
+
 const imagekit = new ImageKit({
     publicKey: IMAGEKIT_PUBLIC_KEY,
     urlEndpoint: IMAGEKIT_URL_ENDPOINT,
-    authenticationEndpoint: '/api/admin?action=auth&password=' + encodeURIComponent(localStorage.getItem('adminPass'))
+    authenticationEndpoint: '/api/admin?action=auth&password=' + encodeURIComponent(currentPassword)
 });
 
 // --- Elementos del Interfaz ---
@@ -27,14 +29,20 @@ const toastMsg = document.getElementById('toastMsg');
 
 // --- Control de Sesión ---
 document.addEventListener('DOMContentLoaded', () => {
-    const savedPass = localStorage.getItem('adminPass');
-    if (savedPass) {
-        checkSession(savedPass);
+    if (currentPassword) {
+        checkSession(currentPassword);
     }
 });
 
 async function checkSession(pass) {
     try {
+        // Si estamos en un archivo local (file://), fetch a /api fallará
+        if (window.location.protocol === 'file:') {
+            console.warn("⚠️ Ejecución local detectada. El API solo funciona en el servidor (Vercel).");
+            // No hacemos el fetch para evitar retrasos, pero mostramos un mensaje si intentan loguear
+            return;
+        }
+
         const res = await fetch(`/api/admin?action=list&password=${encodeURIComponent(pass)}`);
         if (res.ok) {
             handleAuthState(true);
@@ -44,6 +52,7 @@ async function checkSession(pass) {
             handleAuthState(false);
         }
     } catch (err) {
+        console.error("Fetch error:", err);
         handleAuthState(false);
     }
 }
@@ -64,41 +73,48 @@ loginForm.addEventListener('submit', async (e) => {
     const pass = document.getElementById('adminPassword').value;
     const loader = document.getElementById('loginLoader');
     const btn = document.getElementById('btnLogin');
+    const loginText = document.getElementById('loginBtnText');
+
+    if (window.location.protocol === 'file:') {
+        alert("⚠️ ATENCIÓN: Estás abriendo el archivo localmente. \n\nEl sistema de contraseñas y base de datos SOLO FUNCIONA cuando subes los cambios a GitHub/Vercel. \n\nSube los cambios para poder ingresar.");
+        return;
+    }
 
     btn.disabled = true;
     loader.classList.remove('hidden');
+    loginText.textContent = "Verificando...";
 
     try {
         const res = await fetch(`/api/admin?action=list&password=${encodeURIComponent(pass)}`);
         if (res.ok) {
             localStorage.setItem('adminPass', pass);
+            currentPassword = pass;
             showToast('Acceso premiun concedido ✨');
             handleAuthState(true);
             const files = await res.json();
             renderGallery(files);
         } else {
-            showToast('Identificación incorrecta', 'error');
+            showToast('Contraseña incorrecta', 'error');
         }
     } catch (err) {
-        showToast('Error de conexión', 'error');
+        showToast('Error de conexión con el servidor', 'error');
     } finally {
         btn.disabled = false;
         loader.classList.add('hidden');
+        loginText.textContent = "Acceder al Panel";
     }
 });
 
 btnLogout.addEventListener('click', () => {
     handleAuthState(false);
-    showToast('Sesión finalizada con éxito');
+    showToast('Sesión finalizada');
 });
 
-// --- Gestión de la Galería (UI Logic) ---
+// --- Gestión de la Galería ---
 
 async function fetchGallery() {
-    const pass = localStorage.getItem('adminPass');
-    if (!pass) return;
+    if (!currentPassword) return;
 
-    // Loading Skeletons
     galleryGrid.innerHTML = `
         <div class="admin-card skeleton" style="height: 340px;"></div>
         <div class="admin-card skeleton" style="height: 340px;"></div>
@@ -106,13 +122,13 @@ async function fetchGallery() {
     `;
     
     try {
-        const res = await fetch(`/api/admin?action=list&password=${encodeURIComponent(pass)}`);
+        const res = await fetch(`/api/admin?action=list&password=${encodeURIComponent(currentPassword)}`);
         if (res.ok) {
             const files = await res.json();
             renderGallery(files);
         }
     } catch (err) {
-        showToast('Error al sincronizar galería', 'error');
+        showToast('Error al actualizar galería', 'error');
     }
 }
 
@@ -120,7 +136,7 @@ function renderGallery(items) {
     galleryGrid.innerHTML = '';
     
     if (items.length === 0) {
-        galleryGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #6B7280;">No hay imágenes cargadas en el sistema todavía.</div>';
+        galleryGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #6B7280;">No hay imágenes cargadas.</div>';
         return;
     }
 
@@ -138,13 +154,13 @@ function renderGallery(items) {
                 </div>
             </div>
             <div class="card-body">
-                <strong class="dog-name">${item.name.replace(/\.[^/.]+$/, "").split('_')[1] || item.name}</strong>
+                <strong class="dog-name">${item.name.split('_')[1] || item.name}</strong>
                 <div class="action-row">
-                    <button onclick="toggleStatus('${item.fileId}', ${isActive})" class="btn-sm btn-toggle" title="Cambiar visibilidad">
+                    <button onclick="toggleStatus('${item.fileId}', ${isActive})" class="btn-sm btn-toggle">
                         <i class="fa-solid ${isActive ? 'fa-eye-slash' : 'fa-eye'}"></i>
                         ${isActive ? 'Ocultar' : 'Mostrar'}
                     </button>
-                    <button onclick="deleteImage('${item.fileId}')" class="btn-sm btn-delete" title="Borrar permanentemente">
+                    <button onclick="deleteImage('${item.fileId}')" class="btn-sm btn-delete">
                         <i class="fa-solid fa-trash-can"></i>
                     </button>
                 </div>
@@ -154,16 +170,14 @@ function renderGallery(items) {
     });
 }
 
-// Subida Boutique
+// Subida
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const file = fileInput.files[0];
-    const pass = localStorage.getItem('adminPass');
-
-    if (!file || !pass) return;
+    if (!file || !currentPassword) return;
 
     setLoading(true);
-    imagekit.options.authenticationEndpoint = '/api/admin?action=auth&password=' + encodeURIComponent(pass);
+    imagekit.options.authenticationEndpoint = '/api/admin?action=auth&password=' + encodeURIComponent(currentPassword);
 
     imagekit.upload({
         file: file,
@@ -173,61 +187,45 @@ uploadForm.addEventListener('submit', async (e) => {
     }, (err, result) => {
         setLoading(false);
         if (err) {
-            showToast('Falla en la subida a ImageKit', 'error');
+            showToast('Error en la subida', 'error');
             return;
         }
-        showToast('¡Imagen integrada con éxito! ✨');
+        showToast('¡Imagen subida con éxito! ✨');
         resetForm();
         fetchGallery();
     });
 });
 
 async function toggleStatus(fileId, currentIsActive) {
-    const pass = localStorage.getItem('adminPass');
     const newTags = currentIsActive ? ['inactive'] : ['active'];
-
     const res = await fetch('/api/admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            action: 'toggle',
-            password: pass,
-            fileId: fileId,
-            tags: newTags
-        })
+        body: JSON.stringify({ action: 'toggle', password: currentPassword, fileId: fileId, tags: newTags })
     });
 
     if (res.ok) {
-        showToast('Estado de visibilidad actualizado');
+        showToast('Visibilidad actualizada');
         fetchGallery();
     } else {
-        showToast('No se pudo procesar la acción', 'error');
+        showToast('Error en el cambio', 'error');
     }
 }
 
 async function deleteImage(fileId) {
-    if (!confirm('¿Seguro que desea eliminar esta fotografía permanentemente?')) return;
-
-    const pass = localStorage.getItem('adminPass');
+    if (!confirm('¿Eliminar permanentemente?')) return;
     const res = await fetch('/api/admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            action: 'delete',
-            password: pass,
-            fileId: fileId
-        })
+        body: JSON.stringify({ action: 'delete', password: currentPassword, fileId: fileId })
     });
 
     if (res.ok) {
-        showToast('Imagen eliminada definitivamente');
+        showToast('Eliminada');
         fetchGallery();
-    } else {
-        showToast('Error al intentar eliminar', 'error');
     }
 }
 
-// Visual Utilities
 fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -244,7 +242,7 @@ fileInput.addEventListener('change', (e) => {
 function setLoading(is) {
     btnUpload.disabled = is;
     uploadLoader.classList.toggle('hidden', !is);
-    btnText.textContent = is ? 'Publicando...' : 'Publicar en galería';
+    btnText.textContent = is ? 'Subiendo...' : 'Publicar en galería';
 }
 
 function resetForm() {
@@ -254,8 +252,9 @@ function resetForm() {
 }
 
 function showToast(msg, type = 'success') {
+    if (!toastEl || !toastMsg) return;
     toastMsg.textContent = msg;
     toastEl.style.background = type === 'error' ? '#EF4444' : 'var(--brand-ink)';
     toastEl.classList.add('show');
-    setTimeout(() => toastEl.classList.remove('show'), 4000);
+    setTimeout(() => toastEl.classList.remove('show'), 3000);
 }
