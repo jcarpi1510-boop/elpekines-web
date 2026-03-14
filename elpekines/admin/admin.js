@@ -1,4 +1,4 @@
-// --- CONFIGURACIÓN E IDENTIDAD ---
+// --- Configuración e Integración ---
 const IMAGEKIT_PUBLIC_KEY = 'public_vBNo27Y5W/8jRCH6s9V2K71hPqY=';
 const IMAGEKIT_URL_ENDPOINT = 'https://ik.imagekit.io/elpekines';
 
@@ -8,7 +8,7 @@ const imagekit = new ImageKit({
     authenticationEndpoint: '/api/admin?action=auth&password=' + encodeURIComponent(localStorage.getItem('adminPass'))
 });
 
-// --- ELEMENTOS DEL DOM ---
+// --- Elementos del Interfaz ---
 const loginOverlay = document.getElementById('loginOverlay');
 const adminContent = document.getElementById('adminContent');
 const loginForm = document.getElementById('loginForm');
@@ -25,7 +25,7 @@ const btnText = document.getElementById('btnText');
 const toastEl = document.getElementById('toast');
 const toastMsg = document.getElementById('toastMsg');
 
-// --- INICIALIZACIÓN ---
+// --- Control de Sesión ---
 document.addEventListener('DOMContentLoaded', () => {
     const savedPass = localStorage.getItem('adminPass');
     if (savedPass) {
@@ -89,20 +89,20 @@ loginForm.addEventListener('submit', async (e) => {
 
 btnLogout.addEventListener('click', () => {
     handleAuthState(false);
-    showToast('Sesión cerrada con éxito');
+    showToast('Sesión finalizada con éxito');
 });
 
-// --- GESTIÓN DE GALERÍA ---
+// --- Gestión de la Galería (UI Logic) ---
 
 async function fetchGallery() {
     const pass = localStorage.getItem('adminPass');
     if (!pass) return;
 
-    // Show luxury skeleton states
+    // Loading Skeletons
     galleryGrid.innerHTML = `
-        <div class="skeleton-card"></div>
-        <div class="skeleton-card"></div>
-        <div class="skeleton-card"></div>
+        <div class="admin-card skeleton" style="height: 340px;"></div>
+        <div class="admin-card skeleton" style="height: 340px;"></div>
+        <div class="admin-card skeleton" style="height: 340px;"></div>
     `;
     
     try {
@@ -112,7 +112,7 @@ async function fetchGallery() {
             renderGallery(files);
         }
     } catch (err) {
-        showToast('Error al actualizar la vista', 'error');
+        showToast('Error al sincronizar galería', 'error');
     }
 }
 
@@ -120,29 +120,31 @@ function renderGallery(items) {
     galleryGrid.innerHTML = '';
     
     if (items.length === 0) {
-        galleryGrid.innerHTML = '<div class="admin-header"><p>Su catálogo está vacío actualmente.</p></div>';
+        galleryGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #6B7280;">No hay imágenes cargadas en el sistema todavía.</div>';
         return;
     }
 
     items.forEach(item => {
         const isActive = item.tags && item.tags.includes('active');
         const card = document.createElement('div');
-        card.className = 'admin-img-card';
+        card.className = 'admin-card';
         card.innerHTML = `
-            <div class="img-container">
-                <img src="${item.url}?tr=w-400,h-400,fo-auto" alt="${item.name}" loading="lazy">
-                <span class="status-badge ${isActive ? 'status-active' : 'status-inactive'}">
-                    ${isActive ? 'Activa' : 'Oculta'}
-                </span>
+            <div class="card-image">
+                <img src="${item.url}?tr=w-500,h-400,fo-auto" alt="${item.name}" loading="lazy">
+                <div class="img-overlay">
+                    <span class="badge-tag ${isActive ? 'tag-active' : 'tag-inactive'}">
+                        ${isActive ? 'Activa' : 'Oculta'}
+                    </span>
+                </div>
             </div>
-            <div class="card-info">
-                <strong>${item.name.replace(/\.[^/.]+$/, "").slice(-15)}</strong>
-                <div class="action-btns">
-                    <button onclick="toggleStatus('${item.fileId}', ${isActive})" class="btn-action btn-toggle ${isActive ? 'active' : ''}" title="Alternar Estado">
-                        <i class="fa-solid ${isActive ? 'fa-eye' : 'fa-eye-slash'}"></i> 
+            <div class="card-body">
+                <strong class="dog-name">${item.name.replace(/\.[^/.]+$/, "").split('_')[1] || item.name}</strong>
+                <div class="action-row">
+                    <button onclick="toggleStatus('${item.fileId}', ${isActive})" class="btn-sm btn-toggle" title="Cambiar visibilidad">
+                        <i class="fa-solid ${isActive ? 'fa-eye-slash' : 'fa-eye'}"></i>
                         ${isActive ? 'Ocultar' : 'Mostrar'}
                     </button>
-                    <button onclick="deleteImage('${item.fileId}')" class="btn-action btn-delete" title="Eliminar definitivamente">
+                    <button onclick="deleteImage('${item.fileId}')" class="btn-sm btn-delete" title="Borrar permanentemente">
                         <i class="fa-solid fa-trash-can"></i>
                     </button>
                 </div>
@@ -152,7 +154,7 @@ function renderGallery(items) {
     });
 }
 
-// Subida de archivos (Secure Bridge)
+// Subida Boutique
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const file = fileInput.files[0];
@@ -171,10 +173,10 @@ uploadForm.addEventListener('submit', async (e) => {
     }, (err, result) => {
         setLoading(false);
         if (err) {
-            showToast('La subida ha fallado', 'error');
+            showToast('Falla en la subida a ImageKit', 'error');
             return;
         }
-        showToast('¡Obra integrada con éxito! ✨');
+        showToast('¡Imagen integrada con éxito! ✨');
         resetForm();
         fetchGallery();
     });
@@ -199,12 +201,12 @@ async function toggleStatus(fileId, currentIsActive) {
         showToast('Estado de visibilidad actualizado');
         fetchGallery();
     } else {
-        showToast('No se pudo procesar el cambio', 'error');
+        showToast('No se pudo procesar la acción', 'error');
     }
 }
 
 async function deleteImage(fileId) {
-    if (!confirm('¿Confirma que desea eliminar permanentemente esta imagen de su catálogo boutique?')) return;
+    if (!confirm('¿Seguro que desea eliminar esta fotografía permanentemente?')) return;
 
     const pass = localStorage.getItem('adminPass');
     const res = await fetch('/api/admin', {
@@ -221,11 +223,11 @@ async function deleteImage(fileId) {
         showToast('Imagen eliminada definitivamente');
         fetchGallery();
     } else {
-        showToast('No se pudo completar la eliminación', 'error');
+        showToast('Error al intentar eliminar', 'error');
     }
 }
 
-// Preview Logic
+// Visual Utilities
 fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -242,7 +244,7 @@ fileInput.addEventListener('change', (e) => {
 function setLoading(is) {
     btnUpload.disabled = is;
     uploadLoader.classList.toggle('hidden', !is);
-    btnText.textContent = is ? 'Publicando...' : 'Publicar en Galería';
+    btnText.textContent = is ? 'Publicando...' : 'Publicar en galería';
 }
 
 function resetForm() {
@@ -253,7 +255,7 @@ function resetForm() {
 
 function showToast(msg, type = 'success') {
     toastMsg.textContent = msg;
-    toastEl.style.background = type === 'error' ? '#ef4444' : 'var(--luxury-primary)';
+    toastEl.style.background = type === 'error' ? '#EF4444' : 'var(--brand-ink)';
     toastEl.classList.add('show');
     setTimeout(() => toastEl.classList.remove('show'), 4000);
 }
