@@ -74,13 +74,33 @@ module.exports = async (req, res) => {
             };
         });
 
+        // 3. Filtramos los 3 Videos (Tags 'moment_1', 'moment_2', 'moment_3')
+        const moments = [1, 2, 3].map(num => {
+            const file = files.find(f => f.tags && f.tags.includes(`moment_${num}`));
+            if (file) {
+                return {
+                    id: file.fileId,
+                    url: file.url,
+                    title: `Video ${num}`
+                };
+            }
+            // Fallback para que siempre haya 3 slots
+            return {
+                id: null,
+                url: `https://ik.imagekit.io/v9p6v3z7f/Video${num}.mp4`, // Placeholder inicial
+                title: `Video ${num} (Demo)`
+            };
+        });
+
         // Si después de todo no hay servicios dinámicos, enviamos una señal de 'vacio' 
         // pero incluimos los nombres por defecto por si el front los necesita.
         res.status(200).json({ 
             success: true,
+            status: 'success',
             count: files.length,
             gallery, 
-            services 
+            services,
+            moments
         });
 
     } catch (error) {

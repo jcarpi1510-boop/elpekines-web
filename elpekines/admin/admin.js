@@ -24,7 +24,7 @@ try {
 
 // Elementos (Selección diferida para mayor seguridad)
 let loginOverlay, adminContent, loginForm, btnLogout, btnLogin;
-let galleryGrid, servicesContainer, uploadForm, fileInput, previewImg, btnUpload, uploadLoader;
+let galleryGrid, servicesContainer, videosContainer, uploadForm, fileInput, previewImg, btnUpload, uploadLoader;
 
 // --- Control de Sesión ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -74,6 +74,7 @@ function bindElements() {
 
     galleryGrid = document.getElementById('galleryAdminGrid');
     servicesContainer = document.getElementById('servicesEditorContainer');
+    videosContainer = document.getElementById('videosEditorContainer');
     uploadForm = document.getElementById('uploadForm');
     fileInput = document.getElementById('imageFile');
     previewImg = document.getElementById('imagePreview');
@@ -152,8 +153,10 @@ function handleAuthState(isAuth) {
 function switchTab(tabId) {
     const gTab = document.getElementById('galleryTab');
     const sTab = document.getElementById('servicesTab');
+    const vTab = document.getElementById('videosTab');
     if (gTab) gTab.classList.toggle('hidden', tabId !== 'galleryTab');
     if (sTab) sTab.classList.toggle('hidden', tabId !== 'servicesTab');
+    if (vTab) vTab.classList.toggle('hidden', tabId !== 'videosTab');
     
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('onclick')?.includes(tabId));
@@ -166,6 +169,7 @@ async function refreshAllData(preloadedFiles = null) {
     if (!files) return;
     renderGallery(files.filter(f => f.tags && f.tags.includes('active')));
     renderServices(files);
+    renderVideos(files);
 }
 
 async function fetchFiles() {
@@ -283,6 +287,85 @@ window.saveService = async (num, oldFileId) => {
         refreshAllData();
     } catch (err) { showToast('Error al guardar', 'error'); }
     finally { btn.disabled = false; btn.innerHTML = '<span>Guardar Cambios</span>'; }
+};
+
+// --- RENDER VIDEOS MOMENTOS ---
+function renderVideos(files) {
+    if (!videosContainer) return;
+    videosContainer.innerHTML = '';
+    
+    [1, 2, 3].forEach(num => {
+        const file = files.find(f => f.tags && f.tags.includes(`moment_${num}`));
+        const card = document.createElement('div');
+        card.className = 'service-editor-card';
+        
+        const videoUrl = file?.url || '';
+
+        card.innerHTML = `
+            <h4 style="margin-bottom: 15px; color: var(--brand-gold);">Slot Video #${num}</h4>
+            <div class="form-group">
+                <label>Video (Preview)</label>
+                <div style="position: relative; height: 160px; background: #000; border-radius: 14px; overflow: hidden; margin-bottom: 15px; border: 1px solid #E5E7EB;">
+                    <video src="${videoUrl}" id="videoPrev_${num}" style="width: 100%; height: 100%; object-fit: cover;" muted loop playsinline onclick="triggerVideoFile(${num})"></video>
+                    <div style="position: absolute; inset: 0; display: ${videoUrl ? 'none' : 'flex'}; align-items: center; justify-content: center; color: #fff; cursor: pointer;" onclick="triggerVideoFile(${num})">
+                        <i class="fa-solid fa-play-circle" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+                <input type="file" id="videoFileInput_${num}" accept="video/*" style="display:none" onchange="handleVideoFile(${num})">
+            </div>
+            <button class="btn-gold" onclick="saveVideo(${num}, '${file?.fileId || ''}')" id="btnSaveVideo_${num}">
+                <span>Guardar Video #${num}</span>
+            </button>
+        `;
+        videosContainer.appendChild(card);
+        const vid = document.getElementById(`videoPrev_${num}`);
+        if (videoUrl) vid.play().catch(() => {});
+    });
+}
+
+window.triggerVideoFile = (num) => { document.getElementById(`videoFileInput_${num}`).click(); };
+window.handleVideoFile = (num) => {
+    const file = document.getElementById(`videoFileInput_${num}`).files[0];
+    if (file) {
+        const vid = document.getElementById(`videoPrev_${num}`);
+        vid.src = URL.createObjectURL(file);
+        vid.play().catch(() => {});
+        showToast('Video listo para subir 🎬');
+    }
+};
+
+window.saveVideo = async (num, oldFileId) => {
+    const btn = document.getElementById(`btnSaveVideo_${num}`);
+    const file = document.getElementById(`videoFileInput_${num}`).files[0];
+
+    if (!file && !oldFileId) {
+        showToast('Selecciona un video primero', 'error');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Subiendo...';
+
+    try {
+        if (file) {
+            console.log(`🎬 Subiendo video ${num} a ImageKit...`);
+            const uploadRes = await imagekit.upload({
+                file: file,
+                fileName: `moment_${num}_${Date.now()}`,
+                folder: '/galeria-perritos',
+                tags: [`moment_${num}`]
+            });
+            if (oldFileId) await fetch(`/api/admin?action=delete&password=${encodeURIComponent(currentPassword)}&fileId=${oldFileId}`);
+            showToast(`¡Video #${num} actualizado! 🐾🎬`);
+            refreshAllData();
+        } else {
+          showToast('No hay cambios que guardar', 'info');
+        }
+    } catch (err) {
+        console.error("Error al subir video:", err);
+        showToast('Error al subir video (Max 100MB)', 'error'); 
+    }
+    finally { btn.disabled = false; btn.innerHTML = `<span>Guardar Video #${num}</span>`; }
 };
 
 // --- SUBIDA GALERÍA ---

@@ -26,36 +26,18 @@ window.addEventListener('scroll', () => {
 });
 
 // --- Dynamic Content Loading (Gallery & Services) ---
-const aboutVideos = [
-    {
-        id: 1,
-        title: "Peluquería Canina",
-        src: "https://ik.imagekit.io/v9p6v3z7f/Video1.mp4" // Placeholder, user will replace
-    },
-    {
-        id: 2,
-        title: "Atención Veterinaria",
-        src: "https://ik.imagekit.io/v9p6v3z7f/Video2.mp4" // Placeholder, user will replace
-    },
-    {
-        id: 3,
-        title: "Baño Relax",
-        src: "https://ik.imagekit.io/v9p6v3z7f/Video3.mp4" // Placeholder, user will replace
-    }
-];
-
-function renderAboutVideos() {
+function renderAboutVideos(moments) {
     const container = document.getElementById('aboutVideosContainer');
-    if (!container) return;
+    if (!container || !moments) return;
 
     container.innerHTML = '';
-    aboutVideos.forEach((video, index) => {
+    moments.forEach((video, index) => {
         const card = document.createElement('div');
         card.className = 'video-card';
         card.style.animationDelay = `${index * 0.15}s`;
         card.innerHTML = `
             <video 
-                src="${video.src}" 
+                src="${video.url}" 
                 autoplay 
                 muted 
                 loop 
@@ -76,7 +58,10 @@ async function loadDynamicContent() {
         if (!response.ok) throw new Error('Error al cargar datos');
         
         const data = await response.json();
-        const { gallery, services } = data;
+        const { gallery, services, moments } = data;
+
+        // 0. Render About Videos
+        renderAboutVideos(moments);
 
         // 1. Render Gallery
         const galleryContainer = document.querySelector('.gallery-preview-container');
@@ -154,5 +139,4 @@ if (waBubble && waWindow) {
 // Iniciar todo
 document.addEventListener('DOMContentLoaded', () => {
     loadDynamicContent();
-    renderAboutVideos();
 });
