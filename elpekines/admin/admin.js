@@ -49,6 +49,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    if (btnLogout) {
+        btnLogout.addEventListener('click', () => {
+            console.log("🔓 Cerrando sesión...");
+            handleAuthState(false);
+            showToast('Sesión finalizada');
+            // Forzar recarga ligera para limpiar estados
+            setTimeout(() => window.location.reload(), 1000);
+        });
+    }
+
     if (currentPassword) {
         console.log("🔑 Sesión persistente detectada, verificando...");
         checkSession(currentPassword);
@@ -137,8 +147,6 @@ function handleAuthState(isAuth) {
     if (adminContent) adminContent.classList.toggle('hidden', !isAuth);
     if (!isAuth) localStorage.removeItem('adminPass');
 }
-
-if (btnLogout) btnLogout.addEventListener('click', () => { handleAuthState(false); showToast('Sesión finalizada'); });
 
 // --- TABS ---
 function switchTab(tabId) {
