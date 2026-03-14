@@ -31,57 +31,68 @@ module.exports = async (req, res) => {
     try {
         const params = { ...req.query, ...req.body };
         const { action, password, fileId, tags, customMetadata } = params;
+        
+        console.log(`📡 [API] Acción recibida: ${action}`);
 
         // Validaciones de Seguridad
         if (!process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD === "") {
+            console.error("❌ ERROR: ADMIN_PASSWORD no configurada en Vercel");
             return res.status(500).json({ error: 'Configuración de seguridad incompleta en Vercel.' });
         }
 
         if (password !== process.env.ADMIN_PASSWORD) {
+            console.warn("⚠️ Intento de acceso con contraseña incorrecta");
             return res.status(401).json({ error: 'Contraseña incorrecta' });
         }
 
         if (!imagekit) {
+            console.error("❌ ERROR: SDK de ImageKit no inicializado");
             return res.status(500).json({ error: 'Falla en conexión con ImageKit.' });
         }
 
         // --- SISTEMA DE ACCIONES ---
+        console.log(`⚙️ [API] Procesando acción: ${action}...`);
         switch (action) {
             case 'auth':
-                // Generar token para subida desde cliente (Permitimos metadata en la subida)
-                return res.status(200).json(imagekit.getAuthenticationParameters());
+                const authParams = imagekit.getAuthenticationParameters();
+                console.log("✅ [API] Auth params generados");
+                return res.status(200).json(authParams);
 
             case 'list':
-                // Listado unificado: galería normal + servicios
                 const listMethod = imagekit.listFiles ? 'listFiles' : (imagekit.list ? 'list' : null);
-                if (!listMethod) throw new Error("Método listFiles no encontrado");
+                if (!listMethod) throw new Error("Método listFiles no detectado en el SDK");
 
+                console.log(`📂 [API] Listando archivos desde: /galeria-perritos usando ${listMethod}`);
                 const allFiles = await imagekit[listMethod]({
                     path: '/galeria-perritos',
                     limit: 100
                 });
+                console.log(`✅ [API] ${allFiles.length} archivos recuperados`);
                 return res.status(200).json(allFiles);
 
             case 'update':
-                // ACTUALIZAR METADATOS (Título y descripción del servicio)
+                console.log(`📝 [API] Actualizando archivo: ${fileId}`);
                 await imagekit.updateFileDetails(fileId, {
                     tags: tags,
-                    customMetadata: customMetadata // Aquí guardamos title y description
+                    customMetadata: customMetadata
                 });
                 return res.status(200).json({ success: true });
 
             case 'delete':
+                console.log(`🗑️ [API] Eliminando archivo: ${fileId}`);
                 await imagekit.deleteFile(fileId);
                 return res.status(200).json({ success: true });
 
             default:
+                console.warn(`❓ [API] Acción desconocida: ${action}`);
                 return res.status(400).json({ error: 'Acción no reconocida' });
         }
     } catch (error) {
-        console.error('API Error:', error);
+        console.error('❌ [API CRITICAL ERROR]:', error);
         return res.status(500).json({ 
             error: 'Falla en el servidor', 
-            details: error.message 
+            details: error.message,
+            stack: error.stack // Solo para esta fase de depuración profunda
         });
     }
 };

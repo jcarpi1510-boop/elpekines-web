@@ -141,9 +141,11 @@ async function handleLoginAttempt(e) {
             handleAuthState(true);
             refreshAllData(data);
         } else {
-            const errData = await res.json();
-            showToast(errData.error || 'Contraseña incorrecta', 'error');
-            console.warn("❌ Login rechazado:", errData.error);
+            const errData = await res.json().catch(() => ({}));
+            const errMsg = errData.error || 'Contraseña incorrecta';
+            const details = errData.details ? ` (${errData.details})` : '';
+            showToast(errMsg + details, 'error');
+            console.warn("❌ Login rechazado:", errMsg, details);
         }
     } catch (err) {
         showToast('Falla de red o servidor', 'error');
