@@ -339,6 +339,24 @@ img {
 
 /* Responsive Header */
 @media (max-width: 768px) {
+    .header {
+        padding: 5px 0;
+    }
+
+    .nav-logo-img {
+        width: 60px;
+    }
+
+    .titles h1 {
+        font-size: 1.1rem;
+        margin-bottom: 2px;
+    }
+
+    .subtitle {
+        font-size: 0.65rem;
+        margin-top: 0;
+        letter-spacing: 0.1em;
+    }
 
     .nav,
     .header-actions {
@@ -349,8 +367,8 @@ img {
         display: block;
         background: none;
         border: none;
-        font-size: 1.5rem;
-        color: var(--text-color);
+        font-size: 1.8rem;
+        color: var(--ink);
         cursor: pointer;
     }
 
@@ -1837,7 +1855,6 @@ img {
     text-align: center;
     letter-spacing: 6px; /* Elegant spacing */
     font-weight: 400;
-    text-transform: uppercase;
     position: relative;
     padding-bottom: 20px;
     width: 100%;
