@@ -128,3 +128,74 @@ if (waBubble && waWindow) {
         }
     });
 }
+
+// --- Supabase Configuration ---
+// Reemplaza estos valores con los que obtengas en tu panel de Supabase
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+let supabaseClient = null;
+
+if (SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
+    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
+// --- Premium Gallery Logic ---
+async function loadGallery() {
+    const galleryGrid = document.getElementById('dogGallery');
+    if (!galleryGrid) return;
+
+    try {
+        let dogs = [];
+
+        if (supabaseClient) {
+            const { data, error } = await supabaseClient
+                .from('gallery_dogs')
+                .select('*')
+                .eq('is_active', true)
+                .order('display_order', { ascending: true })
+                .limit(10);
+
+            if (error) throw error;
+            dogs = data;
+        } else {
+            // Demo mode / Fallback if no supabase keys
+            console.warn("Supabase no configurado. Usando datos de prueba.");
+            dogs = [
+                { title: 'Perrito 1', image_url: 'https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&q=80&w=400' },
+                { title: 'Perrito 2', image_url: 'https://images.unsplash.com/photo-1544568100-847a948585b9?auto=format&fit=crop&q=80&w=400' },
+                { title: 'Perrito 3', image_url: 'https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&q=80&w=400' },
+                { title: 'Perrito 4', image_url: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&q=80&w=400' },
+                { title: 'Perrito 5', image_url: 'https://images.unsplash.com/photo-1598133894008-61f7fdb8cc3a?auto=format&fit=crop&q=80&w=400' },
+                { title: 'Perrito 6', image_url: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&q=80&w=400' },
+                { title: 'Perrito 7', image_url: 'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?auto=format&fit=crop&q=80&w=400' },
+            ];
+        }
+
+        if (dogs.length > 0) {
+            galleryGrid.innerHTML = '';
+            dogs.forEach((dog, index) => {
+                const card = document.createElement('div');
+                card.className = 'gallery-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.innerHTML = `<img src="${dog.image_url}" alt="${dog.title || 'Perrito bañado'}" loading="lazy">`;
+                
+                // Optional: Lightbox click
+                card.addEventListener('click', () => {
+                    window.open(dog.image_url, '_blank');
+                });
+
+                galleryGrid.appendChild(card);
+            });
+        } else {
+            galleryGrid.innerHTML = '<p style="color: white; opacity: 0.6;">Próximamente más peluditos...</p>';
+        }
+
+    } catch (err) {
+        console.error('Error cargando galería:', err);
+        galleryGrid.innerHTML = '<p style="color: white; opacity: 0.6;">Cargando momentos felices...</p>';
+    }
+}
+
+// Iniciar galería
+document.addEventListener('DOMContentLoaded', loadGallery);
