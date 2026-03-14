@@ -2,6 +2,7 @@
 const ImageKit = require('imagekit');
 
 // Inicialización segura de ImageKit
+let imagekit;
 const IK_CONFIG = {
     publicKey: process.env.IMAGEKIT_PUBLIC_KEY || '',
     privateKey: process.env.IMAGEKIT_PRIVATE_KEY || '',
