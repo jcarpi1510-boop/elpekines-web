@@ -86,15 +86,16 @@ loginForm.addEventListener('submit', async (e) => {
 
     try {
         const res = await fetch(`/api/admin?action=list&password=${encodeURIComponent(pass)}`);
+        const data = await res.json();
+        
         if (res.ok) {
             localStorage.setItem('adminPass', pass);
             currentPassword = pass;
             showToast('Acceso premiun concedido ✨');
             handleAuthState(true);
-            const files = await res.json();
-            renderGallery(files);
+            renderGallery(data);
         } else {
-            showToast('Contraseña incorrecta', 'error');
+            showToast(data.error || 'Contraseña incorrecta', 'error');
         }
     } catch (err) {
         showToast('Error de conexión con el servidor', 'error');
