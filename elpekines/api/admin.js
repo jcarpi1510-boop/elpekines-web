@@ -1,15 +1,22 @@
 // --- REPARACIÓN BOUTIQUE: API ADMIN (DynaServices Edition) ---
 const ImageKit = require('imagekit');
 
-let imagekit;
-try {
-    imagekit = new ImageKit({
-        publicKey: process.env.IMAGEKIT_PUBLIC_KEY || '',
-        privateKey: process.env.IMAGEKIT_PRIVATE_KEY || '',
-        urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT || '',
-    });
-} catch (e) {
-    console.error("Critical: Failed to initialize ImageKit", e);
+// Inicialización segura de ImageKit
+const IK_CONFIG = {
+    publicKey: process.env.IMAGEKIT_PUBLIC_KEY || '',
+    privateKey: process.env.IMAGEKIT_PRIVATE_KEY || '',
+    urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT || '',
+};
+
+if (IK_CONFIG.publicKey && IK_CONFIG.privateKey && IK_CONFIG.urlEndpoint) {
+    try {
+        imagekit = new ImageKit(IK_CONFIG);
+        console.log("✅ ImageKit backend inicializado correctamente");
+    } catch (e) {
+        console.error("❌ Error inicializando ImageKit SDK:", e);
+    }
+} else {
+    console.error("❌ Error: Faltan variables de entorno de ImageKit (Public, Private o Endpoint)");
 }
 
 module.exports = async (req, res) => {

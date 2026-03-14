@@ -1,6 +1,6 @@
 // --- Configuración e Integración Boutique (Ultra-Robust Edition) ---
 console.log("🚀 [SISTEMA] Iniciando Panel Admin V3.1...");
-const IMAGEKIT_PUBLIC_KEY = 'public_7/aJSThn/m100WILssPm9pLrwSo=';
+const IMAGEKIT_PUBLIC_KEY = 'public_7/aJSThnVm10OMILssPm9pLrwSo=';
 const IMAGEKIT_URL_ENDPOINT = 'https://ik.imagekit.io/15vvxh7w1';
 
 let currentPassword = localStorage.getItem('adminPass') || '';
@@ -402,17 +402,23 @@ async function handleGalleryUpload(e) {
         return false;
     }
     
-    if (!imagekit) {
-        showToast('Error: SDK de imágenes no listo', 'error');
-        return false;
-    }
-
     setLoading(true);
-    // Actualizar credenciales justo antes de subir
-    imagekit.options.authenticationEndpoint = `/api/admin?action=auth&password=${encodeURIComponent(currentPassword)}`;
-
+    const authUrl = `/api/admin?action=auth&password=${encodeURIComponent(currentPassword)}`;
+    
     try {
-        console.log(`📤 [TRAZA] Subiendo archivo: ${file.name} (${(file.size/1024).toFixed(1)} KB)`);
+        console.log("📡 [TRAZA] Verificando token de subida...");
+        const authCheck = await fetch(authUrl);
+        if (!authCheck.ok) {
+            const errData = await authCheck.json().catch(() => ({}));
+            throw new Error(errData.error || `Error del servidor (${authCheck.status})`);
+        }
+        const authData = await authCheck.json();
+        console.log("✅ [TRAZA] Token obtenido:", authData.token ? "OK" : "MISSING");
+
+        // Actualizar endpoint y subir
+        imagekit.options.authenticationEndpoint = authUrl;
+
+        console.log(`📤 [TRAZA] Subiendo archivo: ${file.name}`);
         imagekit.upload({
             file: file,
             fileName: `${Date.now()}_${file.name.replace(/\s/g, '_')}`,
@@ -421,18 +427,18 @@ async function handleGalleryUpload(e) {
         }, (err, result) => {
             setLoading(false);
             if (err) {
-                console.error("❌ [TRAZA] Error ImageKit:", err);
-                return showToast('Error en la subida: ' + (err.message || 'Verifica tu conexión'), 'error');
+                console.error("❌ [TRAZA] Error SDK ImageKit:", err);
+                return showToast('Error ImageKit: ' + (err.message || 'Error desconocido'), 'error');
             }
             console.log("✅ [TRAZA] Subida exitosa:", result);
             showToast('¡Foto publicada! 🐾');
             resetGalleryForm();
             refreshAllData();
         });
-    } catch (fatal) {
+    } catch (err) {
         setLoading(false);
-        console.error("❌ [TRAZA] Error Fatal en Upload:", fatal);
-        showToast('Error crítico al procesar imagen', 'error');
+        console.error("❌ [TRAZA] Error en proceso de subida:", err);
+        showToast('Falla de Autenticación: ' + err.message, 'error');
     }
     return false;
 }
