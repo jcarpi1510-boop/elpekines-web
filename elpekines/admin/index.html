@@ -3,104 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Galería El Pekinés</title>
+    <title>Boutique Admin - El Pekinés</title>
+    <!-- Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../styles/style.css">
     <link rel="stylesheet" href="admin.css">
-    <!-- Supabase JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- ImageKit JS SDK -->
+    <!-- SDKs -->
     <script src="https://unpkg.com/imagekit-javascript/dist/imagekit.min.js"></script>
 </head>
 <body class="admin-body">
-    <!-- Login Overlay -->
+
+    <!-- LOGIN SCREEN -->
     <div id="loginOverlay" class="admin-login-overlay">
-        <div class="login-card card-premium">
+        <div class="login-card">
             <div class="login-header">
-                <img src="../Logo.png" alt="Logo">
-                <h2>Acceso Administrativo</h2>
-                <p>Ingresa tus credenciales</p>
+                <img src="../Logo.png" alt="El Pekinés Luxury">
+                <h2>Panel Administrativo</h2>
+                <p>Acceso exclusivo para gestión de marca</p>
             </div>
             <form id="loginForm">
                 <div class="form-group">
                     <label for="adminPassword">Contraseña Maestra</label>
                     <input type="password" id="adminPassword" placeholder="••••••••" required>
                 </div>
-                <button type="submit" class="btn btn-gold shine-effect" id="btnLogin">
-                    <span>Acceder al Panel</span>
+                <button type="submit" class="btn btn-gold" id="btnLogin">
+                    <span id="loginBtnText">Iniciar Sesión</span>
                     <i class="fa-solid fa-spinner fa-spin hidden" id="loginLoader"></i>
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- Main Admin Content (hidden until login) -->
+    <!-- MAIN DASHBOARD -->
     <div id="adminContent" class="hidden">
         <nav class="admin-nav">
             <div class="container">
-                <a href="/" class="logo">
-                    <img src="../Logo.png" alt="Logo"> Admin Panel
+                <a href="/" class="logo-admin">
+                    <img src="../Logo.png" alt="Logo">
+                    <span>Admin Dashboard</span>
                 </a>
                 <div class="nav-right">
-                    <span id="userEmail" class="user-email"></span>
+                    <div class="badge-connected">
+                        <i class="fa-solid fa-circle-check"></i> ImageKit Activo
+                    </div>
                     <button id="btnLogout" class="btn-logout">Cerrar Sesión</button>
-                    <a href="/" class="btn-back">Sitioview</a>
                 </div>
             </div>
         </nav>
 
-    <main class="container admin-container">
-        <header class="admin-header">
-            <h1>Gestión de Galería Premium</h1>
-            <p>Sube fotos reales de perritos bañados y administra su visibilidad.</p>
-        </header>
+        <main class="container admin-container">
+            <header class="admin-header">
+                <h1>Gestión de Galería</h1>
+                <p>Personaliza las fotos reales de tus peluditos que se muestran en la sección premium del home.</p>
+            </header>
 
-        <section class="admin-upload-section card-premium">
-            <h2><i class="fa-solid fa-cloud-arrow-up"></i> Subir Nueva Foto</h2>
-            <form id="uploadForm" class="upload-form">
-                <div class="form-group">
-                    <label for="imageFile">Seleccionar Imagen</label>
-                    <div class="file-drop-zone" id="dropZone">
-                        <input type="file" id="imageFile" accept="image/*" required>
-                        <div class="drop-zone-text">
-                            <i class="fa-solid fa-image"></i>
-                            <p>Arrastra una foto o haz clic para buscar</p>
+            <!-- UPLOAD CARD -->
+            <section class="admin-upload-section">
+                <div class="card-premium">
+                    <h2 class="upload-title">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        Añadir Nueva Obra al Catálogo
+                    </h2>
+                    <form id="uploadForm">
+                        <div class="form-group">
+                            <label>Seleccionar Imagen</label>
+                            <div class="file-drop-zone" id="dropZone">
+                                <input type="file" id="imageFile" accept="image/*" required>
+                                <div class="drop-zone-text" id="dropZoneContent">
+                                    <i class="fa-regular fa-image"></i>
+                                    <p>Arrastra tu fotografía aquí o haz clic para explorar</p>
+                                </div>
+                                <div class="preview-container">
+                                    <img id="imagePreview" class="preview-img hidden" src="" alt="Previsualización">
+                                </div>
+                            </div>
                         </div>
-                        <img id="imagePreview" class="preview-img hidden" src="" alt="Previsualización">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="dogTitle">Título (Nombre del perrito)</label>
-                        <input type="text" id="dogTitle" placeholder="Ej: Pelusa - Caniche">
-                    </div>
-                    <div class="form-group">
-                        <label for="displayOrder">Orden de aparición</label>
-                        <input type="number" id="displayOrder" value="0">
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-gold shine-effect" id="btnUpload">
-                    <span id="btnText">Subir e Integrar</span>
-                    <i class="fa-solid fa-spinner fa-spin hidden" id="uploadLoader"></i>
-                </button>
-            </form>
-        </section>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="dogTitle">Nombre del Perrito</label>
+                                <input type="text" id="dogTitle" placeholder="Ej: Milo - Schnauzer">
+                            </div>
+                            <div class="form-group">
+                                <label for="displayOrder">Prioridad Visual</label>
+                                <input type="number" id="displayOrder" value="0" placeholder="0 = Automático">
+                            </div>
+                        </div>
 
-        <section class="admin-list-section">
-            <div class="list-header">
-                <h2><i class="fa-solid fa-images"></i> Imágenes en la Galería</h2>
-                <button id="refreshBtn" class="btn-refresh"><i class="fa-solid fa-rotate"></i></button>
-            </div>
-            <div id="galleryAdminGrid" class="admin-grid">
-                <!-- Se cargará dinámicamente -->
-                <div class="admin-skeleton"></div>
-                <div class="admin-skeleton"></div>
-                <div class="admin-skeleton"></div>
-            </div>
-        </section>
+                        <button type="submit" class="btn btn-gold" id="btnUpload">
+                            <span id="btnText">Publicar en Galería</span>
+                            <i class="fa-solid fa-spinner fa-spin hidden" id="uploadLoader"></i>
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- GALLERY GRID -->
+            <section class="admin-list-section">
+                <div class="section-title">
+                    <h2>Imágenes en Exposición</h2>
+                    <p id="imageCount" class="user-email"></p>
+                </div>
+                
+                <div id="galleryAdminGrid" class="admin-grid">
+                    <!-- High-end skeleton placeholders -->
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                </div>
+            </section>
+        </main>
     </div>
 
-    <div id="toast" class="toast">Mensaje aquí</div>
+    <!-- NOTIFICATION SYSTEM -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-sparkles"></i>
+        <span id="toastMsg">Cambios aplicados correctamente</span>
+    </div>
 
     <script src="admin.js"></script>
 </body>
