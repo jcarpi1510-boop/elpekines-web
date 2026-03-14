@@ -38,9 +38,12 @@ async function loadDynamicContent() {
         const { gallery, services } = data;
 
         // 1. Render Gallery
+        const galleryContainer = document.querySelector('.gallery-preview-container');
         if (galleryGrid) {
-            galleryGrid.innerHTML = '';
             if (gallery && gallery.length > 0) {
+                galleryGrid.innerHTML = '';
+                if (galleryContainer) galleryContainer.style.display = 'block';
+                
                 gallery.forEach((dog, index) => {
                     const card = document.createElement('div');
                     card.className = 'gallery-card';
@@ -49,6 +52,9 @@ async function loadDynamicContent() {
                     card.addEventListener('click', () => window.open(dog.url, '_blank'));
                     galleryGrid.appendChild(card);
                 });
+            } else {
+                console.warn('Aviso: Galería vacía en API. Ocultando sección.');
+                if (galleryContainer) galleryContainer.style.display = 'none';
             }
         }
 
