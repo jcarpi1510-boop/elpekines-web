@@ -60,6 +60,17 @@ document.addEventListener('DOMContentLoaded', () => {
             checkSession(currentPassword);
         }
 
+        // --- Vincular Eventos de Galería (Correcto) ---
+        if (uploadForm) {
+            uploadForm.onsubmit = handleGalleryUpload;
+            console.log("✅ [TRAZA] Listener de subida de galería listo");
+        }
+
+        if (fileInput) {
+            fileInput.addEventListener('change', handleFilePreview);
+            console.log("✅ [TRAZA] Listener de preview de galería listo");
+        }
+
     } catch (error) {
         console.error("❌ [TRAZA] Error crítico durante la inicialización:", error);
     } finally {
@@ -381,51 +392,66 @@ window.saveVideo = async (num, oldFileId) => {
     finally { btn.disabled = false; btn.innerHTML = `<span>Guardar Video #${num}</span>`; }
 };
 
-// --- SUBIDA GALERÍA ---
-if (uploadForm) {
-    uploadForm.onsubmit = async (e) => {
-        if (e) e.preventDefault();
-        console.log("📤 Iniciando proceso de subida a ImageKit...");
-        
-        const file = fileInput.files[0];
-        if (!file) {
-            showToast('Selecciona una imagen primero', 'error');
-            return false;
-        }
-        
-        if (!imagekit) {
-            showToast('Error: SDK de imágenes no listo', 'error');
-            return false;
-        }
-
-        setLoading(true);
-        // Actualizar credenciales justo antes de subir
-        imagekit.options.authenticationEndpoint = `/api/admin?action=auth&password=${encodeURIComponent(currentPassword)}`;
-
-        try {
-            imagekit.upload({
-                file: file,
-                fileName: `${Date.now()}_${file.name.replace(/\s/g, '_')}`,
-                folder: '/galeria-perritos',
-                tags: ['active']
-            }, (err, result) => {
-                setLoading(false);
-                if (err) {
-                    console.error("❌ Error ImageKit:", err);
-                    return showToast('Error en la subida: ' + (err.message || 'Verifica tu conexión'), 'error');
-                }
-                console.log("✅ Subida exitosa:", result);
-                showToast('¡Foto publicada! 🐾');
-                resetGalleryForm();
-                refreshAllData();
-            });
-        } catch (fatal) {
-            setLoading(false);
-            console.error("❌ Error Fatal en Upload:", fatal);
-            showToast('Error crítico al procesar imagen', 'error');
-        }
+async function handleGalleryUpload(e) {
+    if (e) e.preventDefault();
+    console.log("📤 [TRAZA] Iniciando proceso de subida a ImageKit...");
+    
+    const file = fileInput ? fileInput.files[0] : null;
+    if (!file) {
+        showToast('Selecciona una imagen primero', 'error');
         return false;
-    };
+    }
+    
+    if (!imagekit) {
+        showToast('Error: SDK de imágenes no listo', 'error');
+        return false;
+    }
+
+    setLoading(true);
+    // Actualizar credenciales justo antes de subir
+    imagekit.options.authenticationEndpoint = `/api/admin?action=auth&password=${encodeURIComponent(currentPassword)}`;
+
+    try {
+        console.log(`📤 [TRAZA] Subiendo archivo: ${file.name} (${(file.size/1024).toFixed(1)} KB)`);
+        imagekit.upload({
+            file: file,
+            fileName: `${Date.now()}_${file.name.replace(/\s/g, '_')}`,
+            folder: '/galeria-perritos',
+            tags: ['active']
+        }, (err, result) => {
+            setLoading(false);
+            if (err) {
+                console.error("❌ [TRAZA] Error ImageKit:", err);
+                return showToast('Error en la subida: ' + (err.message || 'Verifica tu conexión'), 'error');
+            }
+            console.log("✅ [TRAZA] Subida exitosa:", result);
+            showToast('¡Foto publicada! 🐾');
+            resetGalleryForm();
+            refreshAllData();
+        });
+    } catch (fatal) {
+        setLoading(false);
+        console.error("❌ [TRAZA] Error Fatal en Upload:", fatal);
+        showToast('Error crítico al procesar imagen', 'error');
+    }
+    return false;
+}
+
+function handleFilePreview(e) {
+    const file = e.target.files[0];
+    if (file) {
+        console.log("📸 [TRAZA] Generando vista previa...");
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            if (previewImg) {
+                previewImg.src = e.target.result;
+                previewImg.classList.remove('hidden');
+            }
+            const drop = document.getElementById('dropZoneContent');
+            if (drop) drop.classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
 }
 
 window.deleteImage = async (fileId) => {
@@ -434,20 +460,7 @@ window.deleteImage = async (fileId) => {
     if (res.ok) { showToast('Foto eliminada'); refreshAllData(); }
 };
 
-if (fileInput) {
-    fileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                previewImg.src = e.target.result;
-                previewImg.classList.remove('hidden');
-                document.getElementById('dropZoneContent').classList.add('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-}
+// --- MANEJO DE IMÁGENES ---
 
 // --- UTILS ---
 function setLoading(is) {
