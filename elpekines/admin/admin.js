@@ -1,67 +1,129 @@
-// --- Configuración e Integración Boutique ---
+// --- Configuración e Integración Boutique (Ultra-Robust Edition) ---
 const IMAGEKIT_PUBLIC_KEY = 'public_vBNo27Y5W/8jRCH6s9V2K71hPqY=';
 const IMAGEKIT_URL_ENDPOINT = 'https://ik.imagekit.io/elpekines';
 
 let currentPassword = localStorage.getItem('adminPass') || '';
+let imagekit = null;
 
-const imagekit = new ImageKit({
-    publicKey: IMAGEKIT_PUBLIC_KEY,
-    urlEndpoint: IMAGEKIT_URL_ENDPOINT,
-    authenticationEndpoint: '/api/admin?action=auth&password=' + encodeURIComponent(currentPassword)
-});
+// Inicialización segura de ImageKit
+try {
+    if (typeof ImageKit !== 'undefined') {
+        imagekit = new ImageKit({
+            publicKey: IMAGEKIT_PUBLIC_KEY,
+            urlEndpoint: IMAGEKIT_URL_ENDPOINT,
+            authenticationEndpoint: '/api/admin?action=auth&password=' + encodeURIComponent(currentPassword)
+        });
+        console.log("✅ ImageKit SDK inicializado");
+    } else {
+        console.warn("⚠️ SDK de ImageKit no detectado. Las subidas podrían fallar.");
+    }
+} catch (e) {
+    console.error("❌ Error al inicializar ImageKit:", e);
+}
 
-// --- Elementos Dashboard ---
-const loginOverlay = document.getElementById('loginOverlay');
-const adminContent = document.getElementById('adminContent');
-const loginForm = document.getElementById('adminLoginForm');
-const btnLogout = document.getElementById('btnLogout');
-
-const galleryGrid = document.getElementById('galleryAdminGrid');
-const servicesContainer = document.getElementById('servicesEditorContainer');
-const uploadForm = document.getElementById('uploadForm');
-const fileInput = document.getElementById('imageFile');
-const previewImg = document.getElementById('imagePreview');
-const btnUpload = document.getElementById('btnUpload');
-const uploadLoader = document.getElementById('uploadLoader');
+// Elementos (Selección diferida para mayor seguridad)
+let loginOverlay, adminContent, loginForm, btnLogout, btnLogin;
+let galleryGrid, servicesContainer, uploadForm, fileInput, previewImg, btnUpload, uploadLoader;
 
 // --- Control de Sesión ---
 document.addEventListener('DOMContentLoaded', () => {
-    if (currentPassword) checkSession(currentPassword);
-    if (loginForm) loginForm.addEventListener('submit', handleLoginAttempt);
+    console.log("🚀 Admin Panel DOM cargado");
+    
+    // Vincular elementos
+    bindElements();
+    
+    // Adjuntar eventos de forma explícita
+    if (loginForm) {
+        loginForm.addEventListener('submit', handleLoginAttempt);
+        console.log("✅ Escuchador de Submit añadido al formulario");
+    } else {
+        console.error("❌ No se encontró el formulario 'adminLoginForm'");
+    }
+
+    if (btnLogin) {
+        // Doble protección: Clic directo por si el submit falla
+        btnLogin.addEventListener('click', (e) => {
+            if (loginForm && !loginForm.checkValidity()) return;
+            console.log("🔘 Botón Acceder clickeado");
+        });
+    }
+
+    if (currentPassword) {
+        console.log("🔑 Sesión persistente detectada, verificando...");
+        checkSession(currentPassword);
+    }
 });
+
+function bindElements() {
+    loginOverlay = document.getElementById('loginOverlay');
+    adminContent = document.getElementById('adminContent');
+    loginForm = document.getElementById('adminLoginForm');
+    btnLogout = document.getElementById('btnLogout');
+    btnLogin = document.getElementById('btnLogin');
+
+    galleryGrid = document.getElementById('galleryAdminGrid');
+    servicesContainer = document.getElementById('servicesEditorContainer');
+    uploadForm = document.getElementById('uploadForm');
+    fileInput = document.getElementById('imageFile');
+    previewImg = document.getElementById('imagePreview');
+    btnUpload = document.getElementById('btnUpload');
+    uploadLoader = document.getElementById('uploadLoader');
+}
 
 async function handleLoginAttempt(e) {
     if (e) e.preventDefault();
-    const pass = document.getElementById('adminPassInput').value;
-    if (!pass) return;
+    console.log("🎯 Intento de login iniciado...");
+
+    const passInput = document.getElementById('adminPassInput');
+    const pass = passInput ? passInput.value : '';
+    
+    if (!pass) {
+        showToast('Por favor ingresa la contraseña', 'error');
+        return;
+    }
+
+    // Alerta de modo local
+    if (window.location.protocol === 'file:') {
+        alert("⚠️ MODO LOCAL DETECTADO:\nEl login solo funciona cuando subes los cambios a Vercel/GitHub.");
+        return;
+    }
 
     setLoginLoading(true);
     try {
+        console.log("📡 Llamando a la API de validación...");
         const res = await fetch(`/api/admin?action=list&password=${encodeURIComponent(pass)}`);
-        const data = await res.json();
         
         if (res.ok) {
+            const data = await res.json();
             localStorage.setItem('adminPass', pass);
             currentPassword = pass;
+            
+            // Actualizar auth endpoint de ImageKit
+            if (imagekit) imagekit.options.authenticationEndpoint = '/api/admin?action=auth&password=' + encodeURIComponent(pass);
+            
             showToast('Acceso premiun concedido ✨');
             handleAuthState(true);
             refreshAllData(data);
         } else {
-            showToast(data.error || 'Contraseña incorrecta', 'error');
+            const errData = await res.json();
+            showToast(errData.error || 'Contraseña incorrecta', 'error');
+            console.warn("❌ Login rechazado:", errData.error);
         }
     } catch (err) {
-        showToast('Error de conexión', 'error');
+        showToast('Falla de red o servidor', 'error');
+        console.error("❌ Error en fetch login:", err);
     } finally {
         setLoginLoading(false);
     }
 }
 
 async function checkSession(pass) {
+    if (window.location.protocol === 'file:') return;
     try {
         const res = await fetch(`/api/admin?action=list&password=${encodeURIComponent(pass)}`);
         if (res.ok) {
-            handleAuthState(true);
             const data = await res.json();
+            handleAuthState(true);
             refreshAllData(data);
         } else {
             handleAuthState(false);
@@ -70,25 +132,26 @@ async function checkSession(pass) {
 }
 
 function handleAuthState(isAuth) {
-    loginOverlay.classList.toggle('hidden', isAuth);
-    adminContent.classList.toggle('hidden', !isAuth);
+    if (loginOverlay) loginOverlay.classList.toggle('hidden', isAuth);
+    if (adminContent) adminContent.classList.toggle('hidden', !isAuth);
     if (!isAuth) localStorage.removeItem('adminPass');
 }
 
-btnLogout.addEventListener('click', () => { handleAuthState(false); showToast('Sesión finalizada'); });
+if (btnLogout) btnLogout.addEventListener('click', () => { handleAuthState(false); showToast('Sesión finalizada'); });
 
 // --- TABS ---
 function switchTab(tabId) {
-    document.getElementById('galleryTab').classList.toggle('hidden', tabId !== 'galleryTab');
-    document.getElementById('servicesTab').classList.toggle('hidden', tabId !== 'servicesTab');
+    const gTab = document.getElementById('galleryTab');
+    const sTab = document.getElementById('servicesTab');
+    if (gTab) gTab.classList.toggle('hidden', tabId !== 'galleryTab');
+    if (sTab) sTab.classList.toggle('hidden', tabId !== 'servicesTab');
     
     document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.onclick.toString().includes(tabId));
+        btn.classList.toggle('active', btn.getAttribute('onclick')?.includes(tabId));
     });
 }
 
 // --- DATOS ---
-
 async function refreshAllData(preloadedFiles = null) {
     const files = preloadedFiles || await fetchFiles();
     if (!files) return;
@@ -97,6 +160,7 @@ async function refreshAllData(preloadedFiles = null) {
 }
 
 async function fetchFiles() {
+    if (!currentPassword) return null;
     try {
         const res = await fetch(`/api/admin?action=list&password=${encodeURIComponent(currentPassword)}`);
         return res.ok ? await res.json() : null;
@@ -105,6 +169,7 @@ async function fetchFiles() {
 
 // --- RENDER GALERÍA ---
 function renderGallery(items) {
+    if (!galleryGrid) return;
     galleryGrid.innerHTML = '';
     if (!items.length) { galleryGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px;">No hay fotos activas.</p>'; return; }
 
@@ -129,6 +194,7 @@ function renderGallery(items) {
 
 // --- RENDER SERVICIOS ---
 function renderServices(files) {
+    if (!servicesContainer) return;
     servicesContainer.innerHTML = '';
     
     [1, 2, 3].forEach(num => {
@@ -150,11 +216,11 @@ function renderServices(files) {
             </div>
             <div class="form-group">
                 <label>Título Boutique</label>
-                <input type="text" id="serviceTitle_${num}" value="${title}" placeholder="Ej: Peluquería Canina Premium">
+                <input type="text" id="serviceTitle_${num}" value="${title}">
             </div>
             <div class="form-group">
                 <label>Descripción corta</label>
-                <textarea id="serviceDesc_${num}" rows="3" placeholder="Describe el servicio...">${desc}</textarea>
+                <textarea id="serviceDesc_${num}" rows="3">${desc}</textarea>
             </div>
             <button class="btn-gold" onclick="saveService(${num}, '${file?.fileId || ''}')" id="btnSaveService_${num}">
                 <span>Guardar Cambios</span>
@@ -164,19 +230,18 @@ function renderServices(files) {
     });
 }
 
-// --- ACCIONES SERVICIOS ---
-function triggerServiceFile(num) { document.getElementById(`serviceFileInput_${num}`).click(); }
-
-function handleServiceFile(num) {
+// Acciones Servicios
+window.triggerServiceFile = (num) => { document.getElementById(`serviceFileInput_${num}`).click(); };
+window.handleServiceFile = (num) => {
     const file = document.getElementById(`serviceFileInput_${num}`).files[0];
     if (file) {
         const reader = new FileReader();
         reader.onload = (e) => document.getElementById(`serviceImg_${num}`).src = e.target.result;
         reader.readAsDataURL(file);
     }
-}
+};
 
-async function saveService(num, oldFileId) {
+window.saveService = async (num, oldFileId) => {
     const btn = document.getElementById(`btnSaveService_${num}`);
     const title = document.getElementById(`serviceTitle_${num}`).value;
     const desc = document.getElementById(`serviceDesc_${num}`).value;
@@ -186,8 +251,6 @@ async function saveService(num, oldFileId) {
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
 
     try {
-        // Si hay una foto nueva, la subimos primero y borramos la vieja
-        let finalFileId = oldFileId;
         if (file) {
             const uploadRes = await imagekit.upload({
                 file: file,
@@ -196,99 +259,100 @@ async function saveService(num, oldFileId) {
                 tags: [`service_${num}`],
                 customMetadata: { title, description: desc }
             });
-            finalFileId = uploadRes.fileId;
-            // Borrar foto vieja si existe
             if (oldFileId) await fetch(`/api/admin?action=delete&password=${encodeURIComponent(currentPassword)}&fileId=${oldFileId}`);
         } else if (oldFileId) {
-            // Solo actualizar texto
             await fetch('/api/admin', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
-                    action: 'update', 
-                    password: currentPassword, 
-                    fileId: oldFileId, 
-                    tags: [`service_${num}`],
-                    customMetadata: { title, description: desc }
+                    action: 'update', password: currentPassword, fileId: oldFileId, 
+                    tags: [`service_${num}`], customMetadata: { title, description: desc }
                 })
             });
         }
-        
-        showToast('Servicio actualizado con éxito ✨');
+        showToast('Servicio actualizado ✨');
         refreshAllData();
-    } catch (err) {
-        showToast('Error al guardar', 'error');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<span>Guardar Cambios</span>';
-    }
-}
+    } catch (err) { showToast('Error al guardar', 'error'); }
+    finally { btn.disabled = false; btn.innerHTML = '<span>Guardar Cambios</span>'; }
+};
 
 // --- SUBIDA GALERÍA ---
-uploadForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const file = fileInput.files[0];
-    if (!file) return;
+if (uploadForm) {
+    uploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const file = fileInput.files[0];
+        if (!file || !imagekit) return;
 
-    setLoading(true);
-    imagekit.options.authenticationEndpoint = `/api/admin?action=auth&password=${encodeURIComponent(currentPassword)}`;
+        setLoading(true);
+        imagekit.options.authenticationEndpoint = `/api/admin?action=auth&password=${encodeURIComponent(currentPassword)}`;
 
-    imagekit.upload({
-        file: file,
-        fileName: `${Date.now()}_${file.name}`,
-        folder: '/galeria-perritos',
-        tags: ['active']
-    }, (err) => {
-        setLoading(false);
-        if (err) return showToast('Error en la subida', 'error');
-        showToast('¡Foto publicada! 🐾');
-        resetGalleryForm();
-        refreshAllData();
+        imagekit.upload({
+            file: file,
+            fileName: `${Date.now()}_${file.name}`,
+            folder: '/galeria-perritos',
+            tags: ['active']
+        }, (err) => {
+            setLoading(false);
+            if (err) return showToast('Error en la subida', 'error');
+            showToast('¡Foto publicada! 🐾');
+            resetGalleryForm();
+            refreshAllData();
+        });
     });
-});
+}
 
-async function deleteImage(fileId) {
+window.deleteImage = async (fileId) => {
     if (!confirm('¿Eliminar de la galería?')) return;
     const res = await fetch(`/api/admin?action=delete&password=${encodeURIComponent(currentPassword)}&fileId=${fileId}`);
     if (res.ok) { showToast('Foto eliminada'); refreshAllData(); }
-}
+};
 
-fileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            previewImg.src = e.target.result;
-            previewImg.classList.remove('hidden');
-            document.getElementById('dropZoneContent').classList.add('hidden');
-        };
-        reader.readAsDataURL(file);
-    }
-});
+if (fileInput) {
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                previewImg.classList.remove('hidden');
+                document.getElementById('dropZoneContent').classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
 
 // --- UTILS ---
 function setLoading(is) {
-    btnUpload.disabled = is;
-    uploadLoader.classList.toggle('hidden', !is);
-    document.getElementById('btnText').textContent = is ? 'Publicando...' : 'Publicar en Galería';
+    if (btnUpload) btnUpload.disabled = is;
+    if (uploadLoader) uploadLoader.classList.toggle('hidden', !is);
+    const bt = document.getElementById('btnText');
+    if (bt) bt.textContent = is ? 'Publicando...' : 'Publicar en Galería';
 }
 
 function setLoginLoading(is) {
-    document.getElementById('btnLogin').disabled = is;
-    document.getElementById('loginLoader').classList.toggle('hidden', !is);
-    document.getElementById('loginBtnText').textContent = is ? 'Verificando...' : 'Acceder al Panel';
+    if (btnLogin) btnLogin.disabled = is;
+    const loader = document.getElementById('loginLoader');
+    const text = document.getElementById('loginBtnText');
+    if (loader) loader.classList.toggle('hidden', !is);
+    if (text) text.textContent = is ? 'Verificando...' : 'Acceder al Panel';
 }
 
 function resetGalleryForm() {
-    uploadForm.reset();
-    previewImg.classList.add('hidden');
-    document.getElementById('dropZoneContent').classList.remove('hidden');
+    if (uploadForm) uploadForm.reset();
+    if (previewImg) previewImg.classList.add('hidden');
+    const drop = document.getElementById('dropZoneContent');
+    if (drop) drop.classList.remove('hidden');
 }
 
 function showToast(msg, type = 'success') {
     const t = document.getElementById('toast');
-    document.getElementById('toastMsg').textContent = msg;
+    const m = document.getElementById('toastMsg');
+    if (!t || !m) return;
+    m.textContent = msg;
     t.style.background = type === 'error' ? '#EF4444' : 'var(--brand-ink)';
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
 }
+
+window.switchTab = switchTab;
