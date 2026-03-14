@@ -6,7 +6,207 @@
     <title>Panel Administrativo - El Pekinés</title>
     <!-- Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="admin.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+        :root {
+            --brand-aqua: #9ECED0;
+            --brand-aqua-deep: #7FB4B6;
+            --brand-gold: #C8A86A;
+            --brand-ink: #1F3B3A;
+            --brand-softwhite: #F7F5F2;
+            --luxury-radius: 24px;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body.admin-body {
+            background-color: var(--brand-softwhite);
+            color: var(--brand-ink);
+            font-family: var(--font-body);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 25px; }
+
+        /* --- LOGIN SCREEN --- */
+        .admin-login-overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #DEEFF0 0%, #F7F5F2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .login-card {
+            background: #FFFFFF;
+            width: 100%;
+            max-width: 420px;
+            padding: 50px 40px;
+            border-radius: var(--luxury-radius);
+            box-shadow: 0 25px 60px rgba(158, 206, 208, 0.2);
+            border: 1px solid rgba(200, 168, 106, 0.15);
+            text-align: center;
+        }
+
+        .login-header img { height: 100px; margin-bottom: 25px; }
+
+        .login-header h2 {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .login-header p { color: #6B7280; font-size: 0.95rem; margin-bottom: 35px; }
+
+        .form-group { margin-bottom: 25px; text-align: left; }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            color: var(--brand-gold);
+            margin-bottom: 10px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 16px 20px;
+            background: #FAFAFA;
+            border: 1.5px solid #E5E7EB;
+            border-radius: 16px;
+            font-size: 1rem;
+        }
+
+        .btn-gold {
+            background: var(--brand-aqua);
+            color: white;
+            border: none;
+            padding: 18px 30px;
+            border-radius: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-gold:hover:not(:disabled) {
+            background: var(--brand-aqua-deep);
+            transform: translateY(-2px);
+        }
+
+        /* --- DASHBOARD --- */
+        .admin-nav {
+            background: white;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(200, 168, 106, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .admin-nav .container { display: flex; justify-content: space-between; align-items: center; }
+
+        .logo-admin-small { display: flex; align-items: center; gap: 12px; font-family: var(--font-heading); font-weight: 600; }
+        .logo-admin-small img { height: 48px; }
+
+        .badge-connected {
+            background: rgba(16, 185, 129, 0.08);
+            color: #059669;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: 1.5px solid #F3F4F6;
+            color: #6B7280;
+            padding: 8px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .admin-header-section { padding: 50px 0 30px; }
+        .admin-header-section h1 { font-family: var(--font-heading); font-size: 2.2rem; margin-bottom: 10px; }
+
+        .card-premium {
+            background: white;
+            border-radius: var(--luxury-radius);
+            padding: 40px;
+            box-shadow: 0 15px 45px rgba(31, 59, 58, 0.05);
+            border: 1px solid rgba(200, 168, 106, 0.08);
+            margin-bottom: 50px;
+        }
+
+        .card-title { font-family: var(--font-heading); font-size: 1.6rem; margin-bottom: 15px; display: flex; align-items: center; gap: 12px; }
+        .card-title i { color: var(--brand-gold); }
+
+        .file-drop-zone {
+            background: #F9FAFB;
+            border: 2px dashed #E5E7EB;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-row { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+
+        .admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
+
+        .admin-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            border: 1px solid rgba(200, 168, 106, 0.05);
+        }
+
+        .card-image { height: 200px; position: relative; }
+        .card-image img { width: 100%; height: 100%; object-fit: cover; }
+        .badge-tag { position: absolute; top: 15px; right: 15px; padding: 5px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 700; color: white; }
+        .tag-active { background: #10B981; }
+        .tag-inactive { background: #9CA3AF; }
+
+        .card-body { padding: 20px; }
+        .dog-name { display: block; font-family: var(--font-heading); font-size: 1.2rem; margin-bottom: 15px; }
+
+        .action-row { display: flex; gap: 10px; }
+        .btn-sm { flex: 1; padding: 8px; border-radius: 10px; border: 1px solid #F3F4F6; background: #F9FAFB; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.8rem; }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--brand-ink);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            z-index: 10000;
+            transition: transform 0.4s ease;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .hidden { display: none !important; }
+
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; }
+            .login-card { padding: 40px 20px; }
+        }
+    </style>
     <!-- ImageKit SDK -->
     <script src="https://unpkg.com/imagekit-javascript/dist/imagekit.min.js"></script>
 </head>
@@ -33,94 +233,65 @@
         </div>
     </div>
 
-    <!-- MAIN CONTENT: Dashboard -->
+    <!-- MAIN DASHBOARD -->
     <div id="adminContent" class="hidden">
         <nav class="admin-nav">
             <div class="container">
-                <a href="/" class="logo-admin-small">
+                <a href="/" class="logo-admin-small" style="text-decoration: none; color: inherit;">
                     <img src="../Logo.png" alt="Logo">
                     <span>Gestión de Galería</span>
                 </a>
-                <div class="nav-status">
-                    <div class="badge-connected">
-                        <i class="fa-solid fa-circle-check"></i> ImageKit Conectado
-                    </div>
-                    <button id="btnLogout" class="btn-logout">Cerrar Sesión</button>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span class="badge-connected">ImageKit Conectado</span>
+                    <button id="btnLogout" class="btn-logout">Salir</button>
                 </div>
             </div>
         </nav>
 
         <main class="container">
             <header class="admin-header-section">
-                <h1>Administración de Imágenes</h1>
-                <p>Gestiona las fotos de tus peluditos que aparecen en el Home.</p>
+                <h1>Galería Premium</h1>
+                <p>Administra las fotos reales del Home.</p>
             </header>
 
-            <!-- Card: Subida de Imágenes -->
             <section class="admin-upload-section">
                 <div class="card-premium">
-                    <h2 class="card-title">
-                        <i class="fa-solid fa-camera-retro"></i>
-                        Añadir nueva foto
-                    </h2>
-                    <p style="margin-bottom: 25px; color: #6B7280; font-weight: 300;">Selecciona una imagen de alta calidad para mantener la estética boutique.</p>
-                    
+                    <h2 class="card-title"><i class="fa-solid fa-camera"></i> Añadir foto</h2>
                     <form id="uploadForm">
                         <div class="form-group">
-                            <label>Seleccionar fotografía</label>
                             <div class="file-drop-zone" id="dropZone">
-                                <input type="file" id="imageFile" accept="image/*" required>
-                                <div class="drop-zone-content" id="dropZoneContent">
-                                    <i class="fa-solid fa-image"></i>
-                                    <p>Arrastra una foto aquí o haz clic para buscar</p>
+                                <input type="file" id="imageFile" accept="image/*" required style="position: absolute; opacity: 0; inset: 0; cursor: pointer;">
+                                <div id="dropZoneContent">
+                                    <i class="fa-solid fa-image" style="font-size: 2rem; color: var(--brand-aqua); margin-bottom: 10px;"></i>
+                                    <p>Seleccionar fotografía</p>
                                 </div>
-                                <div class="preview-container">
-                                    <img id="imagePreview" class="preview-img hidden" src="" alt="Vista previa">
-                                </div>
+                                <img id="imagePreview" class="hidden" style="max-width: 200px; border-radius: 10px; margin: 0 auto;">
                             </div>
                         </div>
-
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="dogTitle">Nombre del perrito</label>
-                                <input type="text" id="dogTitle" placeholder="Ej: Toby - Golden Retriever">
+                                <input type="text" id="dogTitle" placeholder="Nombre del perrito">
                             </div>
                             <div class="form-group">
-                                <label for="displayOrder">Prioridad visual</label>
-                                <input type="number" id="displayOrder" value="0" placeholder="0 = Normal">
+                                <input type="number" id="displayOrder" value="0" placeholder="Orden">
                             </div>
                         </div>
-
-                        <button type="submit" class="btn-gold" id="btnUpload">
-                            <span id="btnText">Publicar en galería</span>
-                            <i class="fa-solid fa-circle-notch fa-spin hidden" id="uploadLoader"></i>
-                        </button>
+                        <button type="submit" class="btn-gold" id="btnUpload">Subir a Galería</button>
                     </form>
                 </div>
             </section>
 
-            <!-- Section: Galería Actual -->
-            <section class="admin-list-section">
-                <div class="listing-header">
-                    <h2>Imágenes en Exposición</h2>
-                    <div id="imageCount" style="font-size: 0.9rem; color: #6B7280;"></div>
-                </div>
-
+            <section>
+                <h2 style="font-family: var(--font-heading); margin-bottom: 25px;">Fotos en Home</h2>
                 <div id="galleryAdminGrid" class="admin-grid">
-                    <!-- Skeletons placeholders -->
-                    <div class="admin-card skeleton" style="height: 340px;"></div>
-                    <div class="admin-card skeleton" style="height: 340px;"></div>
-                    <div class="admin-card skeleton" style="height: 340px;"></div>
+                    <div class="admin-card" style="height: 200px; background: #f0f0f0;"></div>
+                    <div class="admin-card" style="height: 200px; background: #f0f0f0;"></div>
                 </div>
             </section>
         </main>
     </div>
 
-    <!-- Notification System -->
-    <div id="toast" class="toast">
-        <i class="fa-solid fa-check-circle"></i>
-        <span id="toastMsg">Cambios aplicados correctamente</span>
-    </div>
+    <div id="toast" class="toast">Cambios guardados</div>
 
     <script src="admin.js"></script>
 </body>
