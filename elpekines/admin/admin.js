@@ -1,4 +1,5 @@
 // --- Configuración e Integración Boutique (Ultra-Robust Edition) ---
+console.log("🚀 [SISTEMA] Iniciando Panel Admin V3.1...");
 const IMAGEKIT_PUBLIC_KEY = 'public_7/aJSThn/m100WILssPm9pLrwSo=';
 const IMAGEKIT_URL_ENDPOINT = 'https://ik.imagekit.io/15vvxh7w1';
 
