@@ -1,6 +1,6 @@
 // --- Configuración e Integración Boutique (Ultra-Robust Edition) ---
-const IMAGEKIT_PUBLIC_KEY = 'public_vBNo27Y5W/8jRCH6s9V2K71hPqY=';
-const IMAGEKIT_URL_ENDPOINT = 'https://ik.imagekit.io/elpekines';
+const IMAGEKIT_PUBLIC_KEY = 'public_7/aJSThn/m100WILssPm9pLrwSo=';
+const IMAGEKIT_URL_ENDPOINT = 'https://ik.imagekit.io/15vvxh7w1';
 
 let currentPassword = localStorage.getItem('adminPass') || '';
 let imagekit = null;
