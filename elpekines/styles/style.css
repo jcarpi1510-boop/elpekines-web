@@ -1830,47 +1830,92 @@ img {
 
 /* Specific layout logic for the 7+X balance */
 /* On desktop, we want to influence the wrap to push the last 2-3 to the next row centered */
-@media (min-width: 1024px) {
-    .gallery-grid {
-        max-width: 860px; /* Forces wrap after ~7 items depending on gap */
-    }
+/* --- ULTRA-PREMIUM HOME GALLERY --- */
+.gallery-preview-container {
+    margin-top: 60px;
+    width: 100%;
+    max-width: 1000px;
 }
 
-/* RESPONSIVE GALLERY */
-@media (max-width: 1023px) {
-    .gallery-grid {
-        max-width: 500px;
-    }
-    .gallery-card {
-        flex: 0 0 100px;
-        height: 100px;
-    }
+.gallery-title {
+    font-family: var(--font-fancy), 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--ink);
+    margin-bottom: 30px;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+.gallery-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.gallery-card {
+    flex: 0 0 110px;
+    height: 110px;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    border: 1.5px solid rgba(200, 168, 106, 0.2);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    background: white;
+}
+
+.gallery-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.gallery-card:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 15px 30px rgba(158, 206, 208, 0.2);
+    border-color: var(--brand-gold, #C8A86A);
+}
+
+.gallery-card:hover img {
+    transform: scale(1.1);
+}
+
+/* Skeletons */
+.gallery-skeleton {
+    flex: 0 0 110px;
+    height: 110px;
+    border-radius: 20px;
+    background: #f0f0f0;
+    animation: skeleton-shimmer 1.5s infinite linear;
+}
+
+@keyframes skeleton-shimmer {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
 }
 
 @media (max-width: 768px) {
-    .gallery-grid {
-        gap: 10px;
-        max-width: 100%;
-    }
-    .gallery-card {
-        flex: 0 0 calc(50% - 10px); /* 2 columns for mobile */
-        height: auto;
-        aspect-ratio: 1 / 1;
-        max-width: 160px;
-    }
-    .gallery-title {
-        font-size: 1.3rem;
-        margin-bottom: 20px;
-    }
+    .gallery-grid { gap: 10px; padding: 0 10px; }
+    .gallery-card { flex: 0 0 calc(33.33% - 10px); height: auto; aspect-ratio: 1/1; }
+    .gallery-title { font-size: 1.4rem; padding: 0 20px; }
+}
+
+@media (max-width: 480px) {
+    .gallery-card { flex: 0 0 calc(50% - 10px); }
 }
 
 /* Skeleton Loading State for Services */
 .service-skeleton {
     height: 400px;
-    border-radius: var(--radius-lg);
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 200% 100%;
-    animation: skeleton-loading-gallery 1.5s infinite;
+    border-radius: 24px;
+    background: #f0f0f0;
+    animation: skeleton-shimmer 1.5s infinite;
     margin-bottom: 30px;
 }
 

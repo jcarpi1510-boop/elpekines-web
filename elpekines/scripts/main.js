@@ -163,8 +163,8 @@ async function loadGallery() {
         
         const dogs = await response.json();
 
+        galleryGrid.innerHTML = '';
         if (dogs.length > 0) {
-            galleryGrid.innerHTML = '';
             dogs.forEach((dog, index) => {
                 const card = document.createElement('div');
                 card.className = 'gallery-card';
@@ -178,6 +178,8 @@ async function loadGallery() {
 
                 galleryGrid.appendChild(card);
             });
+        } else {
+            console.log("Galería vacía en ImageKit");
         }
     } catch (err) {
         console.error('Error cargando galería:', err);

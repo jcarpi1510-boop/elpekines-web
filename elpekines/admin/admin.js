@@ -13,7 +13,7 @@ const imagekit = new ImageKit({
 // --- Elementos del Interfaz ---
 const loginOverlay = document.getElementById('loginOverlay');
 const adminContent = document.getElementById('adminContent');
-const loginForm = document.getElementById('loginForm');
+const loginForm = document.getElementById('adminLoginForm'); // ID sincronizado
 const btnLogout = document.getElementById('btnLogout');
 
 const galleryGrid = document.getElementById('galleryAdminGrid');
@@ -32,51 +32,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentPassword) {
         checkSession(currentPassword);
     }
+    
+    // Vinculación explícita para asegurar captura de Enter y Clic
+    if (loginForm) {
+        loginForm.addEventListener('submit', handleLoginAttempt);
+    }
 });
 
-async function checkSession(pass) {
-    try {
-        // Si estamos en un archivo local (file://), fetch a /api fallará
-        if (window.location.protocol === 'file:') {
-            console.warn("⚠️ Ejecución local detectada. El API solo funciona en el servidor (Vercel).");
-            // No hacemos el fetch para evitar retrasos, pero mostramos un mensaje si intentan loguear
-            return;
-        }
-
-        const res = await fetch(`/api/admin?action=list&password=${encodeURIComponent(pass)}`);
-        if (res.ok) {
-            handleAuthState(true);
-            const files = await res.json();
-            renderGallery(files);
-        } else {
-            handleAuthState(false);
-        }
-    } catch (err) {
-        console.error("Fetch error:", err);
-        handleAuthState(false);
-    }
-}
-
-function handleAuthState(isAuth) {
-    if (isAuth) {
-        loginOverlay.classList.add('hidden');
-        adminContent.classList.remove('hidden');
-    } else {
-        loginOverlay.classList.remove('hidden');
-        adminContent.classList.add('hidden');
-        localStorage.removeItem('adminPass');
-    }
-}
-
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const pass = document.getElementById('adminPassword').value;
+async function handleLoginAttempt(e) {
+    if (e) e.preventDefault();
+    
+    const passInput = document.getElementById('adminPassInput');
+    const pass = passInput ? passInput.value : '';
     const loader = document.getElementById('loginLoader');
     const btn = document.getElementById('btnLogin');
     const loginText = document.getElementById('loginBtnText');
 
+    if (!pass) return;
+
+    // Aviso local
     if (window.location.protocol === 'file:') {
-        alert("⚠️ ATENCIÓN: Estás abriendo el archivo localmente. \n\nEl sistema de contraseñas y base de datos SOLO FUNCIONA cuando subes los cambios a GitHub/Vercel. \n\nSube los cambios para poder ingresar.");
+        alert("⚠️ ATENCIÓN: Estás en modo local. \n\nSube los cambios a GitHub/Vercel para que la contraseña funcione.");
         return;
     }
 
@@ -99,12 +75,41 @@ loginForm.addEventListener('submit', async (e) => {
         }
     } catch (err) {
         showToast('Error de conexión con el servidor', 'error');
+        console.error("Login error:", err);
     } finally {
         btn.disabled = false;
         loader.classList.add('hidden');
         loginText.textContent = "Acceder al Panel";
     }
-});
+}
+
+async function checkSession(pass) {
+    if (window.location.protocol === 'file:') return;
+
+    try {
+        const res = await fetch(`/api/admin?action=list&password=${encodeURIComponent(pass)}`);
+        if (res.ok) {
+            handleAuthState(true);
+            const files = await res.json();
+            renderGallery(files);
+        } else {
+            handleAuthState(false);
+        }
+    } catch (err) {
+        handleAuthState(false);
+    }
+}
+
+function handleAuthState(isAuth) {
+    if (isAuth) {
+        loginOverlay.classList.add('hidden');
+        adminContent.classList.remove('hidden');
+    } else {
+        loginOverlay.classList.remove('hidden');
+        adminContent.classList.add('hidden');
+        localStorage.removeItem('adminPass');
+    }
+}
 
 btnLogout.addEventListener('click', () => {
     handleAuthState(false);
@@ -136,7 +141,7 @@ async function fetchGallery() {
 function renderGallery(items) {
     galleryGrid.innerHTML = '';
     
-    if (items.length === 0) {
+    if (!items || items.length === 0) {
         galleryGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #6B7280;">No hay imágenes cargadas.</div>';
         return;
     }

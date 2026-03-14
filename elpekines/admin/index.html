@@ -32,8 +32,8 @@
 
         .container { max-width: 1100px; margin: 0 auto; padding: 0 25px; }
 
-        /* --- LOGIN SCREEN --- */
-        .admin-login-overlay {
+        /* --- LOGIN SCREEN (OVERLAY) --- */
+        #loginOverlay {
             position: fixed;
             inset: 0;
             background: linear-gradient(135deg, #DEEFF0 0%, #F7F5F2 100%);
@@ -184,8 +184,6 @@
 
         .action-row { display: flex; gap: 12px; }
         .btn-sm { flex: 1; padding: 10px; border-radius: 12px; border: 1px solid #F3F4F6; background: #F9FAFB; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.85rem; font-weight: 600; transition: all 0.3s; }
-        .btn-toggle:hover { background: #F0F9F9; border-color: var(--brand-aqua); color: var(--brand-aqua-deep); }
-        .btn-delete:hover { background: #FEF2F2; border-color: #F87171; color: #EF4444; }
 
         .toast {
             position: fixed;
@@ -216,17 +214,18 @@
 <body class="admin-body">
 
     <!-- OVERLAY: Premium Login -->
-    <div id="loginOverlay" class="admin-login-overlay">
+    <div id="loginOverlay">
         <div class="login-card">
             <div class="login-header">
                 <img src="../Logo.png" alt="Logo El Pekinés">
                 <h2>Panel Administrativo</h2>
                 <p>Acceso privado para gestión de galería</p>
             </div>
-            <form id="loginForm">
+            <!-- FORMULARIO REAL CON SUBMIT -->
+            <form id="adminLoginForm">
                 <div class="form-group">
-                    <label for="adminPassword">Contraseña de acceso</label>
-                    <input type="password" id="adminPassword" placeholder="••••••••" required>
+                    <label for="adminPassInput">Contraseña de acceso</label>
+                    <input type="password" id="adminPassInput" placeholder="••••••••" required autocomplete="current-password">
                 </div>
                 <button type="submit" class="btn-gold" id="btnLogin">
                     <span id="loginBtnText">Acceder al Panel</span>
