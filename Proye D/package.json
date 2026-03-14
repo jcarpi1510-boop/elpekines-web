@@ -8,6 +8,6 @@
     "deploy": "vercel deploy --prod"
   },
   "dependencies": {
-    "imagekit": "^3.12.3"
+    "imagekit": "^6.0.0"
   }
 }
