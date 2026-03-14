@@ -1749,15 +1749,7 @@ img {
     align-items: center;
 }
 
-.gallery-title {
-    font-family: var(--font-heading);
-    font-size: 1.6rem;
-    color: var(--white);
-    margin-bottom: 30px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    font-weight: 700;
-    letter-spacing: 1px;
-}
+/* .gallery-title consolidated below */
 
 .gallery-grid {
     display: flex;
@@ -1838,12 +1830,29 @@ img {
 }
 
 .gallery-title {
-    font-family: var(--font-fancy), 'Playfair Display', serif;
-    font-size: 1.6rem;
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
     color: var(--ink);
-    margin-bottom: 30px;
+    margin-bottom: 45px;
     text-align: center;
-    letter-spacing: 0.5px;
+    letter-spacing: 6px; /* Elegant spacing */
+    font-weight: 400;
+    text-transform: uppercase;
+    position: relative;
+    padding-bottom: 20px;
+    width: 100%;
+    display: block;
+}
+
+.gallery-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 2px;
+    background: var(--secondary-color);
 }
 
 .gallery-grid {

@@ -287,27 +287,49 @@ window.saveService = async (num, oldFileId) => {
 
 // --- SUBIDA GALERÍA ---
 if (uploadForm) {
-    uploadForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    uploadForm.onsubmit = async (e) => {
+        if (e) e.preventDefault();
+        console.log("📤 Iniciando proceso de subida a ImageKit...");
+        
         const file = fileInput.files[0];
-        if (!file || !imagekit) return;
+        if (!file) {
+            showToast('Selecciona una imagen primero', 'error');
+            return false;
+        }
+        
+        if (!imagekit) {
+            showToast('Error: SDK de imágenes no listo', 'error');
+            return false;
+        }
 
         setLoading(true);
+        // Actualizar credenciales justo antes de subir
         imagekit.options.authenticationEndpoint = `/api/admin?action=auth&password=${encodeURIComponent(currentPassword)}`;
 
-        imagekit.upload({
-            file: file,
-            fileName: `${Date.now()}_${file.name}`,
-            folder: '/galeria-perritos',
-            tags: ['active']
-        }, (err) => {
+        try {
+            imagekit.upload({
+                file: file,
+                fileName: `${Date.now()}_${file.name.replace(/\s/g, '_')}`,
+                folder: '/galeria-perritos',
+                tags: ['active']
+            }, (err, result) => {
+                setLoading(false);
+                if (err) {
+                    console.error("❌ Error ImageKit:", err);
+                    return showToast('Error en la subida: ' + (err.message || 'Verifica tu conexión'), 'error');
+                }
+                console.log("✅ Subida exitosa:", result);
+                showToast('¡Foto publicada! 🐾');
+                resetGalleryForm();
+                refreshAllData();
+            });
+        } catch (fatal) {
             setLoading(false);
-            if (err) return showToast('Error en la subida', 'error');
-            showToast('¡Foto publicada! 🐾');
-            resetGalleryForm();
-            refreshAllData();
-        });
-    });
+            console.error("❌ Error Fatal en Upload:", fatal);
+            showToast('Error crítico al procesar imagen', 'error');
+        }
+        return false;
+    };
 }
 
 window.deleteImage = async (fileId) => {
