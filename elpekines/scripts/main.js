@@ -1,6 +1,6 @@
 // --- Appwrite Configuration (Public Side) ---
 const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
-const APPWRITE_PROJECT = 'fra-69b5bc9e001dc8643178';
+const APPWRITE_PROJECT = '69b5c3ba000e65fa0bda';
 const BUCKET_ID = 'media';
 const DATABASE_ID = 'main';
 const COLLECTION_ID = 'content';

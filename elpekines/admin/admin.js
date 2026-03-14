@@ -3,7 +3,7 @@ console.log("🚀 [SISTEMA] Iniciando Panel Admin Appwrite V4.0...");
 
 // Configuración obtenida del usuario
 const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
-const APPWRITE_PROJECT = 'fra-69b5bc9e001dc8643178';
+const APPWRITE_PROJECT = '69b5c3ba000e65fa0bda';
 const BUCKET_ID = 'media';
 const DATABASE_ID = 'main';
 const COLLECTION_ID = 'content';
@@ -118,18 +118,19 @@ async function handleLoginAttempt(e) {
     
     if (!emailInput || !passInput) return;
     
-    const email = emailInput.value;
-    const password = passInput.value;
+    const email = emailInput.value.trim();
+    const password = passInput.value.trim();
     
     setLoginLoading(true);
     try {
+        console.log("📡 Intentando login en Appwrite para:", email);
         await account.createEmailPasswordSession(email, password);
         console.log("✅ Sesión creada exitosamente");
         showToast('¡Bienvenido, Jesús! 🐾');
         handleAuthState(true);
     } catch (error) {
-        console.error("❌ Error de login:", error.message);
-        showToast('Credenciales incorrectas: ' + error.message, 'error');
+        console.error("❌ Error Appwrite:", error.code, error.message);
+        showToast('Error de login: ' + error.message, 'error');
     } finally {
         setLoginLoading(false);
     }
