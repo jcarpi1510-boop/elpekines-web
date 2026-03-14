@@ -1,0 +1,14 @@
+{
+  "name": "el-pekines-web",
+  "version": "1.0.0",
+  "description": "Veterinaria El Pekines - Web Admin",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel deploy --prod"
+  },
+  "dependencies": {
+    "imagekit": "^5.0.0",
+    "@imagekit/nodejs": "^7.3.0"
+  }
+}

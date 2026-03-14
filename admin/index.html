@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrativo - El Pekinés</title>
+    <!-- Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+        :root {
+            --brand-aqua: #9ECED0;
+            --brand-aqua-deep: #7FB4B6;
+            --brand-gold: #C8A86A;
+            --brand-ink: #1F3B3A;
+            --brand-softwhite: #F7F5F2;
+            --luxury-radius: 24px;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* --- MOBILE OPTIMIZATIONS --- */
+        @media (max-width: 600px) {
+            .container { padding: 0 15px; }
+            .admin-nav .container { padding: 0 15px; }
+            .admin-header-section { padding: 25px 0 15px; text-align: center; }
+            .admin-header-section h1 { font-size: 1.8rem; }
+            .section-tabs { 
+                display: grid; 
+                grid-template-columns: 1fr 1fr; 
+                gap: 8px; 
+                border-bottom: none;
+                margin-bottom: 20px;
+            }
+            .tab-btn { 
+                padding: 10px; 
+                border-radius: 12px; 
+                background: #F3F4F6; 
+                font-size: 0.85rem;
+                text-align: center;
+            }
+            .tab-btn.active { background: var(--brand-aqua); color: white; }
+            .tab-btn.active::after { display: none; }
+            .card-premium { padding: 20px; border-radius: 18px; margin-bottom: 25px; }
+            .auth-card { padding: 30px 20px; text-align: center; }
+            .logo-admin-small img { height: 40px; }
+            .admin-header-section h1 { font-size: 1.6rem; }
+        }
+
+        body.admin-body {
+            background-color: var(--brand-softwhite);
+            color: var(--brand-ink);
+            font-family: var(--font-body);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 25px; }
+
+        /* --- LOGIN SCREEN --- */
+        #loginOverlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #DEEFF0 0%, #F7F5F2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .login-card {
+            background: #FFFFFF;
+            width: 100%;
+            max-width: 420px;
+            padding: 50px 40px;
+            border-radius: var(--luxury-radius);
+            box-shadow: 0 25px 60px rgba(158, 206, 208, 0.2);
+            border: 1px solid rgba(200, 168, 106, 0.15);
+            text-align: center;
+        }
+
+        .login-header img { height: 100px; margin-bottom: 25px; }
+        .login-header h2 { font-family: var(--font-heading); font-size: 1.8rem; margin-bottom: 8px; }
+        .login-header p { color: #6B7280; font-size: 0.95rem; margin-bottom: 35px; }
+
+        .form-group { margin-bottom: 25px; text-align: left; }
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            color: var(--brand-gold);
+            margin-bottom: 10px;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 16px 20px;
+            background: #FAFAFA;
+            border: 1.5px solid #E5E7EB;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-family: var(--font-body);
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--brand-aqua); box-shadow: 0 0 0 4px rgba(158, 206, 208, 0.1); }
+
+        .btn-gold {
+            background: var(--brand-aqua);
+            color: white;
+            border: none;
+            padding: 18px 30px;
+            border-radius: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+        .btn-gold:hover:not(:disabled) { background: var(--brand-aqua-deep); transform: translateY(-2px); }
+        .btn-gold:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        /* --- DASHBOARD --- */
+        .admin-nav {
+            background: white;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(200, 168, 106, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .admin-nav .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo-admin-small { display: flex; align-items: center; gap: 12px; font-family: var(--font-heading); font-weight: 600; text-decoration: none; color: inherit; }
+        .logo-admin-small img { height: 48px; }
+
+        .btn-logout {
+            background: transparent;
+            border: 1.5px solid #F3F4F6;
+            color: #6B7280;
+            padding: 8px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-logout:hover { border-color: #EF4444; color: #EF4444; }
+
+        .admin-header-section { padding: 40px 0 20px; }
+        .admin-header-section h1 { font-family: var(--font-heading); font-size: 2.22rem; margin-bottom: 8px; }
+
+        .section-tabs { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid #E5E7EB; padding-bottom: 1px; }
+        .tab-btn { padding: 12px 25px; border: none; background: none; cursor: pointer; font-weight: 600; color: #6B7280; position: relative; transition: all 0.3s; }
+        .tab-btn.active { color: var(--brand-aqua-deep); }
+        .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 3px; background: var(--brand-aqua); border-radius: 10px; }
+
+        .card-premium {
+            background: white;
+            border-radius: var(--luxury-radius);
+            padding: 40px;
+            box-shadow: 0 15px 45px rgba(31, 59, 58, 0.05);
+            border: 1px solid rgba(200, 168, 106, 0.08);
+            margin-bottom: 40px;
+        }
+
+        .card-title { font-family: var(--font-heading); font-size: 1.6rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+        .card-title i { color: var(--brand-gold); }
+
+        /* --- GESTIÓN DE SERVICIOS --- */
+        .services-editor-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .service-editor-card { background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 20px; padding: 25px; }
+        .service-img-preview-mini { width: 100%; height: 160px; object-fit: cover; border-radius: 14px; margin-bottom: 15px; border: 1px solid #E5E7EB; cursor: pointer; }
+        .service-img-preview-mini:hover { opacity: 0.8; }
+
+        /* --- GALERÍA --- */
+        .admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .admin-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            border: 1px solid rgba(200, 168, 106, 0.05);
+            transition: transform 0.4s;
+        }
+        .admin-card:hover { transform: translateY(-8px); }
+        .card-image { height: 200px; position: relative; }
+        .card-image img { width: 100%; height: 100%; object-fit: cover; }
+        .badge-tag { position: absolute; top: 12px; right: 12px; padding: 5px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 700; color: white; text-transform: uppercase; }
+        .tag-active { background: #10B981; }
+        .tag-inactive { background: #9CA3AF; }
+
+        .card-body { padding: 18px; }
+        .dog-name { display: block; font-family: var(--font-heading); font-size: 1.15rem; margin-bottom: 15px; }
+
+        .action-row { display: flex; gap: 10px; }
+        .btn-sm { flex: 1; padding: 10px; border-radius: 12px; border: 1px solid #F3F4F6; background: #F9FAFB; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.8rem; font-weight: 600; transition: all 0.3s; }
+        .btn-toggle:hover { background: #F0F9F9; border-color: var(--brand-aqua); color: var(--brand-aqua-deep); }
+        .btn-delete:hover { background: #FEF2F2; border-color: #F87171; color: #EF4444; }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--brand-ink);
+            color: white;
+            padding: 16px 35px;
+            border-radius: 50px;
+            z-index: 10000;
+            transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            display: flex;
+            align-items: center; gap: 12px;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .hidden { display: none !important; }
+
+        /* --- ROBUSTNESS OVERLAY --- */
+        #globalLoader {
+            position: fixed;
+            inset: 0;
+            background: white;
+            z-index: 10001;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s;
+        }
+        #globalLoader.fade-out { opacity: 0; pointer-events: none; }
+        
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #F3F4F6;
+            border-top: 5px solid var(--brand-aqua);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .emergency-btn {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            font-size: 0.6rem;
+            opacity: 0.3;
+            cursor: pointer;
+            z-index: 10002;
+            background: none;
+            border: none;
+            color: #ccc;
+        }
+        .emergency-btn:hover { opacity: 1; color: var(--brand-gold); }
+
+        .skeleton { background: #eee; animation: skeleton-pulse 1.5s infinite; }
+        @keyframes skeleton-pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+        @media (max-width: 768px) { .container { padding: 0 20px; } .login-card { padding: 40px 25px; } }
+    </style>
+    <script src="https://unpkg.com/imagekit-javascript/dist/imagekit.min.js"></script>
+</head>
+<body class="admin-body">
+
+    <!-- Cargador Global de Robustez -->
+    <div id="globalLoader">
+        <div class="loader-spinner"></div>
+        <p style="font-family: var(--font-heading); color: var(--brand-ink);">Iniciando Panel Boutique...</p>
+    </div>
+
+    <!-- Botón de Emergencia (Limpiar Cache Local) -->
+    <button class="emergency-btn" onclick="if(confirm('¿Limpiar datos de sesión y recargar?')) { localStorage.clear(); location.reload(); }">Reset Admin</button>
+
+    <!-- LOGIN -->
+    <div id="loginOverlay">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="../Logo.png" alt="Logo">
+                <h2>Panel Boutique</h2>
+                <p>Gestión de servicios y galería</p>
+            </div>
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="adminEmailInput" placeholder="tu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="adminPassInput" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-gold" id="btnLogin">
+                    <span id="loginBtnText">Acceder al Panel</span>
+                    <i class="fa-solid fa-spinner fa-spin hidden" id="loginLoader"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="adminContent" class="hidden">
+        <nav class="admin-nav">
+            <div class="container">
+                <a href="/" class="logo-admin-small"><img src="../Logo.png" alt="Logo"> <span>Admin El Pekinés</span></a>
+                <button id="btnLogout" class="btn-logout">Cerrar Sesión</button>
+            </div>
+        </nav>
+
+        <main class="container">
+            <header class="admin-header-section">
+                <h1>Panel de Gestión</h1>
+                <p>Controla las fotos y los servicios que ven tus clientes.</p>
+            </header>
+
+            <div class="section-tabs">
+                <button class="tab-btn active" onclick="switchTab('galleryTab')">Galería de Perritos</button>
+                <button class="tab-btn" onclick="switchTab('servicesTab')">Servicios del Banner</button>
+                <button class="tab-btn" onclick="switchTab('videosTab')">Videos Momentos</button>
+            </div>
+
+            <!-- TABS: Galería -->
+            <div id="galleryTab">
+                <section class="card-premium">
+                    <h2 class="card-title"><i class="fa-solid fa-camera-retro"></i> Nueva Foto de Galería</h2>
+                    <form id="uploadForm">
+                        <input type="file" id="imageFile" accept="image/*" style="display: none">
+                        <div style="background: #F9FAFB; border: 2px dashed #E5E7EB; border-radius: 20px; padding: 40px; text-align: center; cursor: pointer; margin-bottom: 25px;" onclick="document.getElementById('imageFile').click()">
+                            <div id="dropZoneContent">
+                                <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2.5rem; color: var(--brand-aqua); margin-bottom: 10px;"></i>
+                                <p>Haz clic para subir una foto a la galería</p>
+                            </div>
+                            <img id="imagePreview" class="hidden" style="max-height: 200px; border-radius: 12px; margin: 0 auto;">
+                        </div>
+                        <button type="submit" class="btn-gold" id="btnUpload">
+                            <span id="btnText">Publicar en Galería</span>
+                            <i class="fa-solid fa-circle-notch fa-spin hidden" id="uploadLoader"></i>
+                        </button>
+                    </form>
+                </section>
+
+                <h2 style="font-family: var(--font-heading); margin-bottom: 25px;">Fotos en Exposición</h2>
+                <div id="galleryAdminGrid" class="admin-grid">
+                    <!-- Skeletons... -->
+                </div>
+            </div>
+
+            <!-- TABS: Servicios -->
+            <div id="servicesTab" class="hidden">
+                <section class="card-premium">
+                    <h2 class="card-title"><i class="fa-solid fa-briefcase-medical"></i> Configuración de Servicios</h2>
+                    <p style="margin-bottom: 30px; color: #6B7280;">Estos cambios se reflejan en las 3 tarjetas debajo del banner principal.</p>
+                    
+                    <div class="services-editor-grid" id="servicesEditorContainer">
+                        <!-- Generado por JS -->
+                        <p style="text-align: center; padding: 40px;">Cargando servicios...</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TABS: Videos Momentos -->
+            <div id="videosTab" class="hidden">
+                <section class="card-premium">
+                    <h2 class="card-title"><i class="fa-solid fa-clapperboard"></i> Videos Momentos</h2>
+                    <p style="margin-bottom: 30px; color: #6B7280;">Carga los 3 videos verticales para la sección "Momentos en El Pekinés".</p>
+                    
+                    <div class="services-editor-grid" id="videosEditorContainer">
+                        <p style="text-align: center; padding: 40px;">Cargando videos...</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"><i class="fa-solid fa-check-circle"></i> <span id="toastMsg">Éxito</span></div>
+
+    <script>
+        // Fail-safe: Quitar el cargador si algo falla gravemente
+        setTimeout(() => {
+            const loader = document.getElementById('globalLoader');
+            if (loader && !loader.classList.contains('hidden')) {
+                console.warn("⚠️ Aplicando fail-safe: Quitando cargador por tiempo de espera excedido");
+                loader.classList.add('fade-out');
+                setTimeout(() => loader.classList.add('hidden'), 500);
+            }
+        }, 6000);
+    </script>
+    <script src="admin.js?v=3.2"></script>
+</body>
+</html>
