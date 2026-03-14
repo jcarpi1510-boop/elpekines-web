@@ -424,16 +424,17 @@ async function handleGalleryUpload(e) {
         
         console.log("✅ [TRAZA] Token validado OK");
 
-        // Actualizar endpoint y subir
-        imagekit.options.authenticationEndpoint = authUrl;
-        imagekit.options.publicKey = IMAGEKIT_PUBLIC_KEY;
-
-        console.log(`📤 [TRAZA] Subiendo archivo: ${file.name}`);
+        console.log(`📤 [TRAZA] Iniciando subida: ${file.name}`);
         imagekit.upload({
             file: file,
             fileName: `${Date.now()}_${file.name.replace(/\s/g, '_')}`,
             folder: '/galeria-perritos',
-            tags: ['active']
+            tags: ['active'],
+            // Pasamos las credenciales directamente para máxima robustez
+            token: authData.token,
+            signature: authData.signature,
+            expire: authData.expire,
+            publicKey: IMAGEKIT_PUBLIC_KEY
         }, (err, result) => {
             setLoading(false);
             if (err) {
