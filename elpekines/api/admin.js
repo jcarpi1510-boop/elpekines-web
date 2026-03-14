@@ -4,9 +4,9 @@ const ImageKit = require('imagekit');
 // Inicialización segura de ImageKit
 let imagekit;
 const IK_CONFIG = {
-    publicKey: process.env.IMAGEKIT_PUBLIC_KEY || '',
-    privateKey: process.env.IMAGEKIT_PRIVATE_KEY || '',
-    urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT || '',
+    publicKey: (process.env.IMAGEKIT_PUBLIC_KEY || '').trim(),
+    privateKey: (process.env.IMAGEKIT_PRIVATE_KEY || '').trim(),
+    urlEndpoint: (process.env.IMAGEKIT_URL_ENDPOINT || '').trim(),
 };
 
 const mask = (s) => s ? `${s.substring(0, 4)}...${s.substring(s.length - 4)}` : 'MISSING';
@@ -63,7 +63,10 @@ module.exports = async (req, res) => {
             case 'auth':
                 const authParams = imagekit.getAuthenticationParameters();
                 console.log("✅ [API] Auth params generados");
-                return res.status(200).json(authParams);
+                return res.status(200).json({
+                    ...authParams,
+                    publicKey: IK_CONFIG.publicKey
+                });
 
             case 'list':
                 const listMethod = imagekit.listFiles ? 'listFiles' : (imagekit.list ? 'list' : null);

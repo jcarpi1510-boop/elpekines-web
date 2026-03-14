@@ -423,6 +423,8 @@ async function handleGalleryUpload(e) {
         }
         
         console.log("✅ [TRAZA] Token validado OK");
+        const finalPubKey = authData.publicKey || IMAGEKIT_PUBLIC_KEY;
+        console.log(`📡 [TRAZA] Usando Public Key: ${finalPubKey.substring(0, 10)}...`);
 
         console.log(`📤 [TRAZA] Iniciando subida: ${file.name}`);
         imagekit.upload({
@@ -430,11 +432,10 @@ async function handleGalleryUpload(e) {
             fileName: `${Date.now()}_${file.name.replace(/\s/g, '_')}`,
             folder: '/galeria-perritos',
             tags: ['active'],
-            // Pasamos las credenciales directamente para máxima robustez
             token: authData.token,
             signature: authData.signature,
             expire: authData.expire,
-            publicKey: IMAGEKIT_PUBLIC_KEY
+            publicKey: finalPubKey
         }, (err, result) => {
             setLoading(false);
             if (err) {
