@@ -35,10 +35,11 @@ module.exports = async (req, res) => {
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     try {
-        const params = { ...req.query, ...req.body };
-        const { action, password, fileId, tags, customMetadata } = params;
+        const action = req.query.action || req.body.action;
+        const password = req.query.password || req.body.password;
+        const { fileId, tags, customMetadata } = { ...req.query, ...req.body };
         
-        console.log(`📡 [API] Acción recibida: ${action}`);
+        console.log(`📡 [API] Acción: ${action}, Pass detectada: ${password ? 'SÍ' : 'NO'}`);
 
         // Validaciones de Seguridad
         if (!process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD === "") {

@@ -415,10 +415,18 @@ async function handleGalleryUpload(e) {
             throw new Error(errData.error || `Error del servidor (${authCheck.status})`);
         }
         const authData = await authCheck.json();
-        console.log("✅ [TRAZA] Token obtenido:", authData.token ? "OK" : "MISSING");
+        console.log("✅ [TRAZA] Respuesta auth recibida");
+        
+        if (!authData.token || !authData.signature || !authData.expire) {
+            console.error("❌ [TRAZA] Token incompleto:", authData);
+            throw new Error("El servidor no devolvió las llaves de subida. Revisa los logs de Vercel.");
+        }
+        
+        console.log("✅ [TRAZA] Token validado OK");
 
         // Actualizar endpoint y subir
         imagekit.options.authenticationEndpoint = authUrl;
+        imagekit.options.publicKey = IMAGEKIT_PUBLIC_KEY;
 
         console.log(`📤 [TRAZA] Subiendo archivo: ${file.name}`);
         imagekit.upload({
