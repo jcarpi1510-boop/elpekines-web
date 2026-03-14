@@ -374,6 +374,17 @@
     <!-- Toast -->
     <div id="toast" class="toast"><i class="fa-solid fa-check-circle"></i> <span id="toastMsg">Éxito</span></div>
 
-    <script src="admin.js"></script>
+    <script>
+        // Fail-safe: Quitar el cargador si algo falla gravemente
+        setTimeout(() => {
+            const loader = document.getElementById('globalLoader');
+            if (loader && !loader.classList.contains('hidden')) {
+                console.warn("⚠️ Aplicando fail-safe: Quitando cargador por tiempo de espera excedido");
+                loader.classList.add('fade-out');
+                setTimeout(() => loader.classList.add('hidden'), 500);
+            }
+        }, 6000);
+    </script>
+    <script src="admin.js?v=3.2"></script>
 </body>
 </html>

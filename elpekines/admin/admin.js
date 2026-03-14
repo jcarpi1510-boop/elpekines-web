@@ -35,65 +35,64 @@ window.onerror = function(msg, url, line) {
 
 // --- Control de Sesión ---
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("🚀 Admin Panel DOM cargado");
+    console.log("🚀 [TRAZA] Iniciando carga de scripts...");
     
-    // Quitar cargador global tras un pequeño delay para suavidad
-    const gLoader = document.getElementById('globalLoader');
-    if (gLoader) {
-        setTimeout(() => gLoader.classList.add('fade-out'), 500);
-        setTimeout(() => gLoader.classList.add('hidden'), 1000);
-    }
-    
-    // Vincular elementos
-    bindElements();
-    
-    // Adjuntar eventos de forma explícita
-    if (loginForm) {
-        loginForm.addEventListener('submit', handleLoginAttempt);
-        console.log("✅ Escuchador de Submit añadido al formulario");
-    } else {
-        console.error("❌ No se encontró el formulario 'adminLoginForm'");
-    }
+    try {
+        // Vincular elementos de la UI
+        bindElements();
+        console.log("✅ [TRAZA] Elementos vinculados correctamente");
+        
+        // Adjuntar eventos de forma explícita
+        if (loginForm) {
+            loginForm.addEventListener('submit', handleLoginAttempt);
+        }
 
-    if (btnLogin) {
-        // Doble protección: Clic directo por si el submit falla
-        btnLogin.addEventListener('click', (e) => {
-            if (loginForm && !loginForm.checkValidity()) return;
-            console.log("🔘 Botón Acceder clickeado");
-        });
-    }
+        if (btnLogout) {
+            btnLogout.addEventListener('click', () => {
+                handleAuthState(false);
+                showToast('Sesión finalizada');
+                setTimeout(() => window.location.reload(), 1000);
+            });
+        }
 
-    if (btnLogout) {
-        btnLogout.addEventListener('click', () => {
-            console.log("🔓 Cerrando sesión...");
-            handleAuthState(false);
-            showToast('Sesión finalizada');
-            // Forzar recarga ligera para limpiar estados
-            setTimeout(() => window.location.reload(), 1000);
-        });
-    }
+        if (currentPassword) {
+            console.log("🔑 [TRAZA] Sesión previa detectada, validando...");
+            checkSession(currentPassword);
+        }
 
-    if (currentPassword) {
-        console.log("🔑 Sesión persistente detectada, verificando...");
-        checkSession(currentPassword);
+    } catch (error) {
+        console.error("❌ [TRAZA] Error crítico durante la inicialización:", error);
+    } finally {
+        // ELIMINAR CARGADOR SIEMPRE (Fail-safe)
+        const gLoader = document.getElementById('globalLoader');
+        if (gLoader) {
+            setTimeout(() => {
+                gLoader.classList.add('fade-out');
+                setTimeout(() => gLoader.classList.add('hidden'), 500);
+            }, 300);
+        }
     }
 });
 
 function bindElements() {
-    loginOverlay = document.getElementById('loginOverlay');
-    adminContent = document.getElementById('adminContent');
-    loginForm = document.getElementById('adminLoginForm');
-    btnLogout = document.getElementById('btnLogout');
-    btnLogin = document.getElementById('btnLogin');
+    try {
+        loginOverlay = document.getElementById('loginOverlay');
+        adminContent = document.getElementById('adminContent');
+        loginForm = document.getElementById('adminLoginForm');
+        btnLogout = document.getElementById('btnLogout');
+        btnLogin = document.getElementById('btnLogin');
 
-    galleryGrid = document.getElementById('galleryAdminGrid');
-    servicesContainer = document.getElementById('servicesEditorContainer');
-    videosContainer = document.getElementById('videosEditorContainer');
-    uploadForm = document.getElementById('uploadForm');
-    fileInput = document.getElementById('imageFile');
-    previewImg = document.getElementById('imagePreview');
-    btnUpload = document.getElementById('btnUpload');
-    uploadLoader = document.getElementById('uploadLoader');
+        galleryGrid = document.getElementById('galleryAdminGrid');
+        servicesContainer = document.getElementById('servicesEditorContainer');
+        videosContainer = document.getElementById('videosEditorContainer');
+        uploadForm = document.getElementById('uploadForm');
+        fileInput = document.getElementById('imageFile');
+        previewImg = document.getElementById('imagePreview');
+        btnUpload = document.getElementById('btnUpload');
+        uploadLoader = document.getElementById('uploadLoader');
+    } catch (e) {
+        console.warn("⚠️ Advertencia: Algunos elementos no se encontraron en el DOM", e);
+    }
 }
 
 async function handleLoginAttempt(e) {
