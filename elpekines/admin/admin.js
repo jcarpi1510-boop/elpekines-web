@@ -4,8 +4,8 @@ console.log("🚀 [SISTEMA] Iniciando Panel Admin Appwrite V4.0...");
 // Configuración obtenida del usuario
 const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
 const APPWRITE_PROJECT = '69b5bc9e001dc8643178';
-const BUCKET_ID = 'media';
-const DATABASE_ID = 'main';
+const BUCKET_ID = '69b5bf980019193f38fd';
+const DATABASE_ID = '69b5bfbd001ba63ab1d6';
 const COLLECTION_ID = 'content';
 
 // SDK Appwrite
