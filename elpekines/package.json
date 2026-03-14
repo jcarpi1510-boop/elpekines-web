@@ -8,6 +8,7 @@
     "deploy": "vercel deploy --prod"
   },
   "dependencies": {
+    "imagekit": "^5.0.0",
     "@imagekit/nodejs": "^7.3.0"
   }
 }

@@ -1,13 +1,19 @@
-const ImageKit = require('@imagekit/nodejs');
+// --- REPARACIÓN BOUTIQUE: API ADMIN ---
+const ImageKit = require('imagekit'); // Intentamos el paquete estándar
 
-// Initialize only if keys exist to avoid startup crash
-const imagekit = (process.env.IMAGEKIT_PUBLIC_KEY && process.env.IMAGEKIT_PRIVATE_KEY) 
-    ? new ImageKit({
-        publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-        privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
-        urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
-    })
-    : null;
+let imagekit;
+try {
+    imagekit = new ImageKit({
+        publicKey: process.env.IMAGEKIT_PUBLIC_KEY || '',
+        privateKey: process.env.IMAGEKIT_PRIVATE_KEY || '',
+        urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT || '',
+    });
+    
+    // Log de diagnóstico interno (solo se ve en logs de Vercel)
+    console.log("ImageKit Init OK. Methods:", Object.keys(imagekit));
+} catch (e) {
+    console.error("Critical: Failed to initialize ImageKit", e);
+}
 
 module.exports = async (req, res) => {
     // CORS
@@ -17,41 +23,36 @@ module.exports = async (req, res) => {
 
     if (req.method === 'OPTIONS') return res.status(200).end();
 
-    // Robust parsing for Vercel
-    const query = req.query || {};
-    const body = req.body || {};
-    const action = query.action || body.action;
-    const password = query.password || body.password;
-    const fileId = query.fileId || body.fileId;
-    const tags = query.tags || body.tags;
-
-    // DIAGNOSTIC CHECK: Environment Variables
-    if (!process.env.ADMIN_PASSWORD) {
-        return res.status(500).json({ 
-            error: 'ERROR DE CONFIGURACIÓN: La variable ADMIN_PASSWORD no está definida en Vercel.',
-            hint: 'Asegúrate de agregar ADMIN_PASSWORD en Vercel > Settings > Environment Variables y RE-DESPLEGAR.'
-        });
-    }
-
-    if (!imagekit) {
-        return res.status(500).json({ 
-            error: 'ERROR DE CONFIGURACIÓN: Faltan credenciales de ImageKit (Public/Private Key).',
-            hint: 'Verifica IMAGEKIT_PUBLIC_KEY e IMAGEKIT_PRIVATE_KEY en las variables de entorno de Vercel.'
-        });
-    }
-
-    // Password Validation
-    if (password !== process.env.ADMIN_PASSWORD) {
-        return res.status(401).json({ error: 'Contraseña incorrecta' });
-    }
-
     try {
+        const params = { ...req.query, ...req.body };
+        const { action, password, fileId, tags } = params;
+
+        // Validaciones de Seguridad
+        if (!process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD === "") {
+            return res.status(500).json({ error: 'Configuración de seguridad incompleta en Vercel.' });
+        }
+
+        if (password !== process.env.ADMIN_PASSWORD) {
+            return res.status(401).json({ error: 'Contraseña incorrecta' });
+        }
+
+        if (!imagekit) {
+            return res.status(500).json({ error: 'Falla en conexión con ImageKit.' });
+        }
+
+        // --- SISTEMA DE ACCIONES ---
         switch (action) {
             case 'auth':
+                // Generar token para subida desde cliente
                 return res.status(200).json(imagekit.getAuthenticationParameters());
 
             case 'list':
-                const files = await imagekit.listFiles({
+                // Listar imágenes (Soporte para diferentes nombres de método por versión)
+                const listMethod = imagekit.listFiles ? 'listFiles' : (imagekit.list ? 'list' : null);
+                
+                if (!listMethod) throw new Error("Método listFiles no encontrado en SDK");
+
+                const files = await imagekit[listMethod]({
                     path: '/galeria-perritos',
                     limit: 50
                 });
@@ -66,10 +67,13 @@ module.exports = async (req, res) => {
                 return res.status(200).json({ success: true });
 
             default:
-                return res.status(400).json({ error: 'Acción no válida' });
+                return res.status(400).json({ error: 'Acción no reconocida' });
         }
     } catch (error) {
-        console.error('Error Admin API:', error);
-        return res.status(500).json({ error: 'Error interno de ImageKit: ' + error.message });
+        console.error('API Error:', error);
+        return res.status(500).json({ 
+            error: 'Falla en el servidor', 
+            details: error.message 
+        });
     }
 };
