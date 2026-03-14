@@ -129,48 +129,39 @@ if (waBubble && waWindow) {
     });
 }
 
-// --- Supabase Configuration ---
-// Reemplaza estos valores con los que obtengas en tu panel de Supabase
+// --- ImageKit Gallery Configuration ---
+// Edita este arreglo para agregar o quitar fotos.
+// Usa ?tr=w-300,h-300,fo-auto,q-80 para optimización automática de ImageKit.
+const galleryImages = [
+  { id: 1, title: "Perrito Bañado 1", image: "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&q=80&w=400" },
+  { id: 2, title: "Perrito Bañado 2", image: "https://images.unsplash.com/photo-1544568100-847a948585b9?auto=format&fit=crop&q=80&w=400" },
+  { id: 3, title: "Perrito Bañado 3", image: "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&q=80&w=400" },
+  { id: 4, title: "Perrito Bañado 4", image: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&q=80&w=400" },
+  { id: 5, title: "Perrito Bañado 5", image: "https://images.unsplash.com/photo-1598133894008-61f7fdb8cc3a?auto=format&fit=crop&q=80&w=400" },
+  { id: 6, title: "Perrito Bañado 6", image: "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&q=80&w=400" },
+  { id: 7, title: "Perrito Bañado 7", image: "https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?auto=format&fit=crop&q=80&w=400" },
+  { id: 8, title: "Perrito Bañado 8", image: "https://images.unsplash.com/photo-1529927066849-79b791a69825?auto=format&fit=crop&q=80&w=400" }
+];
+
+// --- Supabase Configuration (Opcional para Servicios) ---
 const SUPABASE_URL = 'YOUR_SUPABASE_URL';
 const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-
 let supabaseClient = null;
 
 if (SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
     supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
-// --- Premium Gallery Logic ---
+// --- Premium Gallery Logic (Pure ImageKit API) ---
 async function loadGallery() {
     const galleryGrid = document.getElementById('dogGallery');
     if (!galleryGrid) return;
 
     try {
-        let dogs = [];
-
-        if (supabaseClient) {
-            const { data, error } = await supabaseClient
-                .from('gallery_dogs')
-                .select('*')
-                .eq('is_active', true)
-                .order('display_order', { ascending: true })
-                .limit(10);
-
-            if (error) throw error;
-            dogs = data;
-        } else {
-            // Demo mode / Fallback if no supabase keys
-            console.warn("Supabase no configurado. Usando datos de prueba.");
-            dogs = [
-                { title: 'Perrito 1', image_url: 'https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&q=80&w=400' },
-                { title: 'Perrito 2', image_url: 'https://images.unsplash.com/photo-1544568100-847a948585b9?auto=format&fit=crop&q=80&w=400' },
-                { title: 'Perrito 3', image_url: 'https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&q=80&w=400' },
-                { title: 'Perrito 4', image_url: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&q=80&w=400' },
-                { title: 'Perrito 5', image_url: 'https://images.unsplash.com/photo-1598133894008-61f7fdb8cc3a?auto=format&fit=crop&q=80&w=400' },
-                { title: 'Perrito 6', image_url: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&q=80&w=400' },
-                { title: 'Perrito 7', image_url: 'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?auto=format&fit=crop&q=80&w=400' },
-            ];
-        }
+        const response = await fetch('/api/gallery');
+        if (!response.ok) throw new Error('Error al cargar galería');
+        
+        const dogs = await response.json();
 
         if (dogs.length > 0) {
             galleryGrid.innerHTML = '';
@@ -178,94 +169,74 @@ async function loadGallery() {
                 const card = document.createElement('div');
                 card.className = 'gallery-card';
                 card.style.animationDelay = `${index * 0.1}s`;
-                card.innerHTML = `<img src="${dog.image_url}" alt="${dog.title || 'Perrito bañado'}" loading="lazy">`;
                 
-                // Optional: Lightbox click
+                card.innerHTML = `<img src="${dog.url}?tr=w-300,h-300,fo-auto,q-80" alt="${dog.title}" loading="lazy">`;
+                
                 card.addEventListener('click', () => {
-                    window.open(dog.image_url, '_blank');
+                    window.open(dog.url, '_blank');
                 });
 
                 galleryGrid.appendChild(card);
             });
-        } else {
-            galleryGrid.innerHTML = '<p style="color: white; opacity: 0.6;">Próximamente más peluditos...</p>';
         }
-
     } catch (err) {
         console.error('Error cargando galería:', err);
-        galleryGrid.innerHTML = '<p style="color: white; opacity: 0.6;">Cargando momentos felices...</p>';
     }
 }
 
+
+// --- Services Configuration ---
+// Edita este arreglo para gestionar tus 3 servicios principales.
+const servicesData = [
+    {
+        title: 'Consulta Veterinaria',
+        description: 'Examen físico completo, revisión de piel, oídos, ojos y dental básica para tu mejor amigo.',
+        image_url: 'Foto Veterinaria.jpeg'
+    },
+    {
+        title: 'Vacunación y Desparasitación',
+        description: 'Esquema completo de vacunas séxtuple/óctuple, antirrábica y control preventivo de parásitos.',
+        image_url: 'Vacunacion Pekines.png'
+    },
+    {
+        title: 'Peluquería Canina Completa',
+        description: 'Baño profesional, corte estético según raza, limpieza de oídos y corte de uñas con trato amoroso.',
+        image_url: 'Peluqueria Pekines.png'
+    }
+];
+
+// --- Premium Services Logic (Administrable) ---
 async function loadServices() {
     const servicesContainer = document.getElementById('servicesContainer');
     if (!servicesContainer) return;
 
-    try {
-        let servicesData = [];
+    servicesContainer.innerHTML = '';
+    
+    servicesData.forEach((service, index) => {
+        const card = document.createElement('div');
+        card.className = 'service-card-premium';
+        card.style.animationDelay = `${index * 0.1}s`;
+        
+        let iconClass = 'fa-stethoscope';
+        if (service.title.toLowerCase().includes('vacuna')) iconClass = 'fa-syringe';
+        if (service.title.toLowerCase().includes('pelu')) iconClass = 'fa-scissors';
 
-        if (supabaseClient) {
-            const { data, error } = await supabaseClient
-                .from('services')
-                .select('*')
-                .eq('is_active', true)
-                .order('display_order', { ascending: true });
-
-            if (error) throw error;
-            servicesData = data;
-        } else {
-            // Demo data
-            servicesData = [
-                {
-                    title: 'Consulta Veterinaria',
-                    description: 'Examen físico completo, revisión de piel, oídos, ojos y dental básica.',
-                    image_url: 'Foto Veterinaria.jpeg'
-                },
-                {
-                    title: 'Vacunación y Desparasitación',
-                    description: 'Vacunas séxtuple/óctuple, antirrábica y control de parásitos.',
-                    image_url: 'Vacunacion Pekines.png'
-                },
-                {
-                    title: 'Peluquería Canina Completa',
-                    description: 'Baño profesional, corte estético, limpieza de oídos y corte de uñas.',
-                    image_url: 'Peluqueria Pekines.png'
-                }
-            ];
-        }
-
-        if (servicesData.length > 0) {
-            servicesContainer.innerHTML = '';
-            servicesData.forEach((service, index) => {
-                const card = document.createElement('div');
-                card.className = 'service-card-premium';
-                card.style.animationDelay = `${index * 0.1}s`;
-                
-                // Determinamos el icono basado en el título (opcional, por ahora stethoscope como default)
-                let iconClass = 'fa-stethoscope';
-                if (service.title.toLowerCase().includes('vacuna')) iconClass = 'fa-syringe';
-                if (service.title.toLowerCase().includes('pelu')) iconClass = 'fa-scissors';
-
-                card.innerHTML = `
-                    <div class="service-img-wrapper">
-                        <img src="${service.image_url}" alt="${service.title}">
-                        <div class="service-icon-badge"><i class="fa-solid ${iconClass}"></i></div>
-                    </div>
-                    <div class="service-details">
-                        <h3>${service.title}</h3>
-                        <div class="service-description-detail">
-                            <p>${service.description}</p>
-                        </div>
-                        <a href="https://veterinariadeelpekineschile.site.agendapro.com/cl" target="_blank"
-                            class="btn btn-gold shine-effect">Reservar ahora</a>
-                    </div>
-                `;
-                servicesContainer.appendChild(card);
-            });
-        }
-    } catch (err) {
-        console.error('Error cargando servicios:', err);
-    }
+        card.innerHTML = `
+            <div class="service-img-wrapper">
+                <img src="${service.image_url}" alt="${service.title}">
+                <div class="service-icon-badge"><i class="fa-solid ${iconClass}"></i></div>
+            </div>
+            <div class="service-details">
+                <h3>${service.title}</h3>
+                <div class="service-description-detail">
+                    <p>${service.description}</p>
+                </div>
+                <a href="https://veterinariadeelpekineschile.site.agendapro.com/cl" target="_blank"
+                    class="btn btn-gold shine-effect">Reservar ahora</a>
+            </div>
+        `;
+        servicesContainer.appendChild(card);
+    });
 }
 
 // Iniciar galería y servicios

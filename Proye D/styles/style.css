@@ -1736,42 +1736,47 @@ img {
 }
 
 /* =============================================
-   PREMIUM DOG GALLERY SECTION
+   PREMIUM DOG GALLERY SECTION (BOUTIQUE STYLE)
    ============================================= */
 .gallery-preview-container {
     width: 100%;
-    max-width: 1100px;
-    margin-top: 60px;
+    max-width: 1000px; /* More contained for the 7+3 balance */
+    margin-top: 50px;
     padding: 0 20px;
     z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .gallery-title {
     font-family: var(--font-heading);
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     color: var(--white);
-    margin-bottom: 25px;
+    margin-bottom: 30px;
     text-shadow: 0 2px 4px rgba(0,0,0,0.2);
     font-weight: 700;
+    letter-spacing: 1px;
 }
 
 .gallery-grid {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 15px;
+    gap: 12px;
+    max-width: 900px;
 }
 
 .gallery-card {
-    flex: 0 0 calc(14.28% - 15px); /* 7 columns roughly on desktop */
-    max-width: 140px;
-    aspect-ratio: 1 / 1;
-    border-radius: 18px;
+    flex: 0 0 110px; /* Small cards as requested (95px-120px) */
+    height: 110px;
+    border-radius: 20px; /* Más redondeado y elegante */
     overflow: hidden;
-    border: 2px solid var(--gold-hi);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(200, 168, 106, 0.3); /* Borde dorado fino */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06); /* Sombra más suave */
     transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), 
-                box-shadow 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+                box-shadow 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+                border-color 0.3s ease;
     background: var(--softwhite);
     cursor: pointer;
     position: relative;
@@ -1781,7 +1786,7 @@ img {
 @keyframes fadeInUpGallery {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(15px);
     }
     to {
         opacity: 1;
@@ -1793,12 +1798,13 @@ img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.6s ease;
+    transition: transform 0.5s ease;
 }
 
 .gallery-card:hover {
-    transform: scale(1.04) !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    transform: scale(1.06) translateY(-5px) !important;
+    box-shadow: 0 15px 35px rgba(200, 168, 106, 0.15); /* Sombra con toque dorado */
+    border-color: var(--gold-hi);
     z-index: 10;
 }
 
@@ -1813,7 +1819,7 @@ img {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.1));
+    background: rgba(200, 168, 106, 0.05); /* Very subtle gold overlay */
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -1822,42 +1828,39 @@ img {
     opacity: 1;
 }
 
-/* Skeleton Loading State */
-.gallery-skeleton {
-    flex: 0 0 calc(14.28% - 15px);
-    max-width: 140px;
-    aspect-ratio: 1 / 1;
-    border-radius: 18px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 75%);
-    background-size: 200% 100%;
-    animation: skeleton-loading-gallery 1.5s infinite;
-    border: 2px solid rgba(230, 210, 162, 0.2);
-}
-
-@keyframes skeleton-loading-gallery {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+/* Specific layout logic for the 7+X balance */
+/* On desktop, we want to influence the wrap to push the last 2-3 to the next row centered */
+@media (min-width: 1024px) {
+    .gallery-grid {
+        max-width: 860px; /* Forces wrap after ~7 items depending on gap */
+    }
 }
 
 /* RESPONSIVE GALLERY */
 @media (max-width: 1023px) {
-    .gallery-grid > *, .gallery-skeleton {
-        flex: 0 0 calc(25% - 15px); /* 4 columns for tablet */
-        max-width: none;
+    .gallery-grid {
+        max-width: 500px;
+    }
+    .gallery-card {
+        flex: 0 0 100px;
+        height: 100px;
     }
 }
 
 @media (max-width: 768px) {
-    .gallery-grid > *, .gallery-skeleton {
-        flex: 0 0 calc(50% - 15px); /* 2 columns for mobile */
+    .gallery-grid {
+        gap: 10px;
+        max-width: 100%;
     }
-    
+    .gallery-card {
+        flex: 0 0 calc(50% - 10px); /* 2 columns for mobile */
+        height: auto;
+        aspect-ratio: 1 / 1;
+        max-width: 160px;
+    }
     .gallery-title {
-        font-size: 1.4rem;
-    }
-    
-    .gallery-preview-container {
-        margin-top: 40px;
+        font-size: 1.3rem;
+        margin-bottom: 20px;
     }
 }
 
