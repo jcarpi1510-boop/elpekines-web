@@ -356,3 +356,5 @@ function showToast(msg, type = 'success') {
 }
 
 window.switchTab = switchTab;
+window.handleLoginAttempt = handleLoginAttempt;
+console.log("💎 Sistema Admin El Pekinés V3.0 Cargado");

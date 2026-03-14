@@ -208,7 +208,7 @@
                 <h2>Panel Boutique</h2>
                 <p>Gestión de servicios y galería</p>
             </div>
-            <form id="adminLoginForm">
+            <form id="adminLoginForm" onsubmit="event.preventDefault(); if(typeof handleLoginAttempt === 'function') handleLoginAttempt(event); return false;">
                 <div class="form-group">
                     <label>Contraseña de acceso</label>
                     <input type="password" id="adminPassInput" placeholder="••••••••" required>
