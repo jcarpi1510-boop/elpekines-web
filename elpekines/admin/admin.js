@@ -26,9 +26,23 @@ try {
 let loginOverlay, adminContent, loginForm, btnLogout, btnLogin;
 let galleryGrid, servicesContainer, videosContainer, uploadForm, fileInput, previewImg, btnUpload, uploadLoader;
 
+// --- Robustez Global ---
+window.onerror = function(msg, url, line) {
+    console.error(`🔴 CRASH ADMIN: ${msg} en ${url}:${line}`);
+    // No bloqueamos, pero dejamos registro
+    return false; 
+};
+
 // --- Control de Sesión ---
 document.addEventListener('DOMContentLoaded', () => {
     console.log("🚀 Admin Panel DOM cargado");
+    
+    // Quitar cargador global tras un pequeño delay para suavidad
+    const gLoader = document.getElementById('globalLoader');
+    if (gLoader) {
+        setTimeout(() => gLoader.classList.add('fade-out'), 500);
+        setTimeout(() => gLoader.classList.add('hidden'), 1000);
+    }
     
     // Vincular elementos
     bindElements();

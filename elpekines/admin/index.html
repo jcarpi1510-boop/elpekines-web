@@ -219,6 +219,45 @@
         .toast.show { transform: translateX(-50%) translateY(0); }
         .hidden { display: none !important; }
 
+        /* --- ROBUSTNESS OVERLAY --- */
+        #globalLoader {
+            position: fixed;
+            inset: 0;
+            background: white;
+            z-index: 10001;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s;
+        }
+        #globalLoader.fade-out { opacity: 0; pointer-events: none; }
+        
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #F3F4F6;
+            border-top: 5px solid var(--brand-aqua);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .emergency-btn {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            font-size: 0.6rem;
+            opacity: 0.3;
+            cursor: pointer;
+            z-index: 10002;
+            background: none;
+            border: none;
+            color: #ccc;
+        }
+        .emergency-btn:hover { opacity: 1; color: var(--brand-gold); }
+
         .skeleton { background: #eee; animation: skeleton-pulse 1.5s infinite; }
         @keyframes skeleton-pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
 
@@ -227,6 +266,15 @@
     <script src="https://unpkg.com/imagekit-javascript/dist/imagekit.min.js"></script>
 </head>
 <body class="admin-body">
+
+    <!-- Cargador Global de Robustez -->
+    <div id="globalLoader">
+        <div class="loader-spinner"></div>
+        <p style="font-family: var(--font-heading); color: var(--brand-ink);">Iniciando Panel Boutique...</p>
+    </div>
+
+    <!-- Botón de Emergencia (Limpiar Cache Local) -->
+    <button class="emergency-btn" onclick="if(confirm('¿Limpiar datos de sesión y recargar?')) { localStorage.clear(); location.reload(); }">Reset Admin</button>
 
     <!-- LOGIN -->
     <div id="loginOverlay">
