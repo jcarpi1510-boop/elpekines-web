@@ -1922,13 +1922,18 @@ img {
     opacity: 1;
 }
 
-/* Specific layout logic for the 7+X balance */
-/* On desktop, we want to influence the wrap to push the last 2-3 to the next row centered */
 /* --- ULTRA-PREMIUM HOME GALLERY --- */
+.gallery-home {
+    width: 100%;
+    padding: 60px 0;
+}
+
 .gallery-preview-container {
-    margin-top: 60px;
+    margin: 0 auto;
     width: 100%;
     max-width: 1000px;
+    display: block;
+    padding: 0 20px;
 }
 
 .gallery-title {

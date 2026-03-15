@@ -95,7 +95,7 @@ async function loadDynamicContent() {
         const galleryDocs = documents.filter(d => d.type === 'gallery');
         const serviceDocs = documents.filter(d => d.type === 'service');
         const momentDocs = documents.filter(d => d.type === 'moment');
-        const heroDocs = documents.filter(d => d.type === 'video' && d.section === 'hero');
+        const heroDocs = documents.filter(d => d.type === 'hero-video');
 
         // 0. Render Hero Video
         renderHeroVideo(heroDocs);

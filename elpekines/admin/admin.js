@@ -191,7 +191,7 @@ async function refreshAllData() {
         renderGallery(documents.filter(d => d.type === 'gallery'));
         renderServices(documents.filter(d => d.type === 'service'));
         renderVideos(documents.filter(d => d.type === 'moment'));
-        renderHeroVideo(documents.filter(d => d.type === 'video' && d.section === 'hero'));
+        renderHeroVideo(documents.filter(d => d.type === 'hero-video'));
     } catch (error) {
         console.error("❌ Error al cargar datos de Appwrite:", error);
     }
@@ -507,20 +507,21 @@ async function handleHeroUpload(e) {
         const fileId = uploaded.$id;
 
         // 2. Buscar videos previos del hero para desactivarlos
+        // Filtramos en JS para ser resistentes si el atributo 'section' no está en el esquema aún
         const response = await databases.listDocuments(DATABASE_ID, COLLECTION_ID, [
-            Query.equal('section', 'hero'),
-            Query.equal('type', 'video')
+            Query.equal('type', 'video'),
+            Query.limit(100)
         ]);
         
-        // Desactivar todos los previos
-        for (const doc of response.documents) {
+        // Desactivar solo los que son del hero
+        const heroDocs = response.documents.filter(doc => doc.section === 'hero');
+        for (const doc of heroDocs) {
             await databases.updateDocument(DATABASE_ID, COLLECTION_ID, doc.$id, { active: false });
         }
 
         // 3. Crear nuevo registro activo
         await databases.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), {
-            type: 'video',
-            section: 'hero',
+            type: 'hero-video',
             fileId: fileId,
             title: 'Video Hero Principal',
             description: 'Video split-screen del hero',
