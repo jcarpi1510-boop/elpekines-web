@@ -1,5 +1,5 @@
-// Appwrite constants from appwrite-config.js
-var { ENDPOINT: APPWRITE_ENDPOINT, PROJECT: APPWRITE_PROJECT, BUCKET_ID, DATABASE_ID, COLLECTION_ID } = window.APPWRITE_CONFIG || {};
+// PocketBase instance is globally available from pocketbase-config.js as window.pb
+const pb = window.pb;
 
 // --- Mobile Menu Toggle ---
 const menuToggle = document.querySelector('.menu-toggle');
@@ -41,7 +41,7 @@ function renderHeroVideo(heroDocs) {
     
     if (activeHero) {
         console.log("🎬 Cargando Video Hero...");
-        const videoUrl = `${APPWRITE_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${activeHero.fileId}/view?project=${APPWRITE_PROJECT}`;
+        const videoUrl = pb.files.getUrl(activeHero, activeHero.file);
         container.innerHTML = `
             <video src="${videoUrl}" autoplay muted loop playsinline poster="Logo.png" class="hero-video-fade-in"></video>
         `;
@@ -75,7 +75,7 @@ function renderAboutVideos(moments) {
 
     container.innerHTML = '';
     moments.forEach((doc, index) => {
-        const videoUrl = `${APPWRITE_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${doc.fileId}/view?project=${APPWRITE_PROJECT}`;
+        const videoUrl = pb.files.getUrl(doc, doc.file);
         const card = document.createElement('div');
         card.className = 'video-card';
         card.style.animationDelay = `${index * 0.15}s`;
@@ -89,11 +89,11 @@ async function loadDynamicContent() {
     const servicesContainer = document.getElementById('servicesContainer');
 
     try {
-        console.log("📡 [SISTEMA] Cargando contenido desde Appwrite...");
-        const response = await databases.listDocuments(DATABASE_ID, COLLECTION_ID, [
-            Query.orderAsc('order')
-        ]);
-        const documents = response.documents;
+        console.log("📡 [SISTEMA] Cargando contenido desde PocketBase...");
+        const response = await pb.collection('content').getFullList({
+            sort: 'order',
+        });
+        const documents = response;
 
         const galleryDocs = documents.filter(d => d.type === 'gallery');
         const serviceDocs = documents.filter(d => d.type === 'service');
@@ -117,7 +117,7 @@ async function loadDynamicContent() {
                     const card = document.createElement('div');
                     card.className = 'gallery-card';
                     card.style.animationDelay = `${index * 0.1}s`;
-                    const fileUrl = `${APPWRITE_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${doc.fileId}/view?project=${APPWRITE_PROJECT}`;
+                    const fileUrl = pb.files.getUrl(doc, doc.file);
                     
                     card.innerHTML = `<img src="${fileUrl}" alt="${doc.title}" loading="lazy">`;
                     card.addEventListener('click', () => window.open(fileUrl, '_blank'));
@@ -138,7 +138,7 @@ async function loadDynamicContent() {
                     const card = document.createElement('div');
                     card.className = 'service-card-premium';
                     card.style.animationDelay = `${index * 0.15}s`;
-                    const fileUrl = `${APPWRITE_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${doc.fileId}/view?project=${APPWRITE_PROJECT}`;
+                    const fileUrl = pb.files.getUrl(doc, doc.file);
                     
                     let iconClass = 'fa-stethoscope';
                     if (doc.title.toLowerCase().includes('vacuna')) iconClass = 'fa-syringe';
@@ -194,7 +194,7 @@ async function loadDynamicContent() {
         }
 
     } catch (error) {
-        console.error('Appwrite Error (Public):', error);
+        console.error('PocketBase Error (Public):', error);
     }
 }
 

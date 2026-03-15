@@ -1,13 +1,11 @@
-// safety check: Ensure centralized config is loaded
-if (typeof window.APPWRITE_CONFIG === 'undefined') {
-    console.error("❌ ERROR CRÍTICO: No se pudo cargar appwrite-config.js");
+// safety check: Ensure PocketBase is loaded
+if (typeof window.pb === 'undefined') {
+    console.error("❌ ERROR CRÍTICO: No se pudo cargar pocketbase-config.js");
 }
 
-// Appwrite constants from appwrite-config.js
-// Usamos var para que sea verdaderamente global al script y fácil de depurar
-var { ENDPOINT: APPWRITE_ENDPOINT, PROJECT: APPWRITE_PROJECT, BUCKET_ID, DATABASE_ID, COLLECTION_ID } = window.APPWRITE_CONFIG || {};
+const pb = window.pb;
 
-console.log("🔧 [DEBUG] Config Activa en Admin:", window.APPWRITE_CONFIG);
+console.log("🔧 [DEBUG] PocketBase activo en Admin");
 
 // Elementos (Selección diferida para mayor seguridad)
 let loginOverlay, adminContent, loginForm, btnLogout, btnLogin;
@@ -39,12 +37,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (btnLogout) btnLogout.addEventListener('click', handleLogout);
 
         // Verificación de Conectividad y Sesión
-        if (typeof account !== 'undefined') {
-            console.log("📡 Verificando conexión con Appwrite...");
+        if (typeof pb !== 'undefined') {
+            console.log("📡 Verificando conexión con PocketBase...");
             await checkSession();
         } else {
-            console.error("❌ SDK de Appwrite no disponible");
-            showToast('Error: SDK de Appwrite no cargado. Revisa tu conexión.', 'error');
+            console.error("❌ SDK de PocketBase no disponible");
+            showToast('Error: SDK de PocketBase no cargado.', 'error');
             removeGlobalLoader();
         }
 
@@ -124,16 +122,15 @@ async function handleLoginAttempt(e) {
     
     setLoginLoading(true);
     try {
-        console.log("📡 Intentando login en Appwrite para:", email);
-        await account.createEmailPasswordSession(email, password);
+        console.log("📡 Intentando login en PocketBase para:", email);
+        await pb.collection('users').authWithPassword(email, password);
         console.log("✅ Sesión creada exitosamente");
         showToast('¡Bienvenido, Jesús! 🐾');
         handleAuthState(true);
     } catch (error) {
         console.error("❌ [LOGIN_FAIL]", error);
         let msg = error.message;
-        if (error.code === 401) msg = "Credenciales incorrectas o Proyecto mal configurado.";
-        if (error.code === 0) msg = "No hay conexión con Appwrite. Revisa tu internet o el Endpoint.";
+        if (error.status === 400) msg = "Credenciales incorrectas.";
         
         showToast('Error: ' + msg, 'error');
     } finally {
@@ -162,7 +159,7 @@ async function checkSession() {
 async function handleLogout() {
     if (!confirm('¿Cerrar sesión?')) return;
     try {
-        await account.deleteSession('current');
+        pb.authStore.clear();
         console.log("👋 Sesión cerrada");
         showToast('Sesión finalizada');
         setTimeout(() => window.location.reload(), 1000);
@@ -193,11 +190,9 @@ function switchTab(tabId) {
 async function refreshAllData() {
     try {
         console.log("📡 [SISTEMA] Refrescando datos...");
-        const response = await databases.listDocuments(DATABASE_ID, COLLECTION_ID, [
-            Query.orderDesc('order'),
-            Query.limit(100)
-        ]);
-        const documents = response.documents;
+        const documents = await pb.collection('content').getFullList({
+            sort: 'order',
+        });
         
         // Renderizado no bloqueante (prioridad visual)
         renderGallery(documents.filter(d => d.type === 'gallery'));
@@ -210,21 +205,16 @@ async function refreshAllData() {
         }, 100);
 
     } catch (error) {
-        console.error("❌ Error al cargar datos de Appwrite:", error);
+        console.error("❌ Error al cargar datos de PocketBase:", error);
         showToast('Error al sincronizar datos con el servidor.', 'error');
-        // Fallback: Si falla la carga, limpiar spinners para que el usuario pueda intentar de nuevo
         if (galleryGrid) galleryGrid.innerHTML = '<p style="text-align:center; padding:20px;">Error al cargar galería. Reintenta recargando la página.</p>';
     }
 }
 
-async function deleteImage(docId, fileId) {
+async function deleteImage(docId) {
     if (!confirm('¿Eliminar de la galería?')) return;
     try {
-        // 1. Borrar documento
-        await databases.deleteDocument(DATABASE_ID, COLLECTION_ID, docId);
-        // 2. Borrar archivo
-        await storage.deleteFile(BUCKET_ID, fileId);
-        
+        await pb.collection('content').delete(docId);
         showToast('Foto eliminada');
         refreshAllData();
     } catch (error) {
@@ -242,7 +232,7 @@ function renderGallery(items) {
     items.forEach(item => {
         const card = document.createElement('div');
         card.className = 'admin-card';
-        const fileUrl = `${APPWRITE_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${item.fileId}/view?project=${APPWRITE_PROJECT}`;
+        const fileUrl = pb.files.getUrl(item, item.file);
         
         card.innerHTML = `
             <div class="card-image">
@@ -252,7 +242,7 @@ function renderGallery(items) {
             <div class="card-body">
                 <strong class="dog-name">${item.title}</strong>
                 <div class="action-row">
-                    <button onclick="deleteImage('${item.$id}', '${item.fileId}')" class="btn-sm btn-delete"><i class="fa-solid fa-trash-can"></i> Eliminar</button>
+                    <button onclick="deleteImage('${item.id}')" class="btn-sm btn-delete"><i class="fa-solid fa-trash-can"></i> Eliminar</button>
                 </div>
             </div>
         `;
@@ -273,7 +263,7 @@ function renderServices(docs) {
         const defTitle = num === 1 ? 'Veterinaria' : (num === 2 ? 'Vacunación' : 'Peluquería');
         const title = doc?.title || defTitle;
         const desc = doc?.description || 'Descripción del servicio...';
-        const imgUrl = doc?.fileId ? `${APPWRITE_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${doc.fileId}/view?project=${APPWRITE_PROJECT}` : '../Logo.png';
+        const imgUrl = doc?.file ? pb.files.getUrl(doc, doc.file) : '../Logo.png';
 
         card.innerHTML = `
             <h4 style="margin-bottom: 15px; color: var(--brand-gold);">Slot #${num}: ${defTitle}</h4>
@@ -290,7 +280,7 @@ function renderServices(docs) {
                 <label>Descripción corta</label>
                 <textarea id="serviceDesc_${num}" rows="3">${desc}</textarea>
             </div>
-            <button class="btn-gold" onclick="saveService(${num}, '${doc?.$id || ''}', '${doc?.fileId || ''}')" id="btnSaveService_${num}">
+            <button class="btn-gold" onclick="saveService(${num}, '${doc?.id || ''}')" id="btnSaveService_${num}">
                 <span>Guardar Cambios</span>
             </button>
         `;
@@ -309,7 +299,7 @@ window.handleServiceFile = (num) => {
     }
 };
 
-window.saveService = async (num, docId, oldFileId) => {
+window.saveService = async (num, docId) => {
     const btn = document.getElementById(`btnSaveService_${num}`);
     const title = document.getElementById(`serviceTitle_${num}`).value;
     const desc = document.getElementById(`serviceDesc_${num}`).value;
@@ -318,20 +308,18 @@ window.saveService = async (num, docId, oldFileId) => {
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
 
+    const formData = new FormData();
+    formData.append('type', 'service');
+    formData.append('title', title);
+    formData.append('description', desc);
+    formData.append('order', num);
+    if (file) formData.append('file', file);
+
     try {
-        let fileId = oldFileId;
-        if (file) {
-            const uploaded = await storage.createFile(BUCKET_ID, ID.unique(), file);
-            fileId = uploaded.$id;
-            if (oldFileId) await storage.deleteFile(BUCKET_ID, oldFileId);
-        }
-
-        const data = { type: 'service', fileId, title, description: desc, order: num };
-
         if (docId) {
-            await databases.updateDocument(DATABASE_ID, COLLECTION_ID, docId, data);
+            await pb.collection('content').update(docId, formData);
         } else {
-            await databases.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), data);
+            await pb.collection('content').create(formData);
         }
 
         showToast('Servicio actualizado ✨');
@@ -350,7 +338,7 @@ function renderVideos(docs) {
         const card = document.createElement('div');
         card.className = 'service-editor-card';
         
-        const videoUrl = doc?.fileId ? `${APPWRITE_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${doc.fileId}/view?project=${APPWRITE_PROJECT}` : '';
+        const videoUrl = doc?.file ? pb.files.getUrl(doc, doc.file) : '';
 
         card.innerHTML = `
             <h4 style="margin-bottom: 15px; color: var(--brand-gold);">Slot Video #${num}</h4>
@@ -364,7 +352,7 @@ function renderVideos(docs) {
                 </div>
                 <input type="file" id="videoFileInput_${num}" accept="video/*" style="display:none" onchange="handleVideoFile(${num})">
             </div>
-            <button class="btn-gold" onclick="saveVideo(${num}, '${doc?.$id || ''}', '${doc?.fileId || ''}')" id="btnSaveVideo_${num}">
+            <button class="btn-gold" onclick="saveVideo(${num}, '${doc?.id || ''}')" id="btnSaveVideo_${num}">
                 <span>Guardar Video #${num}</span>
             </button>
         `;
@@ -385,7 +373,7 @@ window.handleVideoFile = (num) => {
     }
 };
 
-window.saveVideo = async (num, docId, oldFileId) => {
+window.saveVideo = async (num, docId) => {
     const btn = document.getElementById(`btnSaveVideo_${num}`);
     const file = document.getElementById(`videoFileInput_${num}`).files[0];
 
@@ -397,20 +385,16 @@ window.saveVideo = async (num, docId, oldFileId) => {
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Subiendo...';
 
+    const formData = new FormData();
+    formData.append('type', 'moment');
+    formData.append('order', num);
+    if (file) formData.append('file', file);
+
     try {
-        let fileId = oldFileId;
-        if (file) {
-            const uploaded = await storage.createFile(BUCKET_ID, ID.unique(), file);
-            fileId = uploaded.$id;
-            if (oldFileId) await storage.deleteFile(BUCKET_ID, oldFileId);
-        }
-
-        const data = { type: 'moment', fileId, order: num };
-
         if (docId) {
-            await databases.updateDocument(DATABASE_ID, COLLECTION_ID, docId, data);
+            await pb.collection('content').update(docId, formData);
         } else {
-            await databases.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), data);
+            await pb.collection('content').create(formData);
         }
 
         showToast(`¡Video #${num} actualizado! 🐾🎬`);
@@ -424,7 +408,7 @@ window.saveVideo = async (num, docId, oldFileId) => {
 
 async function handleGalleryUpload(e) {
     if (e) e.preventDefault();
-    console.log("📤 [TRAZA] Iniciando subida a Appwrite...");
+    console.log("📤 [TRAZA] Iniciando subida a PocketBase...");
     
     const file = fileInput ? fileInput.files[0] : null;
     if (!file) {
@@ -434,31 +418,22 @@ async function handleGalleryUpload(e) {
     
     setLoading(true);
     try {
-        // 1. Subir archivo a Storage
-        console.log("📡 [TRAZA] Subiendo archivo a Storage...");
-        const uploadedFile = await storage.createFile(BUCKET_ID, ID.unique(), file);
-        const fileId = uploadedFile.$id;
-        
-        // Generar URL directa (Appwrite)
-        const fileUrl = `${APPWRITE_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${fileId}/view?project=${APPWRITE_PROJECT}`;
+        const formData = new FormData();
+        formData.append('type', 'gallery');
+        formData.append('title', file.name);
+        formData.append('description', 'Foto de la galería');
+        formData.append('active', true);
+        formData.append('order', Date.now());
+        formData.append('file', file);
 
-        // 2. Crear documento en Database
-        console.log("📡 [TRAZA] Registrando en base de datos...");
-        await databases.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), {
-            type: 'gallery',
-            fileId: fileId,
-            title: file.name,
-            description: 'Foto de la galería',
-            active: true,
-            order: Date.now()
-        });
+        await pb.collection('content').create(formData);
 
-        console.log("✅ [TRAZA] Proceso Appwrite completo");
+        console.log("✅ [TRAZA] Proceso PocketBase completo");
         showToast('¡Foto publicada! 🐾');
         resetGalleryForm();
         refreshAllData();
     } catch (err) {
-        console.error("❌ [TRAZA] Error en proceso Appwrite:", err);
+        console.error("❌ [TRAZA] Error en proceso PocketBase:", err);
         showToast('Error en la subida: ' + err.message, 'error');
     } finally {
         setLoading(false);
@@ -481,7 +456,7 @@ function renderHeroVideo(docs) {
         return;
     }
 
-    const videoUrl = `${APPWRITE_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${activeDoc.fileId}/view?project=${APPWRITE_PROJECT}`;
+    const videoUrl = pb.files.getUrl(activeDoc, activeDoc.file);
     
     heroPreviewContainer.innerHTML = `
         <div style="background: #000; border-radius: 16px; overflow: hidden; position: relative; aspect-ratio: 16/9; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
@@ -524,29 +499,26 @@ async function handleHeroUpload(e) {
     try {
         console.log("📡 [SISTEMA] Subiendo nuevo video Hero...");
         
-        // 1. Subir a Storage
-        const uploaded = await storage.createFile(BUCKET_ID, ID.unique(), file);
-        const fileId = uploaded.$id;
-
-        // 2. Buscar videos previos del hero para desactivarlos
-        const response = await databases.listDocuments(DATABASE_ID, COLLECTION_ID, [
-            Query.equal('type', 'hero-video')
-        ]);
+        // 1. Buscar videos previos del hero para desactivarlos
+        const response = await pb.collection('content').getFullList({
+            filter: 'type = "hero-video"'
+        });
         
         // Desactivar todos los previos de este tipo
-        for (const doc of response.documents) {
-            await databases.updateDocument(DATABASE_ID, COLLECTION_ID, doc.$id, { active: false });
+        for (const doc of response) {
+            await pb.collection('content').update(doc.id, { active: false });
         }
 
-        // 3. Crear nuevo registro activo
-        await databases.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), {
-            type: 'hero-video',
-            fileId: fileId,
-            title: 'Video Hero Principal',
-            description: 'Video split-screen del hero',
-            active: true,
-            order: Date.now()
-        });
+        // 2. Crear nuevo registro activo
+        const formData = new FormData();
+        formData.append('type', 'hero-video');
+        formData.append('title', 'Video Hero Principal');
+        formData.append('description', 'Video split-screen del hero');
+        formData.append('active', true);
+        formData.append('order', Date.now());
+        formData.append('file', file);
+
+        await pb.collection('content').create(formData);
 
         showToast('¡Video Hero actualizado con éxito! ✨');
         resetHeroForm();
@@ -633,4 +605,4 @@ function showToast(msg, type = 'success') {
 
 window.switchTab = switchTab;
 window.handleLoginAttempt = handleLoginAttempt;
-console.log("💎 Sistema Admin El Pekinés V3.0 Cargado");
+console.log("💎 Sistema Admin El Pekinés V4.0 (PocketBase) Cargado");
