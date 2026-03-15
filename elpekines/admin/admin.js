@@ -123,12 +123,15 @@ async function handleLoginAttempt(e) {
     setLoginLoading(true);
     try {
         console.log("📡 Intentando login en PocketBase para:", email);
-        await pb.collection('users').authWithPassword(email, password);
-        console.log("✅ Sesión creada exitosamente");
+        const authData = await pb.collection('users').authWithPassword(email, password);
+        console.log("✅ Sesión creada exitosamente:", authData);
+        console.log("🔑 Token en AuthStore:", pb.authStore.token ? "Presente" : "AUSENTE");
+        console.log("👤 Modelo en AuthStore:", pb.authStore.model ? "Presente" : "AUSENTE");
+        
         showToast('¡Bienvenido, Jesús! 🐾');
         handleAuthState(true);
     } catch (error) {
-        console.error("❌ [LOGIN_FAIL]", error);
+        console.error("❌ [LOGIN_FAIL] Error completo:", error);
         let msg = error.message;
         if (error.status === 400) msg = "Credenciales incorrectas.";
         
