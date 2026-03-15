@@ -166,6 +166,8 @@ async function handleLogout() {
 
 // --- TABS ---
 function switchTab(tabId) {
+    const gTab = document.getElementById('galleryTab');
+    const sTab = document.getElementById('servicesTab');
     const vTab = document.getElementById('videosTab');
     const hTab = document.getElementById('heroTab');
     if (gTab) gTab.classList.toggle('hidden', tabId !== 'galleryTab');
