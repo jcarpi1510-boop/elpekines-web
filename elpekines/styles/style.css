@@ -607,6 +607,7 @@ img {
 
 .hero-text-block {
     max-width: 500px;
+    text-align: center;
 }
 
 .hero-mini-logo {
@@ -614,7 +615,7 @@ img {
     height: auto;
     border-radius: 50%;
     border: 3px solid var(--champagne);
-    margin-bottom: 30px;
+    margin: 0 auto 30px;
     box-shadow: 0 10px 20px rgba(74, 52, 32, 0.15);
 }
 
@@ -637,6 +638,7 @@ img {
 .hero-buttons {
     display: flex;
     gap: 15px;
+    justify-content: center;
 }
 
 /* Responsive Hero */
