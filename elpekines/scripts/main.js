@@ -34,7 +34,10 @@ function renderHeroVideo(heroDocs) {
     const container = document.getElementById('heroVideoContainer');
     if (!container) return;
 
-    const activeHero = heroDocs.find(d => d.active === true) || heroDocs[0];
+    // Ordenar por 'order' descendente y priorizar el que tenga active: true
+    const activeHero = heroDocs
+        .sort((a, b) => (b.order || 0) - (a.order || 0))
+        .find(d => d.active === true) || heroDocs[0];
     
     if (activeHero) {
         console.log("🎬 Cargando Video Hero...");

@@ -472,7 +472,9 @@ function renderHeroVideo(docs) {
     heroPreviewContainer.innerHTML = '';
     
     // El video activo es el que tiene la fecha más reciente o activo:true
-    const activeDoc = docs.find(d => d.active === true) || docs[0];
+    const activeDoc = docs
+        .sort((a, b) => (b.order || 0) - (a.order || 0))
+        .find(d => d.active === true) || docs[0];
     
     if (!activeDoc) {
         heroPreviewContainer.innerHTML = '<p style="text-align: center; padding: 20px; background: #fffbe6; border: 1px dashed #ffe58f; border-radius: 12px; color: #856404;">No hay video del Hero configurado. Se usará el logo por defecto.</p>';
@@ -527,15 +529,12 @@ async function handleHeroUpload(e) {
         const fileId = uploaded.$id;
 
         // 2. Buscar videos previos del hero para desactivarlos
-        // Filtramos en JS para ser resistentes si el atributo 'section' no está en el esquema aún
         const response = await databases.listDocuments(DATABASE_ID, COLLECTION_ID, [
-            Query.equal('type', 'video'),
-            Query.limit(100)
+            Query.equal('type', 'hero-video')
         ]);
         
-        // Desactivar solo los que son del hero
-        const heroDocs = response.documents.filter(doc => doc.section === 'hero');
-        for (const doc of heroDocs) {
+        // Desactivar todos los previos de este tipo
+        for (const doc of response.documents) {
             await databases.updateDocument(DATABASE_ID, COLLECTION_ID, doc.$id, { active: false });
         }
 
