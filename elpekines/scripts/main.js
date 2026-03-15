@@ -1,5 +1,5 @@
 // Appwrite constants from appwrite-config.js
-const { BUCKET_ID, DATABASE_ID, COLLECTION_ID } = APPWRITE_CONFIG;
+var { ENDPOINT: APPWRITE_ENDPOINT, PROJECT: APPWRITE_PROJECT, BUCKET_ID, DATABASE_ID, COLLECTION_ID } = window.APPWRITE_CONFIG || {};
 
 // --- Mobile Menu Toggle ---
 const menuToggle = document.querySelector('.menu-toggle');

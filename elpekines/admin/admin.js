@@ -1,13 +1,13 @@
 // safety check: Ensure centralized config is loaded
-if (typeof APPWRITE_CONFIG === 'undefined') {
-    console.error("❌ ERROR CRÍTICO: No se pudo cargar appwrite-config.js. Revisa la ruta o la conexión.");
-    alert("Error de sistema: No se pudo cargar la configuración de Appwrite. Por favor, recarga la página o contacta a soporte.");
+if (typeof window.APPWRITE_CONFIG === 'undefined') {
+    console.error("❌ ERROR CRÍTICO: No se pudo cargar appwrite-config.js");
 }
 
 // Appwrite constants from appwrite-config.js
-const { BUCKET_ID, DATABASE_ID, COLLECTION_ID } = APPWRITE_CONFIG || {};
+// Usamos var para que sea verdaderamente global al script y fácil de depurar
+var { ENDPOINT: APPWRITE_ENDPOINT, PROJECT: APPWRITE_PROJECT, BUCKET_ID, DATABASE_ID, COLLECTION_ID } = window.APPWRITE_CONFIG || {};
 
-console.log("🔧 [DEBUG] Config Activa:", APPWRITE_CONFIG);
+console.log("🔧 [DEBUG] Config Activa en Admin:", window.APPWRITE_CONFIG);
 
 // Elementos (Selección diferida para mayor seguridad)
 let loginOverlay, adminContent, loginForm, btnLogout, btnLogin;

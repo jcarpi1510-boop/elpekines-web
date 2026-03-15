@@ -1,5 +1,5 @@
 // --- Appwrite Centralized Configuration ---
-const APPWRITE_CONFIG = {
+window.APPWRITE_CONFIG = {
     ENDPOINT: 'https://cloud.appwrite.io/v1',
     PROJECT: '69b5bc9e001dc8643178',
     BUCKET_ID: '69b5bf980019193f38fd',
