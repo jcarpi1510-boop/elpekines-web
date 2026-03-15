@@ -25,6 +25,12 @@ window.onerror = function(msg, url, line) {
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("🚀 [SISTEMA] Iniciando Panel Admin...");
     
+    // Fail-Safe: Quitar el cargador si Appwrite tarda demasiado
+    const failSafeTimeout = setTimeout(() => {
+        console.warn("⚠️ [SISTEMA] Fail-safe activado: Forzando visibilidad del panel");
+        removeGlobalLoader();
+    }, 5000);
+
     try {
         bindElements();
         
@@ -37,7 +43,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log("📡 Verificando conexión con Appwrite...");
             await checkSession();
         } else {
-            throw new Error("SDK de Appwrite no cargado correctamente.");
+            console.error("❌ SDK de Appwrite no disponible");
+            showToast('Error: SDK de Appwrite no cargado. Revisa tu conexión.', 'error');
+            removeGlobalLoader();
         }
 
         // Vincular eventos de formularios
@@ -48,13 +56,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     } catch (error) {
         console.error("❌ Error de inicialización:", error);
-        if (error.message.includes('fetch')) {
-            showToast('Error de conexión: No se pudo contactar con Appwrite. Revisa tu internet o firewall.', 'error');
-        } else {
-            showToast('Falla de sistema: ' + error.message, 'error');
-        }
-    } finally {
+        showToast('Falla de sistema: ' + error.message, 'error');
         removeGlobalLoader();
+    } finally {
+        clearTimeout(failSafeTimeout);
+        // El loader se quita normalmente dentro de handleAuthState si hay sesión,
+        // o aquí si algo falló antes de llegar ahí.
+        setTimeout(removeGlobalLoader, 500); 
     }
 });
 
@@ -170,6 +178,7 @@ function switchTab(tabId) {
     const sTab = document.getElementById('servicesTab');
     const vTab = document.getElementById('videosTab');
     const hTab = document.getElementById('heroTab');
+    
     if (gTab) gTab.classList.toggle('hidden', tabId !== 'galleryTab');
     if (sTab) sTab.classList.toggle('hidden', tabId !== 'servicesTab');
     if (vTab) vTab.classList.toggle('hidden', tabId !== 'videosTab');
@@ -183,17 +192,28 @@ function switchTab(tabId) {
 // --- DATOS ---
 async function refreshAllData() {
     try {
+        console.log("📡 [SISTEMA] Refrescando datos...");
         const response = await databases.listDocuments(DATABASE_ID, COLLECTION_ID, [
-            Query.orderDesc('order')
+            Query.orderDesc('order'),
+            Query.limit(100)
         ]);
         const documents = response.documents;
         
+        // Renderizado no bloqueante (prioridad visual)
         renderGallery(documents.filter(d => d.type === 'gallery'));
         renderServices(documents.filter(d => d.type === 'service'));
         renderVideos(documents.filter(d => d.type === 'moment'));
-        renderHeroVideo(documents.filter(d => d.type === 'hero-video'));
+        
+        // El video hero se renderiza al final o con un pequeño delay para no bloquear el resto
+        setTimeout(() => {
+            renderHeroVideo(documents.filter(d => d.type === 'hero-video'));
+        }, 100);
+
     } catch (error) {
         console.error("❌ Error al cargar datos de Appwrite:", error);
+        showToast('Error al sincronizar datos con el servidor.', 'error');
+        // Fallback: Si falla la carga, limpiar spinners para que el usuario pueda intentar de nuevo
+        if (galleryGrid) galleryGrid.innerHTML = '<p style="text-align:center; padding:20px;">Error al cargar galería. Reintenta recargando la página.</p>';
     }
 }
 
