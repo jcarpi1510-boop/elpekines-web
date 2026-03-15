@@ -58,7 +58,7 @@ function renderHeroVideo(heroDocs) {
     }
 }
 
-// --- Dynamic Content Loading (Appwrite) ---
+// --- Dynamic Content Loading (PocketBase) ---
 function renderAboutVideos(moments) {
     const container = document.getElementById('aboutVideosContainer');
     if (!container) return;
@@ -66,9 +66,9 @@ function renderAboutVideos(moments) {
     if (!moments || moments.length === 0) {
         // Fallback placeholders if DB is empty
         container.innerHTML = `
-            <div class="video-card"><video src="https://ik.imagekit.io/v9p6v3z7f/Video1.mp4" autoplay muted loop playsinline poster="Logo.png"></video></div>
-            <div class="video-card"><video src="https://ik.imagekit.io/v9p6v3z7f/Video2.mp4" autoplay muted loop playsinline poster="Logo.png"></video></div>
-            <div class="video-card"><video src="https://ik.imagekit.io/v9p6v3z7f/Video3.mp4" autoplay muted loop playsinline poster="Logo.png"></video></div>
+            <div class="video-card"><video src="Logo.png" autoplay muted loop playsinline></video></div>
+            <div class="video-card"><video src="Logo.png" autoplay muted loop playsinline></video></div>
+            <div class="video-card"><video src="Logo.png" autoplay muted loop playsinline></video></div>
         `;
         return;
     }
@@ -124,7 +124,7 @@ async function loadDynamicContent() {
                     galleryGrid.appendChild(card);
                 });
             } else {
-                console.warn('Aviso: Galería vacía en Appwrite. Ocultando sección.');
+                console.warn('Aviso: Galería vacía. Ocultando sección.');
                 if (galleryContainer) galleryContainer.style.display = 'none';
             }
         }
