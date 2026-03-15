@@ -29,6 +29,32 @@ window.addEventListener('scroll', () => {
     }
 });
 
+// --- Hero Video Loading ---
+function renderHeroVideo(heroDocs) {
+    const container = document.getElementById('heroVideoContainer');
+    if (!container) return;
+
+    const activeHero = heroDocs.find(d => d.active === true) || heroDocs[0];
+    
+    if (activeHero) {
+        console.log("🎬 Cargando Video Hero...");
+        const videoUrl = `${APPWRITE_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${activeHero.fileId}/view?project=${APPWRITE_PROJECT}`;
+        container.innerHTML = `
+            <video src="${videoUrl}" autoplay muted loop playsinline poster="Logo.png" class="hero-video-fade-in"></video>
+        `;
+    } else {
+        console.log("ℹ️ No hay video Hero activo, usando fallback.");
+        // Mantener el fallback HTML que ya existe o inyectar uno si está vacío
+        if (container.innerHTML.trim() === '') {
+            container.innerHTML = `
+                <div class="hero-fallback">
+                    <img src="Logo.png" class="main-logo-hero" alt="Logo">
+                </div>
+            `;
+        }
+    }
+}
+
 // --- Dynamic Content Loading (Appwrite) ---
 function renderAboutVideos(moments) {
     const container = document.getElementById('aboutVideosContainer');
@@ -69,8 +95,12 @@ async function loadDynamicContent() {
         const galleryDocs = documents.filter(d => d.type === 'gallery');
         const serviceDocs = documents.filter(d => d.type === 'service');
         const momentDocs = documents.filter(d => d.type === 'moment');
+        const heroDocs = documents.filter(d => d.type === 'video' && d.section === 'hero');
 
-        // 0. Render About Videos
+        // 0. Render Hero Video
+        renderHeroVideo(heroDocs);
+
+        // 0.5 Render About Videos
         renderAboutVideos(momentDocs);
 
         // 1. Render Gallery

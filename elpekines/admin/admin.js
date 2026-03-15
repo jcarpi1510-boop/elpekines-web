@@ -11,7 +11,8 @@ console.log("🔧 [DEBUG] Config Activa en Admin:", window.APPWRITE_CONFIG);
 
 // Elementos (Selección diferida para mayor seguridad)
 let loginOverlay, adminContent, loginForm, btnLogout, btnLogin;
-let galleryGrid, servicesContainer, videosContainer, uploadForm, fileInput, previewImg, btnUpload, uploadLoader;
+let galleryGrid, servicesContainer, videosContainer, heroPreviewContainer, uploadForm, fileInput, previewImg, btnUpload, uploadLoader;
+let heroUploadForm, heroFileInput, heroFilePreview, btnHeroUpload, heroUploadLoader;
 
 // --- Robustez Global ---
 window.onerror = function(msg, url, line) {
@@ -42,6 +43,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Vincular eventos de formularios
         if (uploadForm) uploadForm.onsubmit = handleGalleryUpload;
         if (fileInput) fileInput.addEventListener('change', handleFilePreview);
+        if (heroUploadForm) heroUploadForm.onsubmit = handleHeroUpload;
+        if (heroFileInput) heroFileInput.addEventListener('change', handleHeroFilePreview);
 
     } catch (error) {
         console.error("❌ Error de inicialización:", error);
@@ -69,7 +72,13 @@ function bindElements() {
         adminContent = document.getElementById('adminContent');
         loginForm = document.getElementById('adminLoginForm');
         btnLogout = document.getElementById('btnLogout');
-        btnLogin = document.getElementById('btnLogin');
+        btnLogin = document.getElementById('btnLogin'); // Keep existing line
+        btnHeroUpload = document.getElementById('btnHeroUpload');
+        heroUploadLoader = document.getElementById('heroUploadLoader');
+        heroPreviewContainer = document.getElementById('heroVideoPreviewContainer');
+        heroUploadForm = document.getElementById('heroUploadForm');
+        heroFileInput = document.getElementById('heroVideoFile');
+        heroFilePreview = document.getElementById('heroFilePreview');
 
         galleryGrid = document.getElementById('galleryAdminGrid');
         servicesContainer = document.getElementById('servicesEditorContainer');
@@ -157,12 +166,12 @@ async function handleLogout() {
 
 // --- TABS ---
 function switchTab(tabId) {
-    const gTab = document.getElementById('galleryTab');
-    const sTab = document.getElementById('servicesTab');
     const vTab = document.getElementById('videosTab');
+    const hTab = document.getElementById('heroTab');
     if (gTab) gTab.classList.toggle('hidden', tabId !== 'galleryTab');
     if (sTab) sTab.classList.toggle('hidden', tabId !== 'servicesTab');
     if (vTab) vTab.classList.toggle('hidden', tabId !== 'videosTab');
+    if (hTab) hTab.classList.toggle('hidden', tabId !== 'heroTab');
     
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('onclick')?.includes(tabId));
@@ -180,6 +189,7 @@ async function refreshAllData() {
         renderGallery(documents.filter(d => d.type === 'gallery'));
         renderServices(documents.filter(d => d.type === 'service'));
         renderVideos(documents.filter(d => d.type === 'moment'));
+        renderHeroVideo(documents.filter(d => d.type === 'video' && d.section === 'hero'));
     } catch (error) {
         console.error("❌ Error al cargar datos de Appwrite:", error);
     }
@@ -432,6 +442,117 @@ async function handleGalleryUpload(e) {
         setLoading(false);
     }
     return false;
+}
+
+// --- HERO VIDEO LOGIC ---
+function renderHeroVideo(docs) {
+    if (!heroPreviewContainer) return;
+    heroPreviewContainer.innerHTML = '';
+    
+    // El video activo es el que tiene la fecha más reciente o activo:true
+    const activeDoc = docs.find(d => d.active === true) || docs[0];
+    
+    if (!activeDoc) {
+        heroPreviewContainer.innerHTML = '<p style="text-align: center; padding: 20px; background: #fffbe6; border: 1px dashed #ffe58f; border-radius: 12px; color: #856404;">No hay video del Hero configurado. Se usará el logo por defecto.</p>';
+        return;
+    }
+
+    const videoUrl = `${APPWRITE_ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${activeDoc.fileId}/view?project=${APPWRITE_PROJECT}`;
+    
+    heroPreviewContainer.innerHTML = `
+        <div style="background: #000; border-radius: 16px; overflow: hidden; position: relative; aspect-ratio: 16/9; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+            <video src="${videoUrl}" style="width: 100%; height: 100%; object-fit: cover;" autoplay muted loop playsinline></video>
+            <div style="position: absolute; bottom: 15px; left: 15px; background: rgba(0,0,0,0.6); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem;">
+                <i class="fa-solid fa-check-circle"></i> Video Actual Activo
+            </div>
+        </div>
+    `;
+}
+
+function handleHeroFilePreview(e) {
+    const file = e.target.files[0];
+    if (file) {
+        if (!file.type.startsWith('video/')) {
+            showToast('El archivo debe ser un video', 'error');
+            heroFileInput.value = '';
+            return;
+        }
+        
+        if (heroFilePreview) {
+            heroFilePreview.src = URL.createObjectURL(file);
+            heroFilePreview.classList.remove('hidden');
+        }
+        const drop = document.getElementById('heroDropZoneContent');
+        if (drop) drop.classList.add('hidden');
+    }
+}
+
+async function handleHeroUpload(e) {
+    if (e) e.preventDefault();
+    const file = heroFileInput ? heroFileInput.files[0] : null;
+    
+    if (!file) {
+        showToast('Selecciona un video primero', 'error');
+        return false;
+    }
+
+    setHeroLoading(true);
+    try {
+        console.log("📡 [SISTEMA] Subiendo nuevo video Hero...");
+        
+        // 1. Subir a Storage
+        const uploaded = await storage.createFile(BUCKET_ID, ID.unique(), file);
+        const fileId = uploaded.$id;
+
+        // 2. Buscar videos previos del hero para desactivarlos
+        const response = await databases.listDocuments(DATABASE_ID, COLLECTION_ID, [
+            Query.equal('section', 'hero'),
+            Query.equal('type', 'video')
+        ]);
+        
+        // Desactivar todos los previos
+        for (const doc of response.documents) {
+            await databases.updateDocument(DATABASE_ID, COLLECTION_ID, doc.$id, { active: false });
+        }
+
+        // 3. Crear nuevo registro activo
+        await databases.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), {
+            type: 'video',
+            section: 'hero',
+            fileId: fileId,
+            title: 'Video Hero Principal',
+            description: 'Video split-screen del hero',
+            active: true,
+            order: Date.now()
+        });
+
+        showToast('¡Video Hero actualizado con éxito! ✨');
+        resetHeroForm();
+        refreshAllData();
+    } catch (error) {
+        console.error("❌ Error al actualizar hero:", error);
+        showToast('Error: ' + error.message, 'error');
+    } finally {
+        setHeroLoading(false);
+    }
+    return false;
+}
+
+function setHeroLoading(is) {
+    if (btnHeroUpload) btnHeroUpload.disabled = is;
+    if (heroUploadLoader) heroUploadLoader.classList.toggle('hidden', !is);
+    const bt = document.getElementById('btnHeroText');
+    if (bt) bt.textContent = is ? 'Subiendo video...' : 'Actualizar Video Principal';
+}
+
+function resetHeroForm() {
+    if (heroUploadForm) heroUploadForm.reset();
+    if (heroFilePreview) {
+        heroFilePreview.src = '';
+        heroFilePreview.classList.add('hidden');
+    }
+    const drop = document.getElementById('heroDropZoneContent');
+    if (drop) drop.classList.remove('hidden');
 }
 
 function handleFilePreview(e) {

@@ -320,6 +320,7 @@
                 <button class="tab-btn active" onclick="switchTab('galleryTab')">Galería de Perritos</button>
                 <button class="tab-btn" onclick="switchTab('servicesTab')">Servicios del Banner</button>
                 <button class="tab-btn" onclick="switchTab('videosTab')">Videos Momentos</button>
+                <button class="tab-btn" onclick="switchTab('heroTab')">Video Principal</button>
             </div>
 
             <!-- TABS: Galería -->
@@ -370,6 +371,33 @@
                     <div class="services-editor-grid" id="videosEditorContainer">
                         <p style="text-align: center; padding: 40px;">Cargando videos...</p>
                     </div>
+                </section>
+            </div>
+            <!-- TABS: Hero Video -->
+            <div id="heroTab" class="hidden">
+                <section class="card-premium">
+                    <h2 class="card-title"><i class="fa-solid fa-star"></i> Video del Banner Principal (Hero)</h2>
+                    <p style="margin-bottom: 30px; color: #6B7280;">Este video aparecerá en la parte izquierda del banner principal del Home.</p>
+                    
+                    <div id="heroVideoPreviewContainer" style="margin-bottom: 25px;">
+                        <p style="text-align: center; padding: 20px; background: #f9fafb; border-radius: 12px; border: 1px solid #eee;">Cargando video actual...</p>
+                    </div>
+
+                    <form id="heroUploadForm">
+                        <input type="file" id="heroVideoFile" accept="video/mp4,video/x-m4v,video/*" style="display: none">
+                        <div style="background: #F9FAFB; border: 2px dashed #E5E7EB; border-radius: 20px; padding: 40px; text-align: center; cursor: pointer; margin-bottom: 25px;" onclick="document.getElementById('heroVideoFile').click()">
+                            <div id="heroDropZoneContent">
+                                <i class="fa-solid fa-film" style="font-size: 2.5rem; color: var(--brand-aqua); margin-bottom: 10px;"></i>
+                                <p>Haz clic para subir/reemplazar el video del Hero</p>
+                                <p style="font-size: 0.8rem; color: #9CA3AF; margin-top: 5px;">Recomendado: Video MP4 corto (8-15 seg)</p>
+                            </div>
+                            <video id="heroFilePreview" class="hidden" style="max-height: 200px; border-radius: 12px; margin: 0 auto;" autoplay muted loop></video>
+                        </div>
+                        <button type="submit" class="btn-gold" id="btnHeroUpload">
+                            <span id="btnHeroText">Actualizar Video Principal</span>
+                            <i class="fa-solid fa-circle-notch fa-spin hidden" id="heroUploadLoader"></i>
+                        </button>
+                    </form>
                 </section>
             </div>
         </main>
