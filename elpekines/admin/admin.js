@@ -1,30 +1,13 @@
-// --- Configuración Appwrite (Master Edition) ---
-console.log("🚀 [SISTEMA] Iniciando Panel Admin Appwrite V4.0...");
+// safety check: Ensure centralized config is loaded
+if (typeof APPWRITE_CONFIG === 'undefined') {
+    console.error("❌ ERROR CRÍTICO: No se pudo cargar appwrite-config.js. Revisa la ruta o la conexión.");
+    alert("Error de sistema: No se pudo cargar la configuración de Appwrite. Por favor, recarga la página o contacta a soporte.");
+}
 
-// Configuración obtenida del usuario
-const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
-const APPWRITE_PROJECT = '69b5bc9e001dc8643178';
-const BUCKET_ID = '69b5bf980019193f38fd';
-const DATABASE_ID = '69b5bfbd001ba63ab1d6';
-const COLLECTION_ID = 'content';
+// Appwrite constants from appwrite-config.js
+const { BUCKET_ID, DATABASE_ID, COLLECTION_ID } = APPWRITE_CONFIG || {};
 
-// SDK Appwrite
-const { Client, Account, Storage, Databases, ID, Query } = Appwrite;
-const client = new Client()
-    .setEndpoint(APPWRITE_ENDPOINT)
-    .setProject(APPWRITE_PROJECT);
-
-const account = new Account(client);
-const storage = new Storage(client);
-const databases = new Databases(client);
-
-console.log("✅ Appwrite SDK inicializado");
-console.log("🔧 [DEBUG] Config Activa:", {
-    Endpoint: APPWRITE_ENDPOINT,
-    Project: APPWRITE_PROJECT,
-    Database: DATABASE_ID,
-    Collection: COLLECTION_ID
-});
+console.log("🔧 [DEBUG] Config Activa:", APPWRITE_CONFIG);
 
 // Elementos (Selección diferida para mayor seguridad)
 let loginOverlay, adminContent, loginForm, btnLogout, btnLogin;
