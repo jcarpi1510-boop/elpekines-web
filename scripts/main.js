@@ -1,13 +1,5 @@
-// --- Appwrite Configuration (Public Side) ---
-const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
-const APPWRITE_PROJECT = 'fra-69b5bc9e001dc8643178';
-const BUCKET_ID = 'media';
-const DATABASE_ID = 'main';
-const COLLECTION_ID = 'content';
-
-const { Client, Databases, Query } = Appwrite;
-const client = new Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT);
-const databases = new Databases(client);
+// Appwrite constants from appwrite-config.js
+const { ENDPOINT: APPWRITE_ENDPOINT, PROJECT: APPWRITE_PROJECT, BUCKET_ID, DATABASE_ID, COLLECTION_ID } = APPWRITE_CONFIG;
 
 // --- Mobile Menu Toggle ---
 const menuToggle = document.querySelector('.menu-toggle');

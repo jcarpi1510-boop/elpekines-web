@@ -1,24 +1,13 @@
-// --- Configuración Appwrite (Master Edition) ---
-console.log("🚀 [SISTEMA] Iniciando Panel Admin Appwrite V4.0...");
+// safety check: Ensure centralized config is loaded
+if (typeof APPWRITE_CONFIG === 'undefined') {
+    console.error("❌ ERROR CRÍTICO: No se pudo cargar appwrite-config.js. Revisa la ruta o la conexión.");
+    alert("Error de sistema: No se pudo cargar la configuración de Appwrite. Por favor, recarga la página o contacta a soporte.");
+}
 
-// Configuración obtenida del usuario
-const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
-const APPWRITE_PROJECT = 'fra-69b5bc9e001dc8643178';
-const BUCKET_ID = 'media';
-const DATABASE_ID = 'main';
-const COLLECTION_ID = 'content';
+// Appwrite constants from appwrite-config.js
+const { ENDPOINT: APPWRITE_ENDPOINT, PROJECT: APPWRITE_PROJECT, BUCKET_ID, DATABASE_ID, COLLECTION_ID } = APPWRITE_CONFIG || {};
 
-// SDK Appwrite
-const { Client, Account, Storage, Databases, ID, Query } = Appwrite;
-const client = new Client()
-    .setEndpoint(APPWRITE_ENDPOINT)
-    .setProject(APPWRITE_PROJECT);
-
-const account = new Account(client);
-const storage = new Storage(client);
-const databases = new Databases(client);
-
-console.log("✅ Appwrite SDK inicializado");
+console.log("🔧 [DEBUG] Config Activa:", APPWRITE_CONFIG);
 
 // Elementos (Selección diferida para mayor seguridad)
 let loginOverlay, adminContent, loginForm, btnLogout, btnLogin;
@@ -28,56 +17,51 @@ let galleryGrid, servicesContainer, videosContainer, uploadForm, fileInput, prev
 window.onerror = function(msg, url, line) {
     console.error(`🔴 CRASH ADMIN: ${msg} en ${url}:${line}`);
     // No bloqueamos, pero dejamos registro
-    return false; 
+    return false;
 };
 
 // --- Control de Sesión ---
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("🚀 [TRAZA] Iniciando carga de scripts...");
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log("🚀 [SISTEMA] Iniciando Panel Admin...");
     
     try {
-        // Vincular elementos de la UI
         bindElements();
-        console.log("✅ [TRAZA] Elementos vinculados correctamente");
         
-        // Adjuntar eventos de forma explícita
-        if (loginForm) {
-            loginForm.addEventListener('submit', handleLoginAttempt);
+        // Listeners básicos
+        if (loginForm) loginForm.addEventListener('submit', handleLoginAttempt);
+        if (btnLogout) btnLogout.addEventListener('click', handleLogout);
+
+        // Verificación de Conectividad y Sesión
+        if (typeof account !== 'undefined') {
+            console.log("📡 Verificando conexión con Appwrite...");
+            await checkSession();
+        } else {
+            throw new Error("SDK de Appwrite no cargado correctamente.");
         }
 
-        if (btnLogout) {
-            btnLogout.addEventListener('click', handleLogout);
-        }
-
-        if (account) {
-            console.log("🔑 [TRAZA] Verificando sesión activa...");
-            checkSession();
-        }
-
-        // --- Vincular Eventos de Galería (Correcto) ---
-        if (uploadForm) {
-            uploadForm.onsubmit = handleGalleryUpload;
-            console.log("✅ [TRAZA] Listener de subida de galería listo");
-        }
-
-        if (fileInput) {
-            fileInput.addEventListener('change', handleFilePreview);
-            console.log("✅ [TRAZA] Listener de preview de galería listo");
-        }
+        // Vincular eventos de formularios
+        if (uploadForm) uploadForm.onsubmit = handleGalleryUpload;
+        if (fileInput) fileInput.addEventListener('change', handleFilePreview);
 
     } catch (error) {
-        console.error("❌ [TRAZA] Error crítico durante la inicialización:", error);
-    } finally {
-        // ELIMINAR CARGADOR SIEMPRE (Fail-safe)
-        const gLoader = document.getElementById('globalLoader');
-        if (gLoader) {
-            setTimeout(() => {
-                gLoader.classList.add('fade-out');
-                setTimeout(() => gLoader.classList.add('hidden'), 500);
-            }, 300);
+        console.error("❌ Error de inicialización:", error);
+        if (error.message.includes('fetch')) {
+            showToast('Error de conexión: No se pudo contactar con Appwrite. Revisa tu internet o firewall.', 'error');
+        } else {
+            showToast('Falla de sistema: ' + error.message, 'error');
         }
+    } finally {
+        removeGlobalLoader();
     }
 });
+
+function removeGlobalLoader() {
+    const gLoader = document.getElementById('globalLoader');
+    if (gLoader) {
+        gLoader.classList.add('fade-out');
+        setTimeout(() => gLoader.classList.add('hidden'), 500);
+    }
+}
 
 function bindElements() {
     try {
@@ -118,18 +102,23 @@ async function handleLoginAttempt(e) {
     
     if (!emailInput || !passInput) return;
     
-    const email = emailInput.value;
-    const password = passInput.value;
+    const email = emailInput.value.trim();
+    const password = passInput.value.trim();
     
     setLoginLoading(true);
     try {
+        console.log("📡 Intentando login en Appwrite para:", email);
         await account.createEmailPasswordSession(email, password);
         console.log("✅ Sesión creada exitosamente");
         showToast('¡Bienvenido, Jesús! 🐾');
         handleAuthState(true);
     } catch (error) {
-        console.error("❌ Error de login:", error.message);
-        showToast('Credenciales incorrectas: ' + error.message, 'error');
+        console.error("❌ [LOGIN_FAIL]", error);
+        let msg = error.message;
+        if (error.code === 401) msg = "Credenciales incorrectas o Proyecto mal configurado.";
+        if (error.code === 0) msg = "No hay conexión con Appwrite. Revisa tu internet o el Endpoint.";
+        
+        showToast('Error: ' + msg, 'error');
     } finally {
         setLoginLoading(false);
     }
@@ -137,11 +126,18 @@ async function handleLoginAttempt(e) {
 
 async function checkSession() {
     try {
-        const user = await account.get();
-        console.log("👤 Usuario autenticado:", user.email);
-        handleAuthState(true);
+        // Usamos la utilidad centralizada de auth.js
+        const user = await getActiveSession();
+        
+        if (user) {
+            console.log("✅ Sesión activa:", user.email);
+            handleAuthState(true);
+        } else {
+            console.log("ℹ️ Sin sesión activa");
+            handleAuthState(false);
+        }
     } catch (error) {
-        console.log("🚪 No hay sesión activa");
+        console.error("❌ Error inesperado en checkSession:", error);
         handleAuthState(false);
     }
 }
