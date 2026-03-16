@@ -554,12 +554,12 @@ img {
 /* Hero Section Premium Split-Screen */
 .hero-premium {
     display: flex;
-    min-height: 70vh; /* Altura más equilibrada */
-    max-height: 600px; /* Evita que crezca demasiado en pantallas gigantes */
+    min-height: 450px; /* Reducción drástica para un look más compacto */
+    max-height: 520px; 
     background: var(--softwhite);
     overflow: hidden;
     position: relative;
-    border-bottom: 1px solid rgba(200, 168, 106, 0.1);
+    border-bottom: 2px solid var(--ajmer);
 }
 
 .hero-visual {
@@ -593,7 +593,7 @@ img {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 60px;
+    padding: 40px; /* Menos padding para ahorrar espacio vertical */
     background: 
         radial-gradient(circle at 10% 10%, rgba(158, 206, 208, 0.05) 0%, transparent 50%),
         var(--softwhite);
@@ -605,19 +605,19 @@ img {
 }
 
 .hero-mini-logo {
-    width: 100px;
+    width: 85px; /* Más pequeño para armonizar */
     height: auto;
     border-radius: 50%;
     border: 3px solid var(--champagne);
-    margin: 0 auto 30px;
+    margin: 0 auto 20px;
     box-shadow: 0 10px 20px rgba(74, 52, 32, 0.15);
 }
 
 .hero-title {
-    font-size: 2.8rem; /* Un poco más pequeño y elegante */
+    font-size: 2.22rem; /* Tamaño optimizado para el nuevo alto */
     color: var(--ink);
     line-height: 1.2;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     font-family: var(--font-heading);
 }
 
