@@ -129,21 +129,14 @@ async function handleLoginAttempt(e) {
     }, 15000);
 
     try {
-        console.log("📡 [SISTEMA] Intentando login como ADMIN en PocketBase...");
+        console.log(`📡 [SISTEMA] Intentando login en colección '${AUTH_COLLECTION}'...`);
         
-        // Prueba de conexión previa
-        try {
-            await pb.health.check();
-            console.log("✅ Servidor PocketBase responde (Health Check OK)");
-        } catch (hErr) {
-            console.warn("⚠️ Advertencia: Health check falló, procediendo de todos modos...", hErr);
-        }
-
-        const authData = await pb.admins.authWithPassword(email, password);
+        // El login en colecciones normales usa pb.collection().authWithPassword
+        const authData = await pb.collection(window.AUTH_COLLECTION || 'staff').authWithPassword(email, password);
         clearTimeout(timeout);
         
         console.log("✅ Sesión creada exitosamente:", authData);
-        showToast('¡Bienvenido, Jesús! 🐾');
+        showToast('¡Bienvenido! 🐾');
         handleAuthState(true);
     } catch (error) {
         clearTimeout(timeout);
@@ -168,7 +161,9 @@ async function getActiveSession() {
         console.error("❌ [AUTH] PocketBase no encontrado en admin.js");
         return null;
     }
-    if (pb.authStore.isValid) {
+    
+    // Verificamos si la sesión es válida y pertenece a un modelo (id presente)
+    if (pb.authStore.isValid && pb.authStore.model) {
         return pb.authStore.model;
     }
     return null;
