@@ -230,8 +230,10 @@ async function refreshAllData() {
         
         // El video hero se renderiza al final o con un pequeño delay para no bloquear el resto
         setTimeout(() => {
-            renderHeroVideo(documents.filter(d => d.type === 'hero-video'));
-        }, 100);
+            const heroDocs = documents.filter(d => d.type === 'hero-video');
+            console.log("🎬 [DEBUG] Videos Hero encontrados:", heroDocs.length);
+            renderHeroVideo(heroDocs);
+        }, 150);
 
     } catch (error) {
         console.error("❌ Error al cargar datos de PocketBase:", error);
@@ -266,7 +268,7 @@ function renderGallery(items) {
     items.forEach(item => {
         const card = document.createElement('div');
         card.className = 'admin-card';
-        const fileUrl = pb.files.getURL(item, item.file);
+        const fileUrl = pb.files.getUrl(item, item.file);
         
         card.innerHTML = `
             <div class="card-image">
@@ -297,7 +299,7 @@ function renderServices(docs) {
         const defTitle = num === 1 ? 'Veterinaria' : (num === 2 ? 'Vacunación' : 'Peluquería');
         const title = doc?.title || defTitle;
         const desc = doc?.description || 'Descripción del servicio...';
-        const imgUrl = doc?.file ? pb.files.getURL(doc, doc.file) : '../Logo.png';
+        const imgUrl = doc?.file ? pb.files.getUrl(doc, doc.file) : '../Logo.png';
 
         card.innerHTML = `
             <h4 style="margin-bottom: 15px; color: var(--brand-gold);">Slot #${num}: ${defTitle}</h4>
@@ -372,7 +374,7 @@ function renderVideos(docs) {
         const card = document.createElement('div');
         card.className = 'service-editor-card';
         
-        const videoUrl = doc?.file ? pb.files.getURL(doc, doc.file) : '';
+        const videoUrl = doc?.file ? pb.files.getUrl(doc, doc.file) : '';
 
         card.innerHTML = `
             <h4 style="margin-bottom: 15px; color: var(--brand-gold);">Slot Video #${num}</h4>
@@ -490,7 +492,8 @@ function renderHeroVideo(docs) {
         return;
     }
 
-    const videoUrl = pb.files.getURL(activeDoc, activeDoc.file);
+    const videoUrl = pb.files.getUrl(activeDoc, activeDoc.file);
+    console.log("🎥 [DEBUG] URL del video Hero:", videoUrl);
     
     heroPreviewContainer.innerHTML = `
         <div style="background: #000; border-radius: 16px; overflow: hidden; position: relative; aspect-ratio: 16/9; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
