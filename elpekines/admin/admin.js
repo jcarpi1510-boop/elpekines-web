@@ -159,6 +159,21 @@ async function handleLoginAttempt(e) {
     }
 }
 
+/**
+ * Verifica si hay una sesión activa en PocketBase.
+ * Devuelve el objeto usuario o null si no hay sesión.
+ */
+async function getActiveSession() {
+    if (typeof pb === 'undefined') {
+        console.error("❌ [AUTH] PocketBase no encontrado en admin.js");
+        return null;
+    }
+    if (pb.authStore.isValid) {
+        return pb.authStore.model;
+    }
+    return null;
+}
+
 async function checkSession() {
     try {
         // Usamos la utilidad centralizada de auth.js
