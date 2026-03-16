@@ -17,7 +17,7 @@ window.onerror = function(msg, url, line) {
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("🚀 [SISTEMA] Iniciando Panel Admin...");
     
-    // Fail-Safe: Quitar el cargador si Appwrite tarda demasiado
+    // Fail-Safe: Quitar el cargador si el sistema tarda demasiado
     const failSafeTimeout = setTimeout(() => {
         console.warn("⚠️ [SISTEMA] Fail-safe activado: Forzando visibilidad del panel");
         removeGlobalLoader();
@@ -93,7 +93,7 @@ function bindElements() {
     }
 }
 
-// --- Control de Sesión con Appwrite ---
+// --- Control de Sesión ---
 async function handleAuthState(isLoggedIn) {
     if (loginOverlay) loginOverlay.classList.toggle('hidden', isLoggedIn);
     if (adminContent) adminContent.classList.toggle('hidden', !isLoggedIn);
