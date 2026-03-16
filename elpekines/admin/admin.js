@@ -122,8 +122,8 @@ async function handleLoginAttempt(e) {
     
     setLoginLoading(true);
     try {
-        console.log("📡 Intentando login en PocketBase para:", email);
-        const authData = await pb.collection('users').authWithPassword(email, password);
+        console.log("📡 Intentando login como ADMIN en PocketBase para:", email);
+        const authData = await pb.admins.authWithPassword(email, password);
         console.log("✅ Sesión creada exitosamente:", authData);
         console.log("🔑 Token en AuthStore:", pb.authStore.token ? "Presente" : "AUSENTE");
         console.log("👤 Modelo en AuthStore:", pb.authStore.model ? "Presente" : "AUSENTE");
