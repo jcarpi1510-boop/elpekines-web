@@ -348,6 +348,7 @@ window.saveService = async (num, docId) => {
     formData.append('type', 'service');
     formData.append('title', title);
     formData.append('description', desc);
+    formData.append('active', true);
     formData.append('order', num);
     if (file) formData.append('file', file);
 
@@ -423,6 +424,7 @@ window.saveVideo = async (num, docId) => {
 
     const formData = new FormData();
     formData.append('type', 'moment');
+    formData.append('active', true);
     formData.append('order', num);
     if (file) formData.append('file', file);
 
