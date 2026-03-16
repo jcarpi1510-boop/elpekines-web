@@ -1,11 +1,4 @@
-// safety check: Ensure PocketBase is loaded
-if (typeof window.pb === 'undefined') {
-    console.error("❌ ERROR CRÍTICO: No se pudo cargar pocketbase-config.js");
-}
-
-// Usamos la instancia global ya declarada en pocketbase-config.js
-// const pb = window.pb; 
-
+// El objeto 'pb' y 'AUTH_COLLECTION' ya vienen configurados desde pocketbase-config.js
 console.log("🔧 [DEBUG] PocketBase activo en Admin");
 
 // Elementos (Selección diferida para mayor seguridad)
