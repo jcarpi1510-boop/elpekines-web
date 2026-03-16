@@ -3,7 +3,8 @@ if (typeof window.pb === 'undefined') {
     console.error("❌ ERROR CRÍTICO: No se pudo cargar pocketbase-config.js");
 }
 
-const pb = window.pb;
+// Usamos la instancia global ya declarada en pocketbase-config.js
+// const pb = window.pb; 
 
 console.log("🔧 [DEBUG] PocketBase activo en Admin");
 
