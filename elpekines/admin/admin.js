@@ -235,8 +235,13 @@ async function refreshAllData() {
 
     } catch (error) {
         console.error("❌ Error al cargar datos de PocketBase:", error);
-        showToast('Error al sincronizar datos con el servidor.', 'error');
-        if (galleryGrid) galleryGrid.innerHTML = '<p style="text-align:center; padding:20px;">Error al cargar galería. Reintenta recargando la página.</p>';
+        
+        let errorHint = 'Error al sincronizar datos.';
+        if (error.status === 404) errorHint = 'Error: La colección "content" no existe en PocketBase.';
+        if (error.status === 403) errorHint = 'Error: No tienes permiso para ver la colección "content". Revisa API Rules.';
+        
+        showToast(errorHint, 'error');
+        if (galleryGrid) galleryGrid.innerHTML = `<p style="text-align:center; padding:20px; color: red;">${errorHint}<br>Verifica la consola (F12) para más detalles.</p>`;
     }
 }
 

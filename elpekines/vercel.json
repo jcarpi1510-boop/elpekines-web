@@ -4,11 +4,20 @@
   ],
   "headers": [
     {
-      "source": "/(.*).(jpg|jpeg|png|gif|svg|webp|css|js)",
+      "source": "/(.*).(jpg|jpeg|png|gif|svg|webp)",
       "headers": [
         {
           "key": "Cache-Control",
           "value": "public, max-age=31104000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*).(js|css)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
         }
       ]
     }
