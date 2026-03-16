@@ -149,7 +149,7 @@ async function loadDynamicContent() {
 
                     card.innerHTML = `
                         <div class="service-img-wrapper">
-                            <img src="${fileUrl}" alt="${doc.title}">
+                            <img src="${fileUrl}" alt="${doc.title}" onerror="this.src='Logo.png'; this.style.opacity='0.5';">
                             <div class="service-icon-badge"><i class="fa-solid ${iconClass}"></i></div>
                         </div>
                         <div class="service-details">

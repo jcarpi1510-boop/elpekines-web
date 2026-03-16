@@ -219,16 +219,15 @@ img {
 
 /* Header */
 .header {
-    position: fixed;
-    top: 50px;
-    /* Adjusted roughly for top-bar height */
+    position: sticky;
+    top: 0;
     left: 0;
     width: 100%;
     z-index: 1000;
-    background: var(--ajmer);
-    padding: 25px 20px;
-    border-top: 1px solid rgba(200, 168, 106, .25);
-    border-bottom: 1px solid rgba(200, 168, 106, .25);
+    background: var(--white);
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(200, 168, 106, .15);
+    box-shadow: var(--shadow);
     transition: var(--transition);
 }
 
@@ -483,14 +482,7 @@ img {
 }
 
 /* Header & Navigation */
-.header {
-    background: var(--white);
-    padding: 15px 0;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    box-shadow: var(--shadow);
-}
+/* Duplicated header styles removed and unified above */
 
 .header-container {
     display: flex;
@@ -562,10 +554,12 @@ img {
 /* Hero Section Premium Split-Screen */
 .hero-premium {
     display: flex;
-    min-height: 85vh;
+    min-height: 70vh; /* Altura más equilibrada */
+    max-height: 600px; /* Evita que crezca demasiado en pantallas gigantes */
     background: var(--softwhite);
     overflow: hidden;
     position: relative;
+    border-bottom: 1px solid rgba(200, 168, 106, 0.1);
 }
 
 .hero-visual {
@@ -620,10 +614,10 @@ img {
 }
 
 .hero-title {
-    font-size: 3.5rem;
+    font-size: 2.8rem; /* Un poco más pequeño y elegante */
     color: var(--ink);
-    line-height: 1.1;
-    margin-bottom: 20px;
+    line-height: 1.2;
+    margin-bottom: 15px;
     font-family: var(--font-heading);
 }
 
@@ -850,17 +844,18 @@ img {
 
 /* Contenido de texto */
 .service-details {
-    padding: 36px 24px 24px;
+    padding: 24px;
     display: flex;
     flex-direction: column;
-    flex: 1;
+    flex: 1; /* Esto empuja el botón al final si hay poco texto */
+    text-align: center;
 }
 
 .service-details h3 {
     font-family: var(--font-heading);
-    font-size: 1.3rem;
-    color: var(--primary-color);
-    margin-bottom: 10px;
+    font-size: 1.4rem;
+    color: var(--ink);
+    margin-bottom: 12px;
 }
 
 .service-price {
@@ -888,35 +883,42 @@ img {
     color: var(--secondary-color);
 }
 
-/* Botón "Reservar ahora" */
-.btn-emerald-card {
-    display: inline-block;
-    padding: 11px 24px;
-    background: var(--primary-color);
-    color: var(--white);
+/* Botón "Agendar Hora" en la Card */
+.btn-service-call {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: var(--ink);
+    color: var(--white) !important;
     border-radius: 50px;
     font-family: var(--font-body);
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     text-align: center;
-    border: 2px solid var(--primary-color);
     transition: var(--transition);
-    margin-top: auto;
-    align-self: flex-start;
+    margin-top: auto; /* IMPORTANTE: Lo empuja al final de la card */
+    box-shadow: 0 4px 12px rgba(31, 59, 58, 0.2);
 }
 
-.btn-emerald-card:hover {
-    background: transparent;
-    color: var(--primary-color);
-    border-color: var(--primary-color);
+.btn-service-call:hover {
+    background: var(--mucurapo-deep);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(31, 59, 58, 0.3);
+}
+
+.btn-service-call i {
+    font-size: 0.9rem;
+    opacity: 0.9;
 }
 
 /* Custom details for service cards */
 .service-description-detail {
-    margin-top: 15px;
-    text-align: left;
-    border-top: 1px solid rgba(212, 175, 55, 0.1);
-    padding-top: 15px;
+    margin-top: 5px;
+    margin-bottom: 25px;
+    text-align: center;
+    flex: 1; /* Permite que este espacio crezca y mantenga los botones alineados */
 }
 
 .service-description-detail p {
