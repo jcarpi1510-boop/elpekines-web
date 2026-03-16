@@ -593,15 +593,17 @@ img {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px; /* Menos padding para ahorrar espacio vertical */
-    background: 
-        radial-gradient(circle at 10% 10%, rgba(158, 206, 208, 0.05) 0%, transparent 50%),
-        var(--softwhite);
+    padding: 40px;
+    background: linear-gradient(135deg, #fdf6f0 0%, #faedf4 50%, #f5e8f0 100%);
+    position: relative; /* Para el canvas absoluto */
+    overflow: hidden;
 }
 
 .hero-text-block {
     max-width: 500px;
     text-align: center;
+    position: relative; /* Capa sobre el canvas */
+    z-index: 1;
 }
 
 .hero-mini-logo {
