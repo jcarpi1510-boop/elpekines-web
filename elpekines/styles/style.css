@@ -785,8 +785,9 @@ img {
    ============================================= */
 .services-grid-premium {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 350px)); /* Columnas más estrechas */
+    gap: 25px;
+    justify-content: center; /* Centrado si hay pocos */
     margin-bottom: 50px;
 }
 
@@ -810,7 +811,7 @@ img {
 /* Imagen con altura fija y corte uniforme */
 .service-img-wrapper {
     position: relative;
-    height: 220px;
+    height: 170px; /* Altura reducida */
     overflow: hidden;
 }
 
@@ -844,18 +845,18 @@ img {
 
 /* Contenido de texto */
 .service-details {
-    padding: 24px;
+    padding: 20px; /* Menos padding */
     display: flex;
     flex-direction: column;
-    flex: 1; /* Esto empuja el botón al final si hay poco texto */
+    flex: 1;
     text-align: center;
 }
 
 .service-details h3 {
     font-family: var(--font-heading);
-    font-size: 1.4rem;
+    font-size: 1.25rem; /* Letra un poco más pequeña */
     color: var(--ink);
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .service-price {
@@ -916,9 +917,14 @@ img {
 /* Custom details for service cards */
 .service-description-detail {
     margin-top: 5px;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     text-align: center;
-    flex: 1; /* Permite que este espacio crezca y mantenga los botones alineados */
+    flex: 1;
+}
+
+.service-description-detail p {
+    font-size: 0.9rem; /* Texto de descripción más pequeño */
+    line-height: 1.5;
 }
 
 .service-description-detail p {
