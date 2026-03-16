@@ -1,5 +1,5 @@
-// PocketBase instance is globally available from pocketbase-config.js as window.pb
-const pb = window.pb;
+// La instancia 'pb' ya es global desde pocketbase-config.js
+console.log("🐾 [DEBUG] Iniciando lógica de El Pekinés");
 
 // --- Mobile Menu Toggle ---
 const menuToggle = document.querySelector('.menu-toggle');
