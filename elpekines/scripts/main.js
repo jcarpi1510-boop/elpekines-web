@@ -93,12 +93,15 @@ async function loadDynamicContent() {
         const response = await pb.collection('content').getFullList({
             sort: 'order',
         });
-        const documents = response;
+        console.log(`📦 [DATO] ${response.length} registros recibidos de PocketBase`);
 
-        const galleryDocs = documents.filter(d => d.type === 'gallery');
-        const serviceDocs = documents.filter(d => d.type === 'service');
-        const momentDocs = documents.filter(d => d.type === 'moment');
-        const heroDocs = documents.filter(d => d.type === 'hero-video');
+        const documents = response;
+        const galleryDocs = documents.filter(d => d.type === 'gallery' && d.active !== false);
+        const serviceDocs = documents.filter(d => d.type === 'service' && d.active !== false);
+        const momentDocs = documents.filter(d => d.type === 'moment' && d.active !== false);
+        const heroDocs = documents.filter(d => d.type === 'hero-video' && d.active !== false);
+
+        console.log(`📊 [FILTRO] Galería:${galleryDocs.length}, Servicios:${serviceDocs.length}, Momentos:${momentDocs.length}, Hero:${heroDocs.length}`);
 
         // 0. Render Hero Video
         renderHeroVideo(heroDocs);
