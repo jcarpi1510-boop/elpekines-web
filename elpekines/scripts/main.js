@@ -41,7 +41,7 @@ function renderHeroVideo(heroDocs) {
     
     if (activeHero) {
         console.log("🎬 Cargando Video Hero...");
-        const videoUrl = pb.files.getUrl(activeHero, activeHero.file);
+        const videoUrl = pb.files.getURL(activeHero, activeHero.file);
         container.innerHTML = `
             <video src="${videoUrl}" autoplay muted loop playsinline poster="Logo.png" class="hero-video-fade-in"></video>
         `;
@@ -75,7 +75,7 @@ function renderAboutVideos(moments) {
 
     container.innerHTML = '';
     moments.forEach((doc, index) => {
-        const videoUrl = pb.files.getUrl(doc, doc.file);
+        const videoUrl = pb.files.getURL(doc, doc.file);
         const card = document.createElement('div');
         card.className = 'video-card';
         card.style.animationDelay = `${index * 0.15}s`;
@@ -117,7 +117,7 @@ async function loadDynamicContent() {
                     const card = document.createElement('div');
                     card.className = 'gallery-card';
                     card.style.animationDelay = `${index * 0.1}s`;
-                    const fileUrl = pb.files.getUrl(doc, doc.file);
+                    const fileUrl = pb.files.getURL(doc, doc.file);
                     
                     card.innerHTML = `<img src="${fileUrl}" alt="${doc.title}" loading="lazy">`;
                     card.addEventListener('click', () => window.open(fileUrl, '_blank'));
@@ -138,7 +138,7 @@ async function loadDynamicContent() {
                     const card = document.createElement('div');
                     card.className = 'service-card-premium';
                     card.style.animationDelay = `${index * 0.15}s`;
-                    const fileUrl = pb.files.getUrl(doc, doc.file);
+                    const fileUrl = pb.files.getURL(doc, doc.file);
                     
                     let iconClass = 'fa-stethoscope';
                     if (doc.title.toLowerCase().includes('vacuna')) iconClass = 'fa-syringe';

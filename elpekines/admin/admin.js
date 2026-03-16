@@ -112,9 +112,10 @@ async function handleLoginAttempt(e) {
     if (!emailInput || !passInput) return;
     
     const email = emailInput.value.trim();
-    const password = passInput.value.trim();
+    const password = passInput.value; // Removido .trim() por si la clave tiene espacios al final
     
     setLoginLoading(true);
+    console.log("🔑 [AUTH] Intento de login iniciado");
     
     // Timeout de seguridad para la red (15 segundos)
     const timeout = setTimeout(() => {
@@ -123,22 +124,24 @@ async function handleLoginAttempt(e) {
     }, 15000);
 
     try {
-        console.log(`📡 [SISTEMA] Intentando login en colección '${AUTH_COLLECTION}'...`);
+        console.log(`📡 [AUTH] Intentando login en colección '${window.AUTH_COLLECTION || 'staff'}'...`);
         
-        // El login en colecciones normales usa pb.collection().authWithPassword
         const authData = await pb.collection(window.AUTH_COLLECTION || 'staff').authWithPassword(email, password);
         clearTimeout(timeout);
         
-        console.log("✅ Sesión creada exitosamente:", authData);
+        console.log("✅ [AUTH] Sesión creada exitosamente:", authData);
+        console.log("🔐 [AUTH] Estado authStore tras login - Valid:", pb.authStore.isValid, "Token:", pb.authStore.token ? "Presente" : "Ausente");
+        
         showToast('¡Bienvenido! 🐾');
         handleAuthState(true);
     } catch (error) {
         clearTimeout(timeout);
-        console.error("❌ [LOGIN_FAIL] Error completo:", error);
+        console.error("❌ [AUTH_FAIL] Error en el intento de login:", error);
         
         let msg = "Error de conexión o servidor.";
-        if (error.status === 400) msg = "Credenciales incorrectas.";
-        if (error.status === 0) msg = "Error de red/CORS. El servidor no responde.";
+        if (error.status === 400) msg = "Credenciales incorrectas (verifica email/pass y que el usuario esté 'Verified').";
+        if (error.status === 403) msg = "Acceso denegado (¿Es una colección Auth?).";
+        if (error.status === 0) msg = "Error de red o CORS.";
         
         showToast('Error: ' + msg, 'error');
     } finally {
@@ -165,18 +168,19 @@ async function getActiveSession() {
 
 async function checkSession() {
     try {
-        // Usamos la utilidad centralizada de auth.js
+        console.log("🔍 [AUTH] Verificando sesión existente...");
         const user = await getActiveSession();
         
         if (user) {
-            console.log("✅ Sesión activa:", user.email);
+            console.log("✅ [AUTH] Sesión válida encontrada:", user.email);
+            console.log("🔐 [AUTH] Token actual:", pb.authStore.token ? "Presente" : "AUSENTE");
             handleAuthState(true);
         } else {
-            console.log("ℹ️ Sin sesión activa");
+            console.log("ℹ️ [AUTH] No se detectó sesión activa en este navegador.");
             handleAuthState(false);
         }
     } catch (error) {
-        console.error("❌ Error inesperado en checkSession:", error);
+        console.error("❌ [AUTH_ERR] Error crítico en checkSession:", error);
         handleAuthState(false);
     }
 }
@@ -257,7 +261,7 @@ function renderGallery(items) {
     items.forEach(item => {
         const card = document.createElement('div');
         card.className = 'admin-card';
-        const fileUrl = pb.files.getUrl(item, item.file);
+        const fileUrl = pb.files.getURL(item, item.file);
         
         card.innerHTML = `
             <div class="card-image">
@@ -288,7 +292,7 @@ function renderServices(docs) {
         const defTitle = num === 1 ? 'Veterinaria' : (num === 2 ? 'Vacunación' : 'Peluquería');
         const title = doc?.title || defTitle;
         const desc = doc?.description || 'Descripción del servicio...';
-        const imgUrl = doc?.file ? pb.files.getUrl(doc, doc.file) : '../Logo.png';
+        const imgUrl = doc?.file ? pb.files.getURL(doc, doc.file) : '../Logo.png';
 
         card.innerHTML = `
             <h4 style="margin-bottom: 15px; color: var(--brand-gold);">Slot #${num}: ${defTitle}</h4>
@@ -363,7 +367,7 @@ function renderVideos(docs) {
         const card = document.createElement('div');
         card.className = 'service-editor-card';
         
-        const videoUrl = doc?.file ? pb.files.getUrl(doc, doc.file) : '';
+        const videoUrl = doc?.file ? pb.files.getURL(doc, doc.file) : '';
 
         card.innerHTML = `
             <h4 style="margin-bottom: 15px; color: var(--brand-gold);">Slot Video #${num}</h4>
@@ -481,7 +485,7 @@ function renderHeroVideo(docs) {
         return;
     }
 
-    const videoUrl = pb.files.getUrl(activeDoc, activeDoc.file);
+    const videoUrl = pb.files.getURL(activeDoc, activeDoc.file);
     
     heroPreviewContainer.innerHTML = `
         <div style="background: #000; border-radius: 16px; overflow: hidden; position: relative; aspect-ratio: 16/9; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
