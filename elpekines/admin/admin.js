@@ -121,19 +121,37 @@ async function handleLoginAttempt(e) {
     const password = passInput.value.trim();
     
     setLoginLoading(true);
+    
+    // Timeout de seguridad para la red (15 segundos)
+    const timeout = setTimeout(() => {
+        setLoginLoading(false);
+        showToast('La conexión está tardando demasiado. Verifica tu internet o si el servidor está despierto.', 'error');
+    }, 15000);
+
     try {
-        console.log("📡 Intentando login como ADMIN en PocketBase para:", email);
-        const authData = await pb.admins.authWithPassword(email, password);
-        console.log("✅ Sesión creada exitosamente:", authData);
-        console.log("🔑 Token en AuthStore:", pb.authStore.token ? "Presente" : "AUSENTE");
-        console.log("👤 Modelo en AuthStore:", pb.authStore.model ? "Presente" : "AUSENTE");
+        console.log("📡 [SISTEMA] Intentando login como ADMIN en PocketBase...");
         
+        // Prueba de conexión previa
+        try {
+            await pb.health.check();
+            console.log("✅ Servidor PocketBase responde (Health Check OK)");
+        } catch (hErr) {
+            console.warn("⚠️ Advertencia: Health check falló, procediendo de todos modos...", hErr);
+        }
+
+        const authData = await pb.admins.authWithPassword(email, password);
+        clearTimeout(timeout);
+        
+        console.log("✅ Sesión creada exitosamente:", authData);
         showToast('¡Bienvenido, Jesús! 🐾');
         handleAuthState(true);
     } catch (error) {
+        clearTimeout(timeout);
         console.error("❌ [LOGIN_FAIL] Error completo:", error);
-        let msg = error.message;
+        
+        let msg = "Error de conexión o servidor.";
         if (error.status === 400) msg = "Credenciales incorrectas.";
+        if (error.status === 0) msg = "Error de red/CORS. El servidor no responde.";
         
         showToast('Error: ' + msg, 'error');
     } finally {
