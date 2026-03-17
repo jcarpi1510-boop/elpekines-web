@@ -554,8 +554,8 @@ img {
 /* Hero Section Premium Split-Screen */
 .hero-premium {
     display: flex;
-    min-height: 450px; /* Reducción drástica para un look más compacto */
-    max-height: 520px; 
+    min-height: 400px; /* Reducido de 450px para ser más compacto */
+    max-height: 480px; /* Reducido de 520px */
     background: var(--softwhite);
     overflow: hidden;
     position: relative;
@@ -563,7 +563,7 @@ img {
 }
 
 .hero-visual {
-    flex: 1;
+    flex: 0.8;
     position: relative;
     background: var(--ink);
     overflow: hidden;
@@ -589,7 +589,7 @@ img {
 }
 
 .hero-content {
-    flex: 1;
+    flex: 1.2;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -607,7 +607,7 @@ img {
 }
 
 .hero-mini-logo {
-    width: 85px; /* Más pequeño para armonizar */
+    width: 75px; /* Reducido de 85px para armonizar con el nuevo alto */
     height: auto;
     border-radius: 50%;
     border: 3px solid var(--champagne);
@@ -616,7 +616,7 @@ img {
 }
 
 .hero-title {
-    font-size: 2.22rem; /* Tamaño optimizado para el nuevo alto */
+    font-size: 2rem; /* Reducido ligeramente de 2.22rem para el nuevo alto */
     color: var(--ink);
     line-height: 1.2;
     margin-bottom: 12px;
