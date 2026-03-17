@@ -2076,10 +2076,10 @@ img {
 }
 
 /* Staggered Hero Text */
-.hero-mini-logo { animation: fadeInUp 0.8s ease out 0.5s forwards; opacity: 0; }
-.hero-title { animation: fadeInUp 0.8s ease out 0.65s forwards; opacity: 0; }
-.hero-subtitle { animation: fadeInUp 0.8s ease out 0.8s forwards; opacity: 0; }
-.hero-buttons { animation: fadeInUp 0.8s ease out 0.95s forwards; opacity: 0; }
+.hero-mini-logo { animation: fadeInUp 0.8s ease-out 0.5s forwards; opacity: 0; }
+.hero-title { animation: fadeInUp 0.8s ease-out 0.65s forwards; opacity: 0; }
+.hero-subtitle { animation: fadeInUp 0.8s ease-out 0.8s forwards; opacity: 0; }
+.hero-buttons { animation: fadeInUp 0.8s ease-out 0.95s forwards; opacity: 0; }
 
 /* Gallery & Scroll Animations */
 .animate-on-scroll {
