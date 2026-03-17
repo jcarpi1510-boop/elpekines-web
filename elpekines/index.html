@@ -160,7 +160,7 @@
         </div>
     </section>
     <!-- Premium Gallery Section -->
-    <section class="section gallery-home">
+    <section class="section gallery-home animate-on-scroll">
         <div class="gallery-preview-container">
             <h3 class="gallery-title">Galería</h3>
             <div id="dogGallery" class="gallery-grid">
@@ -177,7 +177,7 @@
     </section>
 
     <!-- Services Section -->
-    <section id="servicios" class="section services">
+    <section id="servicios" class="section services animate-on-scroll">
         <div class="container">
             <div class="section-header">
                 <span class="section-subtitle">Lo mejor para ellos</span>
@@ -194,7 +194,7 @@
     </section>
 
     <!-- Staff Section (Sobre Nosotros) -->
-    <section id="nosotros" class="section staff-section">
+    <section id="nosotros" class="section staff-section animate-on-scroll">
         <div class="container">
             <div class="section-header">
                 <span class="section-subtitle">Personal calificado</span>
@@ -517,6 +517,39 @@
     }
     loop();
     window.addEventListener('resize', ()=>{ resize(); initDogs(); });
+    </script>
+    <script>
+    // Intersection Observer for scroll animations
+    document.addEventListener('DOMContentLoaded', () => {
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // If it's a grid container, animate children with stagger
+                    if (entry.target.classList.contains('gallery-home')) {
+                        const cards = entry.target.querySelectorAll('.gallery-card');
+                        cards.forEach((card, index) => {
+                            setTimeout(() => {
+                                card.classList.add('visible');
+                            }, index * 70); // 0.07s stagger
+                        });
+                    }
+                    
+                    // Once animated, we can stop observing
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Observe all elements with .animate-on-scroll
+        document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+    });
     </script>
 </body>
 
