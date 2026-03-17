@@ -554,8 +554,8 @@ img {
 /* Hero Section Premium Split-Screen */
 .hero-premium {
     display: flex;
-    min-height: 400px; /* Reducido de 450px para ser más compacto */
-    max-height: 480px; /* Reducido de 520px */
+    min-height: 280px; /* Reducción agresiva */
+    max-height: 320px; 
     background: var(--softwhite);
     overflow: hidden;
     position: relative;
@@ -563,7 +563,7 @@ img {
 }
 
 .hero-visual {
-    flex: 0.8;
+    flex: 0.5; /* Video mucho más estrecho */
     position: relative;
     background: var(--ink);
     overflow: hidden;
@@ -589,11 +589,11 @@ img {
 }
 
 .hero-content {
-    flex: 1.2;
+    flex: 1.5; /* Más espacio para el texto */
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px;
+    padding: 20px; /* Reducido de 40px */
     background: linear-gradient(135deg, #fdf6f0 0%, #faedf4 50%, #f5e8f0 100%);
     position: relative; /* Para el canvas absoluto */
     overflow: hidden;
@@ -607,7 +607,7 @@ img {
 }
 
 .hero-mini-logo {
-    width: 75px; /* Reducido de 85px para armonizar con el nuevo alto */
+    width: 60px; /* Logo más pequeño */
     height: auto;
     border-radius: 50%;
     border: 3px solid var(--champagne);
@@ -616,7 +616,7 @@ img {
 }
 
 .hero-title {
-    font-size: 2rem; /* Reducido ligeramente de 2.22rem para el nuevo alto */
+    font-size: 1.6rem; /* Título más pequeño */
     color: var(--ink);
     line-height: 1.2;
     margin-bottom: 12px;
@@ -624,9 +624,9 @@ img {
 }
 
 .hero-subtitle {
-    font-size: 1.25rem;
+    font-size: 1rem;
     color: var(--text-light);
-    margin-bottom: 40px;
+    margin-bottom: 20px; /* Reducido de 40px */
     font-family: var(--font-body);
     font-style: italic;
 }
