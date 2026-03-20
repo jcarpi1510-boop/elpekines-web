@@ -212,7 +212,33 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
+// --- WhatsApp Widget Logic ---
+function initWhatsAppWidget() {
+    const waBubble = document.getElementById('waBubble');
+    const waWindow = document.getElementById('waWindow');
+
+    if (!waBubble || !waWindow) return;
+
+    waBubble.addEventListener('click', (e) => {
+        e.stopPropagation();
+        waWindow.classList.toggle('active');
+    });
+
+    // Cerrar al hacer clic fuera
+    document.addEventListener('click', (e) => {
+        if (!waWindow.contains(e.target) && !waBubble.contains(e.target)) {
+            waWindow.classList.remove('active');
+        }
+    });
+
+    // No cerrar al hacer clic dentro de la ventana
+    waWindow.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+}
+
 // --- Initialize ---
 document.addEventListener('DOMContentLoaded', () => {
     loadDynamicContent();
+    initWhatsAppWidget();
 });
