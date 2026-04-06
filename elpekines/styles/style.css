@@ -164,7 +164,7 @@ img {
 
 .btn-gold {
     background: #E4D0D1;
-    padding: 22px 45px;
+    padding: 24px 50px;
     border-radius: 50px;
     text-decoration: none;
     font-weight: 800;
@@ -172,6 +172,7 @@ img {
     border: 1px solid rgba(200, 168, 106, .35);
     box-shadow: 0 12px 25px rgba(31, 59, 58, .18);
     transition: all .3s ease;
+    font-size: 1.1rem;
 }
 
 .btn-gold:hover {
@@ -208,13 +209,43 @@ img {
 }
 
 .btn-sm {
-    padding: 8px 20px;
-    font-size: 0.9rem;
+    padding: 12px 28px;
+    font-size: 1rem;
 }
 
 .btn-lg {
-    padding: 15px 40px;
-    font-size: 1.1rem;
+    padding: 20px 45px;
+    font-size: 1.2rem;
+}
+
+.btn-mega {
+    padding: 24px 60px;
+    font-size: 1.4rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #E4D0D1 0%, #D4A8A9 100%);
+    box-shadow: 0 15px 35px rgba(31, 59, 58, 0.25);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn-mega:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 20px 45px rgba(31, 59, 58, 0.3);
+    background: linear-gradient(135deg, #D4A8A9 0%, #E4D0D1 100%);
+}
+
+@media (max-width: 600px) {
+    .btn-mega {
+        padding: 18px 30px;
+        font-size: 1.1rem;
+        width: 100%;
+        max-width: 320px;
+    }
 }
 
 /* Header */
@@ -432,9 +463,10 @@ img {
     /* Highlight buttons in menu */
     .mobile-nav-list .btn {
         margin-top: 20px;
-        padding: 18px;
+        padding: 20px;
         font-family: var(--font-body);
-        font-size: 1rem;
+        font-size: 1.1rem;
+        font-weight: 700;
     }
 }
 
@@ -892,13 +924,13 @@ img {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    padding: 14px 24px;
+    padding: 16px 30px;
     background: var(--ink);
     color: var(--white) !important;
     border-radius: 50px;
     font-family: var(--font-body);
-    font-weight: 600;
-    font-size: 0.95rem;
+    font-weight: 700;
+    font-size: 1.05rem;
     text-align: center;
     transition: var(--transition);
     margin-top: auto; /* IMPORTANTE: Lo empuja al final de la card */
@@ -1387,21 +1419,21 @@ img {
 }
 
 .social-links a {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     background-color: rgba(255, 255, 255, 0.15);
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     transition: var(--transition);
 }
 
 .social-links a:hover {
     background-color: var(--white);
     color: var(--primary-color);
-    transform: translateY(-5px) scale(1.1);
+    transform: translateY(-5px) scale(1.15);
 }
 
 .social-links a.instagram-footer {
@@ -1420,22 +1452,22 @@ img {
 }
 
 .wa-bubble {
-    width: 60px;
-    height: 60px;
+    width: 75px;
+    height: 75px;
     background-color: #25d366;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     color: white;
-    font-size: 30px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    font-size: 38px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
     cursor: pointer;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .wa-bubble:hover {
-    transform: scale(1.1);
+    transform: scale(1.12);
 }
 
 .wa-chat-window {
@@ -1518,37 +1550,37 @@ img {
 .ig-surgical-bubble {
     position: fixed;
     bottom: 25px;
-    right: 95px;
-    /* Al lado de WhatsApp (25 + 60 + 10 de margen) */
-    width: 60px;
-    height: 60px;
+    right: 115px;
+    /* Al lado de WhatsApp (25 + 75 + 15 de margen) */
+    width: 75px;
+    height: 75px;
     background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     color: white;
-    font-size: 30px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    font-size: 38px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
     cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
     z-index: 9998;
     text-decoration: none;
 }
 
 .ig-surgical-bubble:hover {
-    transform: scale(1.1);
+    transform: scale(1.12);
     color: white;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
 }
 
 @media (max-width: 600px) {
     .ig-surgical-bubble {
         bottom: 20px;
-        right: 85px;
-        width: 50px;
-        height: 50px;
-        font-size: 25px;
+        right: 105px;
+        width: 64px;
+        height: 64px;
+        font-size: 32px;
     }
 }
 
@@ -1813,39 +1845,39 @@ img {
 
 @media (max-width: 768px) {
     .social-float {
-        width: 48px;
-        height: 48px;
-        font-size: 22px;
-        bottom: 16px;
+        width: 58px;
+        height: 58px;
+        font-size: 28px;
+        bottom: 20px;
     }
 
     .whatsapp-float {
-        right: 16px;
+        right: 20px;
     }
 
     .instagram-float {
-        right: 74px;
+        right: 90px;
     }
 
     /* Widget WhatsApp en móvil */
     .wa-surgical-widget {
-        bottom: 16px;
-        right: 16px;
+        bottom: 20px;
+        right: 20px;
     }
 
     .wa-bubble {
-        width: 48px;
-        height: 48px;
-        font-size: 22px;
+        width: 64px;
+        height: 64px;
+        font-size: 32px;
     }
 
     /* Botón Instagram en móvil */
     .ig-surgical-bubble {
-        width: 48px;
-        height: 48px;
-        font-size: 22px;
-        bottom: 16px;
-        right: 74px;
+        width: 64px;
+        height: 64px;
+        font-size: 32px;
+        bottom: 20px;
+        right: 100px; /* Separación de 16px del de WhatsApp */
     }
 }
 
