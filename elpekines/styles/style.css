@@ -1845,9 +1845,9 @@ img {
 
 @media (max-width: 768px) {
     .social-float {
-        width: 58px;
-        height: 58px;
-        font-size: 28px;
+        width: 70px;
+        height: 70px;
+        font-size: 32px;
         bottom: 20px;
     }
 
@@ -1856,7 +1856,7 @@ img {
     }
 
     .instagram-float {
-        right: 90px;
+        right: 105px;
     }
 
     /* Widget WhatsApp en móvil */
@@ -1866,18 +1866,18 @@ img {
     }
 
     .wa-bubble {
-        width: 64px;
-        height: 64px;
-        font-size: 32px;
+        width: 75px;
+        height: 75px;
+        font-size: 36px;
     }
 
     /* Botón Instagram en móvil */
     .ig-surgical-bubble {
-        width: 64px;
-        height: 64px;
-        font-size: 32px;
+        width: 75px;
+        height: 75px;
+        font-size: 36px;
         bottom: 20px;
-        right: 100px; /* Separación de 16px del de WhatsApp */
+        right: 110px; /* Separación optimizada para botones de 75px */
     }
 }
 
