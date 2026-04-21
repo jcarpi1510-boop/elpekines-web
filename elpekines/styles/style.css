@@ -674,6 +674,7 @@ img {
     .hero-premium {
         flex-direction: column-reverse;
         min-height: auto;
+        max-height: none;
     }
     
     .hero-visual {
